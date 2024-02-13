@@ -18,7 +18,6 @@ public class UserService {
     public UserResponse registerUser(final RegisterUserRequest registerUserRequest) {
         RealWorldUser user = RealWorldUser.of(registerUserRequest);
         RealWorldUser savedUser = userRepository.save(user);
-
         log.info("[S] registerUser() : savedUser={}", savedUser);
 
         return UserResponse.of(savedUser, "token");

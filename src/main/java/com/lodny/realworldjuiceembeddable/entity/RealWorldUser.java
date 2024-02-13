@@ -2,14 +2,12 @@ package com.lodny.realworldjuiceembeddable.entity;
 
 import com.lodny.realworldjuiceembeddable.entity.dto.RegisterUserRequest;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class RealWorldUser {
