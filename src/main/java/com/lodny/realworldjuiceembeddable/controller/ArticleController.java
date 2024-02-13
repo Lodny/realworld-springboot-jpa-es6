@@ -51,10 +51,13 @@ public class ArticleController {
 
     @JwtTokenRequired
     @DeleteMapping("/{slug}")
-    public void deleteArticleBySlug(@PathVariable final String slug, @LoginUser final UserResponse loginUser) {
+    public ResponseEntity<?> deleteArticleBySlug(@PathVariable final String slug, @LoginUser final UserResponse loginUser) {
         log.info("[C] deleteArticleBySlug() : slug={}", slug);
         log.info("[C] deleteArticleBySlug() : loginUser={}", loginUser);
 
-        articleService.deleteArticleBySlug(slug, loginUser);
+        int count = articleService.deleteArticleBySlug(slug, loginUser);
+        log.info("[C] deleteArticleBySlug() : count={}", count);
+
+        return ResponseEntity.ok(count);
     }
 }

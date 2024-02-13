@@ -36,7 +36,7 @@ public class ArticleService {
         return articleResponse;
     }
 
-    public void deleteArticleBySlug(final String slug, final UserResponse loginUser) {
+    public int deleteArticleBySlug(final String slug, final UserResponse loginUser) {
 //        Article foundArticle = getArticleBySlug(slug);
 //        if (! foundArticle.getAuthorId().equals(loginUser.id()))
 //            throw new IllegalArgumentException("The author is different from the logged-in user.");
@@ -44,7 +44,7 @@ public class ArticleService {
 //        articleRepository.delete(foundArticle);
 
 //        articleRepository.deleteBySlug(slug);
-        articleRepository.deleteBySlugAndAuthorId(slug, loginUser.id());
+        return articleRepository.deleteBySlugAndAuthorId(slug, loginUser.id());
     }
 
     private ArticleResponse getArticleBySlug(final String slug) {

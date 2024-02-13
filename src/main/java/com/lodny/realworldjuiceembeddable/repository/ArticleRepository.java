@@ -17,7 +17,7 @@ public interface ArticleRepository extends Repository<Article, Long> {
     Object findBySlug(String slug);
 
     @Transactional
-    void deleteBySlugAndAuthorId(String slug, Long authorId);
+    int deleteBySlugAndAuthorId(String slug, Long authorId);
 
     @Transactional
     void deleteBySlug(String slug);
