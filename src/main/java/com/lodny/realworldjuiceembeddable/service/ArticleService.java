@@ -22,7 +22,6 @@ public class ArticleService {
                                            final RealWorldUser loginUser) {
         Article article = Article.of(registerArticleRequest, loginUser.getId());
         log.info("[S] registerArticle() : article={}", article);
-        log.info("[S] registerArticle() : loginUser={}", loginUser);
 
         Article savedArticle = articleRepository.save(article);
         log.info("[S] registerArticle() : savedArticle={}", savedArticle);
@@ -31,8 +30,10 @@ public class ArticleService {
     }
 
     public ArticleResponse getArticleBySlug(final String slug, final RealWorldUser loginUser) {
-        Article foundArticle = getArticleBySlug(slug);
-        return ArticleResponse.of(foundArticle, ProfileResponse.of(loginUser));
+        ArticleResponse articleResponse = getArticleBySlug(slug);
+        log.info("getArticleBySlug() : articleResponse={}", articleResponse);
+
+        return articleResponse;
     }
 
     public void deleteArticleBySlug(final String slug, final UserResponse loginUser) {
@@ -42,16 +43,17 @@ public class ArticleService {
 //
 //        articleRepository.delete(foundArticle);
 
-        articleRepository.deleteBySlug(slug);
-//        articleRepository.deleteBySlugAndAuthorId(slug, loginUser.id());
+//        articleRepository.deleteBySlug(slug);
+        articleRepository.deleteBySlugAndAuthorId(slug, loginUser.id());
     }
 
-    private Article getArticleBySlug(final String slug) {
-        Article foundArticle = articleRepository.findBySlug(slug);
-        log.info("[S] getArticleBySlug() : foundArticle={}", foundArticle);
-        if (foundArticle == null)
+    private ArticleResponse getArticleBySlug(final String slug) {
+        Object[] objs = (Object[]) articleRepository.findBySlug(slug);
+        log.info("[S] getArticleBySlug() : objs={}, size={}", objs, objs.length);
+        if (objs.length != 2)
             throw new IllegalArgumentException("The article is not found");
 
-        return foundArticle;
+        return ArticleResponse.of((Article)objs[0], ProfileResponse.of((RealWorldUser)objs[1]));
+
     }
 }

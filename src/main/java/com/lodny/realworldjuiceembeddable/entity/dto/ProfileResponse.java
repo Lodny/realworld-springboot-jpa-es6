@@ -12,6 +12,9 @@ public record ProfileResponse(
 ) {
 
     public static ProfileResponse of(RealWorldUser user) {
+        if (user == null)
+            return null;
+
         return new ProfileResponse(
                 user.getUsername(),
                 user.getBio(),

@@ -29,6 +29,7 @@ public class ArticleController {
                                              @LoginUser final UserResponse loginUser) {
         RegisterArticleRequest registerArticleRequest = wrapRegisterArticleRequest.article();
         log.info("[C] registerArticle() : registerArticleRequest={}", registerArticleRequest);
+        log.info("[C] registerArticle() : loginUser={}", loginUser);
 
         ArticleResponse articleResponse = articleService.registerArticle(registerArticleRequest, loginUser.user());
         log.info("[C] registerArticle() : articleResponse={}", articleResponse);
