@@ -22,13 +22,13 @@ public class ArticleService {
         Article savedArticle = articleRepository.save(article);
         log.info("[S] registerArticle() : savedArticle={}", savedArticle);
 
-        return ArticleResponse.of(savedArticle);
+        return ArticleResponse.of(savedArticle, null);
     }
 
     public ArticleResponse getArticleBySlug(final String slug) {
         Article foundArticle = articleRepository.findBySlug(slug);
         log.info("[S] getArticleBySlug() : foundArticle={}", foundArticle);
 
-        return ArticleResponse.of(foundArticle);
+        return ArticleResponse.of(foundArticle, null);
     }
 }

@@ -1,7 +1,9 @@
 package com.lodny.realworldjuiceembeddable.controller;
 
+import com.lodny.realworldjuiceembeddable.entity.dto.LoginRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.RegisterUserRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
+import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapLoginRequest;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapRegisterUserRequest;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapUserResponse;
 import com.lodny.realworldjuiceembeddable.service.UserService;
@@ -29,5 +31,16 @@ public class UserController {
         log.info("[C] registerUser() : userResponse={}", userResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WrapUserResponse(userResponse));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody final WrapLoginRequest wrapLoginRequest) {
+        LoginRequest loginRequest = wrapLoginRequest.user();
+        log.info("[C] login() : loginRequest={}", loginRequest);
+
+        UserResponse userResponse = userService.login(loginRequest);
+        log.info("[C] login() : userResponse={}", userResponse);
+
+        return ResponseEntity.ok(new WrapUserResponse(userResponse));
     }
 }

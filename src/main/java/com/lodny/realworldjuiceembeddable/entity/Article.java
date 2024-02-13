@@ -28,7 +28,9 @@ public class Article {
     private String description;
     private String body;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "article_tag")
+    @Column(name = "tag")
     private Set<String> tagList;
 
     @CreatedDate

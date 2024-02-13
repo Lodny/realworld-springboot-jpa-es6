@@ -9,4 +9,6 @@ public interface UserRepository extends Repository<RealWorldUser, Long> {
     RealWorldUser save(RealWorldUser user);
 
     RealWorldUser findByUsername(String username);
+
+    RealWorldUser findByEmail(String email);
 }

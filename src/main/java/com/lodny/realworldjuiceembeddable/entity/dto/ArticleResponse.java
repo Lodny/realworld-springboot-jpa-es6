@@ -19,7 +19,7 @@ public record ArticleResponse(
         Long favoritesCount,
         ProfileResponse author
 ) {
-    public static ArticleResponse of(final Article article) {
+    public static ArticleResponse of(final Article article, final ProfileResponse author) {
         // todo : BeanUtils.copyProperites
         return ArticleResponse.builder()
                 .slug(article.getSlug())
@@ -29,6 +29,7 @@ public record ArticleResponse(
                 .tagList(article.getTagList())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
+                .author(author)
                 .build();
     }
 }
