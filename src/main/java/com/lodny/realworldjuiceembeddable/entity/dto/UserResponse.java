@@ -11,7 +11,8 @@ public record UserResponse(
     String username,
     String bio,
     String image,
-    @JsonIgnore RealWorldUser realWorldUser) {
+    @JsonIgnore Long id,
+    @JsonIgnore RealWorldUser user) {
 
     public static UserResponse of(final RealWorldUser user, final String token) {
        return UserResponse.builder()
@@ -20,7 +21,8 @@ public record UserResponse(
                .email(user.getEmail())
                .bio(user.getBio())
                .image(user.getImage())
-               .realWorldUser(user)
+               .id(user.getId())
+               .user(user)
                .build();
     }
 }

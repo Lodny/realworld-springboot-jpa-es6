@@ -1,5 +1,8 @@
 package com.lodny.realworldjuiceembeddable.sys.filter;
 
+import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
+import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
+import com.lodny.realworldjuiceembeddable.repository.UserRepository;
 import com.lodny.realworldjuiceembeddable.sys.properties.JwtProperty;
 import com.lodny.realworldjuiceembeddable.sys.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -20,12 +23,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtProperty jwtProperty;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
         String auth = request.getHeader(jwtProperty.getHeader());
         log.info("[F] doFilterInternal() : auth={}", auth);
+        if (auth == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        String sessionId = request.getSession().getId();
+        String email = jwtUtil.getEmailByToken(auth);
+        String token = auth.replace(jwtProperty.getTokenTitle(), "");
+        RealWorldUser currentUser = userRepository.findByEmail(email);
+        log.info("[F] doFilterInternal() : currentUser={}", currentUser);
+
+        jwtUtil.putLoginUser(sessionId, UserResponse.of(currentUser, token));
         filterChain.doFilter(request, response);
+        jwtUtil.removeLoginUser(sessionId);
     }
 }

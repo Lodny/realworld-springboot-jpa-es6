@@ -23,7 +23,9 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String slug;
+
     private String title;
     private String description;
     private String body;
@@ -40,13 +42,16 @@ public class Article {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public static Article of(final RegisterArticleRequest request) {
+    private Long authorId;
+
+    public static Article of(final RegisterArticleRequest request, final Long authorId) {
         return Article.builder()
                 .slug(request.title() + ": slug")
                 .title(request.title())
                 .description(request.description())
                 .body(request.body())
                 .tagList(request.tagList())
+                .authorId(authorId)
                 .build();
     }
 }

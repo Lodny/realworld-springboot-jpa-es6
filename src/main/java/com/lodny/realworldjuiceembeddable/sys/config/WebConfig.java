@@ -1,0 +1,42 @@
+package com.lodny.realworldjuiceembeddable.sys.config;
+
+import com.lodny.realworldjuiceembeddable.sys.interceptor.JwtTokenInterceptor;
+import com.lodny.realworldjuiceembeddable.sys.resolver.LoginUserMethodArgumentResolver;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+
+
+@Configuration
+@RequiredArgsConstructor
+public class WebConfig implements WebMvcConfigurer {
+
+    private final JwtTokenInterceptor jwtTokenInterceptor;
+    private final LoginUserMethodArgumentResolver loginUserMethodArgumentResolver;
+//    private final JwtFilter jwtFilter;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(jwtTokenInterceptor);
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(loginUserMethodArgumentResolver);
+    }
+
+//    @Bean
+//    public FilterRegistrationBean<JwtFilter> addJwtFilter() {
+//
+//        FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
+//
+//        registrationBean.setFilter(jwtFilter);
+//        registrationBean.addUrlPatterns("/api/*");
+//
+//        return registrationBean;
+//    }
+}
