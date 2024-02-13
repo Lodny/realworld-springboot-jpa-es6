@@ -11,7 +11,7 @@ public record ProfileResponse(
     Boolean following
 ) {
 
-    public static ProfileResponse of(RealWorldUser user) {
+    public static ProfileResponse of(final RealWorldUser user, final Boolean following) {
         if (user == null)
             return null;
 
@@ -19,6 +19,6 @@ public record ProfileResponse(
                 user.getUsername(),
                 user.getBio(),
                 user.getImage(),
-                false);
+                following);
     }
 }

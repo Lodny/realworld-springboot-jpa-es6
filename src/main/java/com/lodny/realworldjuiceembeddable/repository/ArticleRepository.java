@@ -6,19 +6,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
 public interface ArticleRepository extends Repository<Article, Long> {
-    Article save(Article article);
+    Article save(final Article article);
+
+    Article findBySlug(final String slug);
 
     @Query("""
-        select  a, u
+        select  a, u, f
         from    Article a
         join    RealWorldUser u on u.id = a.authorId
+        left join Favorite f on f.id.articleId = a.id and f.id.userId = :loginUserId
         where   a.slug = :slug
     """)
-    Object findBySlug(String slug);
+    Object findBySlugIncludeUser(final String slug, final Long loginUserId);
 
     @Transactional
-    int deleteBySlugAndAuthorId(String slug, Long authorId);
+    int deleteBySlugAndAuthorId(final String slug, final Long authorId);
 
     @Transactional
-    void deleteBySlug(String slug);
+    void deleteBySlug(final String slug);
 }

@@ -25,7 +25,6 @@ public class RealWorldUser {
     private String bio;
     private String image;
 
-//    public static RealWorldUser of(final String username, final String email, final String password) {
     public static RealWorldUser of(final RegisterUserRequest request) {
         return RealWorldUser.builder()
                 .username(request.username())
@@ -33,7 +32,4 @@ public class RealWorldUser {
                 .password(request.password())
                 .build();
     }
-
-    //    private LocalDateTime createdAt;
-//    private LocalDateTime updatedAt;
 }
