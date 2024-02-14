@@ -1,9 +1,8 @@
 package com.lodny.realworldjuiceembeddable.service;
 
-import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
 import com.lodny.realworldjuiceembeddable.entity.dto.ProfileResponse;
 import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
-import com.lodny.realworldjuiceembeddable.repository.UserRepository;
+import com.lodny.realworldjuiceembeddable.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,14 +12,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
     public ProfileResponse getProfile(final String username, final UserResponse loginUser) {
-        RealWorldUser foundUser = userRepository.findByUsername(username);
-        log.info("[S] getProfile() : foundUser={}", foundUser);
-        if (foundUser == null)
+        ProfileResponse profileResponse = profileRepository.findByUsernameAndGetProfile(username, loginUser == null ? -1 : loginUser.id());
+        log.info("[S] getProfile() : profileResponse={}", profileResponse);
+        if (profileResponse == null)
             throw new IllegalArgumentException("user not found");
 
-        return ProfileResponse.of(foundUser, false);
+        return profileResponse;
     }
 }

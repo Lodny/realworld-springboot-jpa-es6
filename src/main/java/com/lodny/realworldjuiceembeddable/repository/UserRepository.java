@@ -5,10 +5,7 @@ import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
 import org.springframework.data.repository.Repository;
 
 public interface UserRepository extends Repository<RealWorldUser, Long> {
-
-    RealWorldUser save(RealWorldUser user);
-
-    RealWorldUser findByUsername(String username);
-
-    RealWorldUser findByEmail(String email);
+    RealWorldUser save(final RealWorldUser user);
+    RealWorldUser findByEmail(final String email);
+    RealWorldUser findByUsername(final String username);
 }
