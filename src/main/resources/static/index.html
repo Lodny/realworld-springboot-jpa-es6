@@ -17,9 +17,9 @@
     <!-- Import the custom Bootstrap 4 theme from our hosted CDN -->
 <!--    <link rel="stylesheet" href="//demo.productionready.io/main.css"/>-->
 
-    <script src="/component/real-navbar.js" type="module"></script>
-    <script src="/component/real-footer.js" type="module"></script>
-    <script src="/component/real-router.js" type="module"></script>
+    <script src="/components/real-navbar.js" type="module"></script>
+    <script src="/components/real-footer.js" type="module"></script>
+    <script src="/components/real-router.js" type="module"></script>
 </head>
 <body>
 
@@ -32,9 +32,7 @@
 
 
 <script type="module">
-    import { HomePage } from './page/home-page.js';
-    import { RegisterPage } from './page/register-page.js';
-    import { LoginPage } from './page/login-page.js';
+    import { routeInfo } from './services/routes.js';
 
     document.addEventListener('DOMContentLoaded', function() {
         initNavbar();
@@ -54,26 +52,6 @@
 
     const initRouter = () => {
         const router = document.querySelector('real-router');
-        const routeInfo = {
-            active: 'home',
-            routes: [
-                {
-                    url: '/',
-                    name: 'home',
-                    element: HomePage
-                },
-                {
-                    url: '/login',
-                    name: 'login',
-                    element: LoginPage
-                },
-                {
-                    url: '/register',
-                    name: 'register',
-                    element: RegisterPage
-                },
-            ]
-        };
         router.setRoutes(routeInfo);
     }
 

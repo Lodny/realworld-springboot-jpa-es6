@@ -1,4 +1,4 @@
-import {RealBanner} from '../component/real-banner.js'
+import {RealBanner} from '../components/real-banner.js'
 
 class HomePage extends HTMLElement {
     constructor() {

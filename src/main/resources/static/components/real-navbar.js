@@ -1,4 +1,4 @@
-import {store} from "../store.js";
+import {store} from "../services/store.js";
 
 class RealNavbar extends HTMLElement {
 
@@ -59,14 +59,14 @@ class RealNavbar extends HTMLElement {
                         <li class="nav-item">
                             <a class="nav-link ${this.isActive('home')}" href="/">Home</a>
                         </li>
-                        <li class="nav-item">
+                    ${!this.user 
+                    ? ` <li class="nav-item">
                             <a class="nav-link ${this.isActive('login')}" href="/login">Sign in</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link ${this.isActive('register')}" href="/register">Sign up</a>
-                        </li>
-                        
-                        <li class="nav-item">
+                        </li>` 
+                    : ` <li class="nav-item">
                             <a class="nav-link ${this.isActive('new-article')}" href="/new-article">New Article</a>
                         </li>
                         <li class="nav-item">
@@ -74,7 +74,8 @@ class RealNavbar extends HTMLElement {
                         </li>
                         <li class="nav-item">
                             <a class="nav-link ${this.isActive('profile')}" href="/profile">${username}</a>
-                        </li>
+                        </li>`
+                    }
                     </ul>
                 </div>
             </nav>

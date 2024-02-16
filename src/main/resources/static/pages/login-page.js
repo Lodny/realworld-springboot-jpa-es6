@@ -1,6 +1,6 @@
-import {actionQueue} from "../action-queue.js";
+import {actionQueue} from "../services/action-queue.js";
 
-class RegisterPage extends HTMLElement {
+class LoginPage extends HTMLElement {
     constructor() {
         super();
 
@@ -11,14 +11,13 @@ class RegisterPage extends HTMLElement {
         this.render();
     }
 
-    register(evt) {
+    login(evt) {
         evt.preventDefault();
-        console.log('register-page::register(): 1:', 1);
+        console.log('login-page::login(): 1:', 1);
 
         actionQueue.addAction({
-            type: 'register-user',
+            type: 'login',
             data: {
-                username: 'cider',
                 email: 'cider@drink.com',
                 password: '1234'
             }
@@ -40,9 +39,9 @@ class RegisterPage extends HTMLElement {
               <div class="container page">
                 <div class="row">
                   <div class="col-md-6 offset-md-3 col-xs-12">
-                    <h1 class="text-xs-center">Sign up</h1>
+                    <h1 class="text-xs-center">Sign in</h1>
                     <p class="text-xs-center">
-                      <a href="/login">Have an account?</a>
+                      <a href="/register">Need an account?</a>
                     </p>
             
                     <ul class="error-messages">
@@ -51,40 +50,37 @@ class RegisterPage extends HTMLElement {
             
                     <form>
                       <fieldset class="form-group">
-                        <input class="form-control form-control-lg" type="text" placeholder="Username" />
-                      </fieldset>
-                      <fieldset class="form-group">
                         <input class="form-control form-control-lg" type="text" placeholder="Email" />
                       </fieldset>
                       <fieldset class="form-group">
                         <input class="form-control form-control-lg" type="password" placeholder="Password" />
                       </fieldset>
-                      <button class="btn btn-lg btn-primary pull-xs-right">Sign up</button>
+                      <button class="btn btn-lg btn-primary pull-xs-right">Sign in</button>
                     </form>
                   </div>
                 </div>
               </div>
-            </div>    
+            </div>
         `;
 
         this.setEventHandler();
     }
 
     setEventHandler() {
-        console.log('register-page::setEventHandler(): 1:', 1);
+        console.log('login-page::setEventHandler(): 1:', 1);
 
-        this.shadow.querySelector('button').addEventListener('click', this.register);
+        this.shadow.querySelector('button').addEventListener('click', this.login);
     }
 }
-customElements.define('register-page', RegisterPage);
-export {RegisterPage}
+customElements.define('login-page', LoginPage);
+export {LoginPage}
 
 function style() {
     return `
         <link rel="stylesheet" href="../css/common.css">
         <link rel="stylesheet" href="../css/register-login.css">
+
+        <style>
         
-        <style>            
-            
         </style>`;
 }
