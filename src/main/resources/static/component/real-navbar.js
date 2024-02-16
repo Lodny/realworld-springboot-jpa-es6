@@ -1,3 +1,5 @@
+import {store} from "../store.js";
+
 class RealNavbar extends HTMLElement {
 
     constructor() {
@@ -42,6 +44,11 @@ class RealNavbar extends HTMLElement {
     render() {
         console.log('navbar::render(): active:', this.active);
 
+        this.user = store.get('user');
+        console.log('real-navbar::render(): this.user:', this.user);
+        const username = this.user?.username || 'Profile';
+        console.log('real-navbar::render(): username:', username);
+
         this.shadow.innerHTML = `
             ${style()}
             
@@ -57,6 +64,16 @@ class RealNavbar extends HTMLElement {
                         </li>
                         <li class="nav-item">
                             <a class="nav-link ${this.isActive('register')}" href="/register">Sign up</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link ${this.isActive('new-article')}" href="/new-article">New Article</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ${this.isActive('settings')}" href="/settings">Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ${this.isActive('profile')}" href="/profile">${username}</a>
                         </li>
                     </ul>
                 </div>

@@ -1,4 +1,5 @@
 import {registerUser, loginUser} from "./api.js";
+import {store} from "./store.js";
 
 class ActionQueue {
     constructor() {
@@ -29,13 +30,35 @@ class ActionQueue {
     }
 
     registerUserAction = async (data) => {
-        const user = await registerUser(data);
-        console.log('action-queue::registerUserAction(): user:', user);
+        const json = await registerUser(data);
+        console.log('action-queue::registerUserAction(): json:', json);
+        store.add('user', json.user);
+
+        this.addAction({
+            type: 'go',
+            data: {
+                name: 'home',
+            }
+        });
     }
+
     loginAction = async (data) => {
-        const user = await loginUser(data);
-        console.log('action-queue::loginAction(): user:', user);
+        const json = await loginUser(data);
+        console.log('action-queue::loginAction(): json:', json);
+        store.add('user', json.user);
+
+        this.addAction({
+            type: 'go',
+            data: {
+                name: 'home',
+            }
+        });
     }
+
+    logoutAction = () => {
+        store.remove('user');
+    }
+
     goAction = (data) => {
         console.log('action-queue::goAction(): this.navbar:', this.navbar);
         if (!this.navbar) return;

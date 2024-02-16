@@ -23,12 +23,12 @@ class LoginPage extends HTMLElement {
             }
         });
 
-        actionQueue.addAction({
-            type: 'go',
-            data: {
-                name: 'home',
-            }
-        });
+        // actionQueue.addAction({
+        //     type: 'go',
+        //     data: {
+        //         name: 'home',
+        //     }
+        // });
     }
 
     render() {
