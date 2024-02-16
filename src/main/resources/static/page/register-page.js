@@ -16,16 +16,16 @@ class RegisterPage extends HTMLElement {
         console.log('register-page::register(): 1:', 1);
 
         actionQueue.addAction({
-            name: 'register-user',
+            type: 'register-user',
             data: {
-                username: 'juice',
-                email: 'juice@drink.com',
+                username: 'cider',
+                email: 'cider@drink.com',
                 password: '1234'
             }
         });
 
         actionQueue.addAction({
-            name: 'go',
+            type: 'go',
             data: {
                 name: 'home',
             }
