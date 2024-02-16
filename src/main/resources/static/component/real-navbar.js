@@ -12,6 +12,7 @@ class RealNavbar extends HTMLElement {
     }
 
     isActive = (name) => this.active === name ? 'active' : '';
+    setCallback = (cb) => this.callback = cb;
 
     clickMenu = (evt) => {
         evt.preventDefault();
@@ -29,6 +30,13 @@ class RealNavbar extends HTMLElement {
     setMenu(menu) {
         this.active = menu || 'home';
         this.render();
+
+        if (this.callback)
+            this.callback(this.active);
+    }
+
+    get currMenu() {
+        return this.active;
     }
 
     render() {

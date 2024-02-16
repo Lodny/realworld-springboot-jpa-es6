@@ -16,14 +16,15 @@
     />
     <!-- Import the custom Bootstrap 4 theme from our hosted CDN -->
     <link rel="stylesheet" href="//demo.productionready.io/main.css"/>
-    <script src="/js/component/real-navbar.js" type="module"></script>
-    <script src="/js/component/real-footer.js" type="module"></script>
+    <script src="/component/real-navbar.js" type="module"></script>
+    <script src="/component/real-footer.js" type="module"></script>
+    <script src="/component/real-router.js" type="module"></script>
 </head>
 <body>
 
 <!--<real-navbar active="home"></real-navbar>-->
 <real-navbar></real-navbar>
-
+<!--<real-navbar/>-->
 
 <div class="home-page">
     <div class="banner">
@@ -32,6 +33,8 @@
             <p>A place to share your knowledge.</p>
         </div>
     </div>
+
+    <real-router></real-router>
 
     <div class="container page">
         <div class="row">
@@ -121,9 +124,59 @@
     </div>
 </div>
 
-
-
 <real-footer></real-footer>
+
+<script type="module">
+    import { HomePage } from './page/home-page.js';
+    import { RegisterPage } from './page/register-page.js';
+    import { LoginPage } from './page/login-page.js';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initNavbar();
+        initRouter();
+    });
+
+    const navCallback = (menuName) => {
+        console.log('index::navCallback(): menuName:', menuName);
+        const router = document.querySelector('real-router');
+        router.go(menuName);
+    }
+
+    const initNavbar = () => {
+        const navbar = document.querySelector('real-navbar');
+        navbar.setCallback(navCallback);
+    }
+
+    const initRouter = () => {
+        const router = document.querySelector('real-router');
+        const routeInfo = {
+            active: 'home',
+            routes: [
+                {
+                    url: '/',
+                    name: 'home',
+                    element: HomePage
+                },
+                {
+                    url: '/login',
+                    name: 'login',
+                    element: LoginPage
+                },
+                {
+                    url: '/register',
+                    name: 'register',
+                    element: RegisterPage
+                },
+            ]
+        };
+        router.setRoutes(routeInfo);
+    }
+
+    // customElements.whenDefined('real-router').then(() => {
+    //     const router = document.querySelector('real-router');
+    //     router.setRoutes(100);
+    // });
+</script>
 
 </body>
 </html>
