@@ -30,41 +30,43 @@ class RealFooter extends HTMLElement {
 customElements.define('real-footer', RealFooter);
 
 function style() {
-    return `<style>
-        a {
-            text-decoration: none;
-            color: #5CB85C;
-        }
+    return `
+        <link rel="stylesheet" href="../css/common.css">
 
-        footer {
-            position: absolute;
-            
-            font-family: "Titillium Web", sans-serif;
-            bottom: 0;
-            width: 100%;
-            background-color: #F3F3F3;
-            
-            margin-top: 2rem;
-        }
-        
-        .container {
-            line-height: 1.5rem;
-            padding: 1rem 5rem;
-            
-            display: flex;
-        }
-        
-        .logo-font {
-            font-size: 1rem;
-        }
-        
-        .attribution {
-            color: #aaa;
-            font-size: 0.7rem;
-            font-weight: lighter;
-            margin-left: 1rem;
-        }
-        
+        <style>
+            a {
+                color: #5CB85C;
+            }
+    
+            footer {
+                position: fixed;
+                bottom: 0;
+                z-index: 999;
+                width: 100%;
                 
-    </style>`;
+                font-family: "Titillium Web", sans-serif;
+                background-color: #F3F3F3;
+                
+                margin-top: 2rem;
+            }
+            
+            .container {
+                line-height: 1.5rem;
+                padding: 1rem 5rem;
+                
+                display: flex;
+            }
+            
+            .logo-font {
+                font-size: 1rem;
+            }
+            
+            .attribution {
+                color: #aaa;
+                font-size: 0.7rem;
+                font-weight: lighter;
+                margin-left: 1rem;
+            }
+                    
+        </style>`;
 }

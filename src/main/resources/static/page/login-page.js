@@ -29,9 +29,12 @@ customElements.define('login-page', LoginPage);
 export {LoginPage}
 
 function style() {
-    return `<style>
-        h1 {
-            color: blue;
-        }
-    </style>`;
+    return `
+        <link rel="stylesheet" href="../css/common.css">
+
+        <style>
+            h1 {
+                color: blue;
+            }
+        </style>`;
 }

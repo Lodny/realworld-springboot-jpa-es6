@@ -80,17 +80,10 @@ function style() {
     console.log('real-navbar::style(): :');
 
     return`
+        <link rel="stylesheet" href="../css/common.css">
+
         <style>
-            a {
-                text-decoration: none;
-            }
-            
             .navbar .container {
-                margin-left: auto;
-                margin-right: auto;
-                padding-left: 15px;
-                padding-right: 15px;
-                
                 display: flex;
                 justify-content: space-between;
             }
