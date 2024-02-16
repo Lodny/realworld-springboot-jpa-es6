@@ -16,12 +16,15 @@ const post = (url, data, token = null) => {
 
 
 const registerUser = async (data) => {
-    const user = await post('/users', {user: data});
-    console.log('api::registerUser(): user:', user);
-    return user;
+    return await post('/users', {user: data});
+}
+
+const loginUser = async (data) => {
+    return await post('/users/login', {user: data});
 }
 
 
 export {
     registerUser
+    , loginUser
 }

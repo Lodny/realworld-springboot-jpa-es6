@@ -1,4 +1,4 @@
-import {registerUser} from "./api.js";
+import {registerUser, loginUser} from "./api.js";
 
 class ActionQueue {
     constructor() {
@@ -14,25 +14,33 @@ class ActionQueue {
         this.queue.push(action);
     }
 
-    run = async () => {
+    run = () => {
         if (this.queue.length === 0) return;
 
         const action = this.queue.pop();
         console.log('action-queue::run(): action:', action);
 
-        switch (action.type) {
-            case 'register-user':
-                console.log('action-queue::run():', 10101010);
-                const user = await registerUser(action.data);
-                break;
+        const actions = {
+            'register-user': this.registerUserAction,
+            'login': this.loginAction,
+            'go': this.goAction,
+        };
+        actions[action.type](action.data);
+    }
 
-            case 'go':
-                console.log('action-queue::run(): this.router:', this.navbar);
-                if (!this.navbar) return;
+    registerUserAction = async (data) => {
+        const user = await registerUser(data);
+        console.log('action-queue::registerUserAction(): user:', user);
+    }
+    loginAction = async (data) => {
+        const user = await loginUser(data);
+        console.log('action-queue::loginAction(): user:', user);
+    }
+    goAction = (data) => {
+        console.log('action-queue::goAction(): this.navbar:', this.navbar);
+        if (!this.navbar) return;
 
-                this.navbar.setCurrentLink(action.data.name);
-                break;
-        }
+        this.navbar.setCurrentLink(data.name);
     }
 }
 
