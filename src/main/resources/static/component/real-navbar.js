@@ -63,12 +63,17 @@ class RealNavbar extends HTMLElement {
             </nav>
         `;
 
+        this.setEventHandler();
+    }
+
+    setEventHandler() {
+        console.log('real-navbar::setEventHandler(): 1:', 1);
+
         this.shadow
             .querySelectorAll('a')
             .forEach(aTag => aTag.addEventListener('click', this.clickMenu));
     }
 }
-
 customElements.define('real-navbar', RealNavbar);
 
 function style() {

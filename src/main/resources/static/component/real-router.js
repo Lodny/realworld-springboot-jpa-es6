@@ -32,28 +32,11 @@ class RealRouter extends HTMLElement {
 
     render() {
         if (!this.active) return;
-
         console.log('real-router::render(): this.active.element.name:', this.active.element.name);
 
-        this.shadow.innerHTML = `
-            ${style()}
-            
-            <div>
-                <h1>router</h1>
-                ${this.getCurrentTagString()}
-            </div>
-        `
+        this.shadow.innerHTML = this.getCurrentTagString();
     }
 }
-
 customElements.define('real-router', RealRouter);
-
-function style() {
-    return ` <style>
-        h1 {
-            color: red;
-        }
-    </style> `;
-}
 
 export {RealRouter}
