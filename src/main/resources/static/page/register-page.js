@@ -1,3 +1,5 @@
+import {actionQueue} from "../action-queue.js";
+
 class RegisterPage extends HTMLElement {
     constructor() {
         super();
@@ -7,6 +9,27 @@ class RegisterPage extends HTMLElement {
 
     connectedCallback() {
         this.render();
+    }
+
+    register(evt) {
+        evt.preventDefault();
+        console.log('register-page::register(): 1:', 1);
+
+        actionQueue.addAction({
+            name: 'register-user',
+            data: {
+                username: 'juice',
+                email: 'juice@drink.com',
+                password: '1234'
+            }
+        });
+
+        actionQueue.addAction({
+            name: 'go',
+            data: {
+                name: 'home',
+            }
+        });
     }
 
     render() {
@@ -49,6 +72,8 @@ class RegisterPage extends HTMLElement {
 
     setEventHandler() {
         console.log('register-page::setEventHandler(): 1:', 1);
+
+        this.shadow.querySelector('button').addEventListener('click', this.register);
     }
 }
 customElements.define('register-page', RegisterPage);

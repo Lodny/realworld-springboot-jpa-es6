@@ -24,11 +24,11 @@ class RealNavbar extends HTMLElement {
         const link = evt.target.href.slice(lastSlash + 1);
         console.log('real-navbar::clickMenu(): link:', link);
 
-        this.setMenu(link);
+        this.setCurrentLink(link);
     }
 
-    setMenu(menu) {
-        this.active = menu || 'home';
+    setCurrentLink(link) {
+        this.active = link || 'home';
         this.render();
 
         if (this.callback)
