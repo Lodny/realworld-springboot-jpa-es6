@@ -66,9 +66,3 @@ function style() {
     </style>`;
 }
 
-
-// .feed-toggle {
-//     margin-bottom: -1px
-// }
-//
-

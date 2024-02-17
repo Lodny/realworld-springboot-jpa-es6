@@ -1,5 +1,5 @@
 import {RealBanner} from '../components/real-banner.js'
-import {RealArticle} from '../components/real-article.js'
+import {RealTab} from '../components/real-tab.js'
 import {RealSidebar} from '../components/real-sidebar.js'
 
 class HomePage extends HTMLElement {
@@ -22,30 +22,7 @@ class HomePage extends HTMLElement {
             
                 <div class="container page">
                     <div class="row">
-                        <div class="col-md-9">
-                            <div class="feed-toggle">
-                                <ul class="nav nav-pills outline-active">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="">Your Feed</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" href="">Global Feed</a>
-                                    </li>
-                                </ul>
-                            </div>
-            
-                            <real-article></real-article>
-            
-                            <ul class="pagination">
-                                <li class="page-item active">
-                                    <a class="page-link" href="">1</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="">2</a>
-                                </li>
-                            </ul>
-                        </div>
-            
+                        <real-tab class="col-md-9"></real-tab>
                         <real-sidebar class="col-md-3"></real-sidebar>
                     </div>
                 </div>
@@ -150,7 +127,6 @@ function style() {
                     max-width: 25%;
                 }
             }
-            
                         
         </style>`;
 }
