@@ -1,4 +1,5 @@
 import {RealArticle} from "./real-article.js";
+import {RealPaging} from "./real-paging.js";
 import {store} from "../services/store.js";
 
 class RealTab extends HTMLElement {
@@ -65,15 +66,7 @@ class RealTab extends HTMLElement {
             </div>
 
             <real-article></real-article>
-
-            <ul class="pagination">
-                <li class="page-item active">
-                    <a class="page-link" href="">1</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="">2</a>
-                </li>
-            </ul>
+            <real-paging></real-paging>
         `;
 
         this.setEventHandler();
