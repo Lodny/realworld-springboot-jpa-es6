@@ -20,15 +20,9 @@ class LoginPage extends HTMLElement {
             data: {
                 email: 'cider@drink.com',
                 password: '1234'
-            }
+            },
+            nextRoute: 'home'
         });
-
-        // actionQueue.addAction({
-        //     type: 'go',
-        //     data: {
-        //         name: 'home',
-        //     }
-        // });
     }
 
     render() {

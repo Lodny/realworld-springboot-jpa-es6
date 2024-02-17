@@ -70,7 +70,7 @@ class RealNavbar extends HTMLElement {
                             <a class="nav-link ${this.isActive('editor')}" href="/editor"><i class="ion-compose"></i>New Article</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ${this.isActive('settings')}" href="/settings"><i class="ion-gear-a">Settings</a>
+                            <a class="nav-link ${this.isActive('settings')}" href="/settings"><i class="ion-gear-a"></i>Settings</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link ${this.isActive('profile')}" href="/profile/${username}">
@@ -106,6 +106,7 @@ function style() {
             .navbar .container {
                 display: flex;
                 justify-content: space-between;
+                align-items: end;
             }
             
             .navbar .navbar-brand {
