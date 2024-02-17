@@ -1,7 +1,7 @@
 import {HomePage} from '../pages/home-page.js';
 import {RegisterPage} from '../pages/register-page.js';
 import {LoginPage} from '../pages/login-page.js';
-import {NewArticlePage} from "../pages/new-article-page.js";
+import {EditorPage} from "../pages/editor-page.js";
 import {SettingsPage} from "../pages/settings-page.js";
 import {ProfilePage} from "../pages/profile-page.js";
 
@@ -26,7 +26,7 @@ const routeInfo = {
         {
             url: 'new-article',
             name: 'new-article',
-            element: NewArticlePage
+            element: EditorPage
         },
         {
             url: '/settings',

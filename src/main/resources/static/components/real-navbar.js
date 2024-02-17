@@ -67,13 +67,15 @@ class RealNavbar extends HTMLElement {
                             <a class="nav-link ${this.isActive('register')}" href="/register">Sign up</a>
                         </li>` 
                     : ` <li class="nav-item">
-                            <a class="nav-link ${this.isActive('new-article')}" href="/new-article">New Article</a>
+                            <a class="nav-link ${this.isActive('editor')}" href="/editor"><i class="ion-compose"></i>New Article</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ${this.isActive('settings')}" href="/settings">Settings</a>
+                            <a class="nav-link ${this.isActive('settings')}" href="/settings"><i class="ion-gear-a">Settings</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ${this.isActive('profile')}" href="/profile">${username}</a>
+                            <a class="nav-link ${this.isActive('profile')}" href="/profile/${username}">
+                                <img src="" class="user-pic" />${username}
+                            </a>
                         </li>`
                     }
                     </ul>
