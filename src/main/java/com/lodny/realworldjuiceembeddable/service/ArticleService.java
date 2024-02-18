@@ -37,10 +37,8 @@ public class ArticleService {
         final Long loginUserId = loginUser == null ? -1 : loginUser.id();
         log.info("[S] getArticleBySlug() : loginUserId={}", loginUserId);
 
-        Object[] obj = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
-        log.info("[S] getArticleBySlug() : obj={}", obj);
-
-        return getArticleResponseByObjs(obj);
+        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
+        return getArticleResponseByObjs(articleAndOther);
     }
 
     public int deleteArticleBySlug(final String slug, final Long loginUserId) {
@@ -58,9 +56,8 @@ public class ArticleService {
         final Long loginUserId = loginUser == null ? -1 : loginUser.id();
         log.info("[S] getArticles() : loginUserId={}", loginUserId);
 
-        int pageSize = articleParam.limit();
-        int pageNo = articleParam.offset() / pageSize;
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+        PageRequest pageRequest = getPageRequest(articleParam);
+        log.info("[S] getArticles() : pageRequest={}", pageRequest);
         Page<Object> objs = articleRepository.getArticles(loginUserId, pageRequest);
         log.info("[S] getArticles() : objs={}", objs);
 
@@ -69,14 +66,22 @@ public class ArticleService {
                 .toList();
     }
 
-    private static ArticleResponse getArticleResponseByObjs(final Object[] objs) {
-        log.info("[S] getArticleResponseByObjs() : objs={}, size={}", objs, objs.length);
-        if (objs.length != 4)
+    private static PageRequest getPageRequest(final ArticleParam articleParam) {
+        int pageSize = articleParam.limit();
+        int pageNo = articleParam.offset() / pageSize;
+
+        return PageRequest.of(pageNo, pageSize);
+    }
+
+    private static ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
+        log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
+        log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
+        if (articleAndOther.length < 4)
             throw new IllegalArgumentException("The article is not found");
 
         return ArticleResponse.of(
-                (Article) objs[0],
-                ProfileResponse.of((RealWorldUser) objs[1], (Boolean)objs[3]),
-                (Boolean) objs[2]);
+                (Article) articleAndOther[0],
+                ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
+                (Boolean) articleAndOther[2]);
     }
 }

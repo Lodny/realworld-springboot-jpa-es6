@@ -14,8 +14,10 @@ class RealTab extends HTMLElement {
     }
 
     connectedCallback() {
-        const articles = getGlobalArticles();
-        console.log('real-tab::connectedCallback(): articles:', articles);
+        const user = store.get('user');
+        console.log('real-tab::connectedCallback(): user:', user);
+        this.articles = getGlobalArticles(user?.token);
+        console.log('real-tab::connectedCallback(): this.articles:', this.articles);
 
         this.render();
     }
@@ -49,13 +51,6 @@ class RealTab extends HTMLElement {
     }
 
     render() {
-        console.log('tab::render(): active:', this.active);
-
-        this.user = store.get('user');
-        console.log('real-tab::render(): this.user:', this.user);
-        const username = this.user?.username || 'Profile';
-        console.log('real-tab::render(): username:', username);
-
         this.shadow.innerHTML = `
             ${style()}
 

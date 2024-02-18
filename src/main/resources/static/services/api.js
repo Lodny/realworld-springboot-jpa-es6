@@ -1,10 +1,19 @@
+import {store} from "./store.js";
+
 const BASE_URL = 'api';
 
 
 const get = (url) => {
     console.log('api::get(): BASE_URL + url:', BASE_URL + url);
 
-    return fetch(BASE_URL + url)
+    const headers = {};
+    const user = store.get("user");
+    if (user) {
+        headers['Authorization'] = 'Token ' + user.token;
+    }
+    console.log('api::get(): headers:', headers);
+
+    return fetch(BASE_URL + url, {headers})
         .then(response => response.json())
         .catch(error => console.log('[E] api::post():', error));
 }

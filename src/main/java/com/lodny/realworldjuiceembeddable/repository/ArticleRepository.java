@@ -12,6 +12,8 @@ public interface ArticleRepository extends Repository<Article, Long> {
 
     Article findBySlug(final String slug);
 
+//    SELECT  NEW com.lodny.realworldjuiceembeddable.entity.dto.Dto01(a, u, fa, fo)
+//    FROM    Article a JOIN FETCH a.tagList
     @Query("""
         SELECT  a
               , u

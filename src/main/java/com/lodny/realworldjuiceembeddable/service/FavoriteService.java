@@ -34,14 +34,16 @@ public class FavoriteService {
     }
 
     private ArticleResponse getArticleBySlug(final String slug, final Long loginUserId) {
-        Object[] objs = (Object[]) articleRepository.findBySlugIncludeUser(slug, loginUserId);
-        log.info("[S] getArticleBySlug() : objs={}, size={}", objs, objs.length);
-        if (objs.length < 2)
+        Object[] articleAndOther = (Object[]) articleRepository.findBySlugIncludeUser(slug, loginUserId);
+        log.info("getArticleBySlug() : articleAndOther.length={}", articleAndOther.length);
+        log.info("getArticleBySlug() : articleAndOther={}", articleAndOther);
+
+        if (articleAndOther.length < 2)
             throw new IllegalArgumentException("The article is not found");
 
         return ArticleResponse.of(
-                (Article)objs[0],
-                ProfileResponse.of((RealWorldUser)objs[1], false),
+                (Article)articleAndOther[0],
+                ProfileResponse.of((RealWorldUser)articleAndOther[1], false),
                 true);
     }
 }
