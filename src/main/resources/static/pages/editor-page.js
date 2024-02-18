@@ -23,7 +23,7 @@ class EditorPage extends HTMLElement {
         console.log('new-article-page::setEventHandler(): 1:', 1);
     }
 }
-customElements.define('new-article-page', EditorPage);
+customElements.define('editor-page', EditorPage);
 export {EditorPage}
 
 function style() {

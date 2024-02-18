@@ -1,5 +1,6 @@
 import {store} from "../services/store.js";
 import {iconCdn} from "../services/icon-cdn.js"
+import {getRouteByName, getRouteByUrl} from "../services/routes.js";
 
 class RealNavbar extends HTMLElement {
 
@@ -7,31 +8,31 @@ class RealNavbar extends HTMLElement {
         super();
 
         this.shadow = this.attachShadow({mode: 'open'});
-        this.active = this.getAttribute('active') || 'home';
+        this.active = getRouteByUrl('/home');
     }
 
     connectedCallback() {
         this.render();
     }
 
-    isActive = (name) => this.active === name ? 'active' : '';
+    isActive = (name) => this.active?.name === name ? 'active' : '';
     setCallback = (cb) => this.callback = cb;
 
-    clickMenu = (evt) => {
+    clickLink = (evt) => {
         evt.preventDefault();
-        console.log('real-navbar::clickMenu(): evt.target.href:', evt.target.href);
+        console.log('real-navbar::clickLink(): evt.target.href:', evt.target.href);
 
-        const lastSlash = evt.target.href.lastIndexOf('/');
-        console.log('real-navbar::clickMenu(): lastSlash:', lastSlash);
-
-        const link = evt.target.href.slice(lastSlash + 1);
-        console.log('real-navbar::clickMenu(): link:', link);
+        const link = getRouteByUrl(evt.target.href);
+        console.log('real-navbar::clickLink(): link:', link);
 
         this.setCurrentLink(link);
     }
 
     setCurrentLink(link) {
-        this.active = link || 'home';
+        if (typeof link === 'string')
+            link = getRouteByName(link);
+
+        this.active = link;
         this.render();
 
         if (this.callback)
@@ -68,10 +69,10 @@ class RealNavbar extends HTMLElement {
                             <a class="nav-link ${this.isActive('register')}" href="/register">Sign up</a>
                         </li>` 
                     : ` <li class="nav-item">
-                            <a class="nav-link ${this.isActive('editor')}" href="/editor"><i class="ion-compose"></i>New Article</a>
+                            <a class="nav-link ${this.isActive('editor')}" href="/editor"><i class="ion-compose"></i> New Article</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ${this.isActive('settings')}" href="/settings"><i class="ion-gear-a"></i>Settings</a>
+                            <a class="nav-link ${this.isActive('settings')}" href="/settings"><i class="ion-gear-a"></i> Settings</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link ${this.isActive('profile')}" href="/profile/${username}">
@@ -92,7 +93,7 @@ class RealNavbar extends HTMLElement {
 
         this.shadow
             .querySelectorAll('a')
-            .forEach(aTag => aTag.addEventListener('click', this.clickMenu));
+            .forEach(aTag => aTag.addEventListener('click', this.clickLink));
     }
 }
 customElements.define('real-navbar', RealNavbar);

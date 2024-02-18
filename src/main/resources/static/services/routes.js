@@ -6,7 +6,6 @@ import {SettingsPage} from "../pages/settings-page.js";
 import {ProfilePage} from "../pages/profile-page.js";
 
 const routeInfo = {
-    active: 'home',
     routes: [
         {
             url: '/',
@@ -24,8 +23,8 @@ const routeInfo = {
             element: RegisterPage
         },
         {
-            url: 'new-article',
-            name: 'new-article',
+            url: '/editor',
+            name: 'editor',
             element: EditorPage
         },
         {
@@ -34,11 +33,42 @@ const routeInfo = {
             element: SettingsPage
         },
         {
-            url: '/profile',
+            url: '/profile/:username',
             name: 'profile',
             element: ProfilePage
         },
     ]
 };
 
-export {routeInfo}
+function extractPath(url, basePath) {
+    const regex = new RegExp('(?:^https?://localhost:\\d+)?(' + basePath.replace(/:[a-zA-Z0-9]+/g, '[a-zA-Z0-9]+') + ')(/.*)?');
+    const match = url.match(regex);
+    if (!match) return null;
+
+    const link = match[1];
+    const pathName = match[2] ? match[2].substring(1) : null;
+    return [link, pathName]
+}
+
+const getRouteByUrl = (url) => {
+    console.log('routes::getRouteNameByUrl(): url:', url);
+
+    const foundRoute = routeInfo.routes.toReversed().find(route => {
+        return !!extractPath(url, route.url);
+    });
+    console.log('routes::getRouteNameByUrl(): foundRoute:', foundRoute);
+
+    const [link, pathName] = extractPath(url, foundRoute.url);
+    console.log('routes::getRouteNameByUrl(): pathName:', pathName);
+
+
+    return {...foundRoute, pathName};
+}
+
+const getRouteByName = (name) => {
+    console.log('routes::getRouteByName(): name:', name);
+    return routeInfo.routes.find(route => route.name === name);
+}
+
+
+export {routeInfo, getRouteByUrl, getRouteByName}

@@ -1,3 +1,7 @@
+import {EditorPage} from "../pages/editor-page.js";
+import {SettingsPage} from "../pages/settings-page.js";
+import {ProfilePage} from "../pages/profile-page.js";
+
 class RealRouter extends HTMLElement {
 
     constructor() {
@@ -13,12 +17,13 @@ class RealRouter extends HTMLElement {
     setRoutes(routeInfo) {
         console.log('real-router::setRoutes(): routeInfo:', routeInfo);
         this.routes = routeInfo.routes;
-        this.go(routeInfo.active);
+        this.go(this.routes[0]);
     }
 
-    go(name) {
-        console.log('real-router::go(): name:', name);
-        this.active = this.routes.find(r => r.name === name);
+    go(route) {
+        console.log('real-router::go(): route:', route);
+
+        this.active = route;
         console.log('real-router::go(): this.active:', this.active);
 
         this.render();
@@ -35,6 +40,7 @@ class RealRouter extends HTMLElement {
         console.log('real-router::render(): this.active.element.name:', this.active.element.name);
 
         this.shadow.innerHTML = this.getCurrentTagString();
+        console.log('real-router::render(): this.shadow.innerHTML:', this.shadow.innerHTML);
     }
 }
 customElements.define('real-router', RealRouter);
