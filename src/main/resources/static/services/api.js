@@ -34,18 +34,18 @@ const post = (url, data, token = null) => {
 
 
 
-const registerUser = async (data) => {
-    return await post('/users', {user: data});
+const registerUser = (data) => {
+    return post('/users', {user: data});
 }
 
-const loginUser = async (data) => {
-    return await post('/users/login', {user: data});
+const loginUser = (data) => {
+    return post('/users/login', {user: data});
 }
 
 
 
-const getGlobalArticles = async () => {
-    return await get('/articles?offset=0&limit=20');
+const getGlobalArticles = () => {
+    return get('/articles?offset=0&limit=20');
 }
 
 

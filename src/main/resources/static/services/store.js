@@ -1,6 +1,7 @@
 class Store {
     constructor() {
         this.store = new Map();
+        this.store.set('articles', []);
     }
 
     add(name, data) {
@@ -15,6 +16,15 @@ class Store {
 
     get(name) {
         return this.store.get(name);
+    }
+
+    addArticles(data) {
+        console.log('store::addArticles(): data:', data);
+        this.store['articles'] = data.articles;
+    }
+
+    getArticle(slug) {
+        return this.store['articles'].find(article => article.slug === slug);
     }
 }
 

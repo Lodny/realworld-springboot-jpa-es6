@@ -1,8 +1,17 @@
+import {store} from "../services/store.js";
+
 class RealArticlePreview extends HTMLElement {
     constructor() {
         super();
 
         this.shadow = this.attachShadow({mode: 'open'});
+        const slug = this.getAttribute('slug');
+        console.log('real-article-preview::constructor(): slug:', slug);
+        if (!slug)
+            throw Error('slug is required');
+
+        this.article = store.getArticle(slug);
+        console.log('real-article-preview::constructor(): this.article:', this.article);
     }
 
     connectedCallback() {
@@ -10,6 +19,9 @@ class RealArticlePreview extends HTMLElement {
     }
 
     render() {
+        const article = this.article;
+        const author = article.author;
+
         this.shadow.innerHTML = `
             ${style()}
             
@@ -17,16 +29,16 @@ class RealArticlePreview extends HTMLElement {
                 <div class="article-meta">
                     <a href="/profile/eric-simons"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
                     <div class="info">
-                        <a href="/profile/eric-simons" class="author">Eric Simons</a>
-                        <span class="date">January 20th</span>
+                        <a href="/profile/eric-simons" class="author">${author.username}</a>
+                        <span class="date">${article.createdAt}</span>
                     </div>
                     <button class="btn btn-outline-primary btn-sm pull-xs-right">
                         <i class="ion-heart"></i> 29
                     </button>
                 </div>
                 <a href="/article/how-to-build-webapps-that-scale" class="preview-link">
-                    <h1>How to build webapps that scale</h1>
-                    <p>This is the description for the post.</p>
+                    <h1>${article.title}</h1>
+                    <p>${article.description}</p>
                     <span>Read more...</span>
                     <ul class="tag-list">
                         <li class="tag-default tag-pill tag-outline">realworld</li>

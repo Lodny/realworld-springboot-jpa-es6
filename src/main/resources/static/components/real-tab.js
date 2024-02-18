@@ -13,10 +13,11 @@ class RealTab extends HTMLElement {
         this.active = this.getAttribute('active') || 'home';
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         const user = store.get('user');
         console.log('real-tab::connectedCallback(): user:', user);
-        this.articles = getGlobalArticles(user?.token);
+        this.articles = await getGlobalArticles(user?.token);
+        store.addArticles(this.articles);
         console.log('real-tab::connectedCallback(): this.articles:', this.articles);
 
         this.render();
@@ -65,8 +66,11 @@ class RealTab extends HTMLElement {
                 </ul>
             </div>
 
-            <real-article-preview></real-article-preview>
-            <real-paging></real-paging>
+        ${this.articles.length > 0 
+        ? ` <real-article-preview slug="title 2: slug"></real-article-preview>
+            <real-paging></real-paging>` 
+        : ''}
+        
         `;
 
         this.setEventHandler();
