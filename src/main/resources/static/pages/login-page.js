@@ -18,7 +18,7 @@ class LoginPage extends HTMLElement {
         actionQueue.addAction({
             type: 'login',
             data: {
-                email: 'cider@drink.com',
+                email: 'coco@drink.com',
                 password: '1234'
             },
             nextRoute: 'home'

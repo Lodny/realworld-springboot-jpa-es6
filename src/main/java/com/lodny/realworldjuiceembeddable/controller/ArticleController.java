@@ -1,19 +1,22 @@
 package com.lodny.realworldjuiceembeddable.controller;
 
+import com.lodny.realworldjuiceembeddable.entity.dto.ArticleParam;
 import com.lodny.realworldjuiceembeddable.entity.dto.ArticleResponse;
 import com.lodny.realworldjuiceembeddable.entity.dto.RegisterArticleRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapArticleResponse;
+import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapArticleResponses;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapRegisterArticleRequest;
 import com.lodny.realworldjuiceembeddable.service.ArticleService;
 import com.lodny.realworldjuiceembeddable.sys.annotation.JwtTokenRequired;
 import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -43,10 +46,22 @@ public class ArticleController {
         log.info("[C] getArticleBySlug() : slug={}", slug);
         log.info("[C] getArticleBySlug() : loginUser={}", loginUser);
 
-        ArticleResponse articleResponse = articleService.getArticleBySlug(slug, loginUser == null ? null : loginUser.user());
+        ArticleResponse articleResponse = articleService.getArticleBySlug(slug, loginUser);
         log.info("[C] getArticleBySlug() : articleResponse={}", articleResponse);
 
         return ResponseEntity.ok(new WrapArticleResponse(articleResponse));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getArticles(final ArticleParam articleParam,
+                                         @LoginUser final UserResponse loginUser) {
+        log.info("[C] getArticles() : articleParam={}", articleParam);
+        log.info("[C] getArticles() : loginUser={}", loginUser);
+
+        List<ArticleResponse> articleResponses = articleService.getArticles(articleParam, loginUser);
+        log.info("[C] getArticles() : articleResponses={}", articleResponses);
+
+        return ResponseEntity.ok(new WrapArticleResponses(articleResponses, articleResponses.size()));
     }
 
     @JwtTokenRequired
@@ -55,7 +70,7 @@ public class ArticleController {
         log.info("[C] deleteArticleBySlug() : slug={}", slug);
         log.info("[C] deleteArticleBySlug() : loginUser={}", loginUser);
 
-        int count = articleService.deleteArticleBySlug(slug, loginUser);
+        int count = articleService.deleteArticleBySlug(slug, loginUser.id());
         log.info("[C] deleteArticleBySlug() : count={}", count);
 
         return ResponseEntity.ok(count);

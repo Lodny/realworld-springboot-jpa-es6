@@ -36,7 +36,7 @@ public class FavoriteService {
     private ArticleResponse getArticleBySlug(final String slug, final Long loginUserId) {
         Object[] objs = (Object[]) articleRepository.findBySlugIncludeUser(slug, loginUserId);
         log.info("[S] getArticleBySlug() : objs={}, size={}", objs, objs.length);
-        if (objs.length != 3)
+        if (objs.length < 2)
             throw new IllegalArgumentException("The article is not found");
 
         return ArticleResponse.of(

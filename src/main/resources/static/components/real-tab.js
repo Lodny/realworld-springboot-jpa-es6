@@ -1,6 +1,8 @@
-import {RealArticle} from "./real-article.js";
+import {RealArticlePreview} from "./real-article-preview.js";
 import {RealPaging} from "./real-paging.js";
 import {store} from "../services/store.js";
+import {getGlobalArticles} from "../services/api.js";
+
 
 class RealTab extends HTMLElement {
 
@@ -12,6 +14,9 @@ class RealTab extends HTMLElement {
     }
 
     connectedCallback() {
+        const articles = getGlobalArticles();
+        console.log('real-tab::connectedCallback(): articles:', articles);
+
         this.render();
     }
 
@@ -53,7 +58,7 @@ class RealTab extends HTMLElement {
 
         this.shadow.innerHTML = `
             ${style()}
-            
+
             <div class="feed-toggle">
                 <ul class="nav nav-pills outline-active">
                     <li class="nav-item">
@@ -65,7 +70,7 @@ class RealTab extends HTMLElement {
                 </ul>
             </div>
 
-            <real-article></real-article>
+            <real-article-preview></real-article-preview>
             <real-paging></real-paging>
         `;
 

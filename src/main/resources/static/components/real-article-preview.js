@@ -1,4 +1,4 @@
-class RealArticle extends HTMLElement {
+class RealArticlePreview extends HTMLElement {
     constructor() {
         super();
 
@@ -46,8 +46,8 @@ class RealArticle extends HTMLElement {
     }
 }
 
-customElements.define('real-article', RealArticle);
-export {RealArticle}
+customElements.define('real-article-preview', RealArticlePreview);
+export {RealArticlePreview}
 
 function style() {
     return `
