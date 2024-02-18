@@ -26,6 +26,10 @@ class Store {
     getArticle(slug) {
         return this.store['articles'].find(article => article.slug === slug);
     }
+
+    getArticles() {
+        return this.store['articles'];
+    }
 }
 
 const store = new Store();

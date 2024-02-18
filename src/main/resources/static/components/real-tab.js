@@ -16,9 +16,10 @@ class RealTab extends HTMLElement {
     async connectedCallback() {
         const user = store.get('user');
         console.log('real-tab::connectedCallback(): user:', user);
-        this.articles = await getGlobalArticles(user?.token);
-        store.addArticles(this.articles);
-        console.log('real-tab::connectedCallback(): this.articles:', this.articles);
+
+        const articles = await getGlobalArticles(user?.token);
+        console.log('real-tab::connectedCallback(): articles:', articles);
+        store.addArticles(articles);
 
         this.render();
     }
@@ -52,6 +53,9 @@ class RealTab extends HTMLElement {
     }
 
     render() {
+        const articles = store.getArticles();
+        console.log('real-tab::render(): art:', articles);
+
         this.shadow.innerHTML = `
             ${style()}
 
@@ -66,9 +70,10 @@ class RealTab extends HTMLElement {
                 </ul>
             </div>
 
-        ${this.articles.length > 0 
-        ? ` <real-article-preview slug="title 2: slug"></real-article-preview>
-            <real-paging></real-paging>` 
+        ${articles.length > 0 
+        ? articles
+                .map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
+                .join('') + '<real-paging></real-paging>'
         : ''}
         
         `;
