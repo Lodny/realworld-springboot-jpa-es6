@@ -6,4 +6,6 @@ import org.springframework.data.repository.Repository;
 
 public interface FavoriteRepository extends Repository<Favorite, FavoriteId> {
     Favorite save(Favorite favorite);
+
+    void deleteById(FavoriteId favoriteId);
 }

@@ -30,6 +30,14 @@ class Store {
     getArticles() {
         return this.store['articles'];
     }
+
+    setFavorite(article) {
+        const foundArticle = this.getArticle(article.slug);
+        if (!foundArticle) return article;
+
+        foundArticle.favorited = !foundArticle.favorited;
+        return foundArticle;
+    }
 }
 
 const store = new Store();

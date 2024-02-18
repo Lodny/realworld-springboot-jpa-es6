@@ -1,6 +1,7 @@
 package com.lodny.realworldjuiceembeddable.entity;
 
 import com.lodny.realworldjuiceembeddable.entity.dto.RegisterArticleRequest;
+import com.lodny.realworldjuiceembeddable.sys.util.SlugUtil;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -46,7 +47,7 @@ public class Article {
 
     public static Article of(final RegisterArticleRequest request, final Long authorId) {
         return Article.builder()
-                .slug(request.title() + ": slug")
+                .slug(SlugUtil.createSlug(request.title()))
                 .title(request.title())
                 .description(request.description())
                 .body(request.body())

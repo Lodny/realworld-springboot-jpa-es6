@@ -3,49 +3,74 @@ import {store} from "./store.js";
 const BASE_URL = 'api';
 
 
-const get = (url) => {
-    console.log('api::get(): BASE_URL + url:', BASE_URL + url);
-
-    const headers = {};
+function makeHeaders() {
+    const headers = new Map();
     const user = store.get("user");
-    if (user) {
-        headers['Authorization'] = 'Token ' + user.token;
-    }
-    console.log('api::get(): headers:', headers);
+    if (user)
+        headers.set('Authorization', 'Token ' + user.token);
 
-    return fetch(BASE_URL + url, {headers})
-        .then(response => response.json())
-        .catch(error => console.log('[E] api::post():', error));
+    console.log('api::makeHeaders(): headers:', headers);
+
+    return headers;
 }
 
-const post = (url, data, token = null) => {
+const apiGet = (url) => {
+    console.log('api::get(): BASE_URL + url:', BASE_URL + url);
+
+    const headers = makeHeaders();
+    return fetch(BASE_URL + url, {headers})
+        .then(response => response.json())
+        .catch(error => console.log('[E] api::apiGet():', error));
+}
+
+const apiPost = (url, data, token = null) => {
     console.log('api::post(): BASE_URL + url:', BASE_URL + url);
 
+    const headers = makeHeaders();
+    headers.set('Content-Type', 'application/json');
     return fetch(BASE_URL + url, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .catch(error => console.log('[E] api::post():', error));
+        .catch(error => console.log('[E] api::apiPost():', error));
+}
+
+const apiDelete = (url, data, token = null) => {
+    console.log('api::apiDelete(): BASE_URL + url:', BASE_URL + url);
+
+    const headers = makeHeaders();
+    return fetch(BASE_URL + url, {
+        method: 'DELETE',
+        headers,
+    })
+        .then(response => response.json())
+        .catch(error => console.log('[E] api::apiDelete():', error));
 }
 
 
 
 const registerUser = (data) => {
-    return post('/users', {user: data});
+    return apiPost('/users', {user: data});
 }
 
 const loginUser = (data) => {
-    return post('/users/login', {user: data});
+    return apiPost('/users/login', {user: data});
+}
+
+const favorite = (slug) => {
+    return apiPost(`/articles/${slug}/favorite`, {});
+}
+
+const unfavorite = (slug) => {
+    return apiDelete(`/articles/${slug}/favorite`, {});
 }
 
 
 
 const getGlobalArticles = () => {
-    return get('/articles?offset=0&limit=20');
+    return apiGet('/articles?offset=0&limit=20');
 }
 
 
@@ -54,4 +79,6 @@ export {
     registerUser
     , loginUser
     , getGlobalArticles
+    , favorite
+    , unfavorite
 }

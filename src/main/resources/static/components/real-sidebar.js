@@ -50,16 +50,6 @@ function style() {
                 margin-bottom: .2rem
             }            
             
-            ul.tag-list {
-                padding-left: 0 !important;
-                display: inline-block;
-                list-style: none !important
-            }
-            
-            ul.tag-list li {
-                display: inline-block !important
-            }                                
-
            .tag-pill {
                 padding-right: .6em;
                 padding-left: .6em;
@@ -85,12 +75,6 @@ function style() {
             .tag-default:hover {
                 text-decoration: none
             }
-            
-            .tag-default.tag-outline {
-                border: 1px solid #ddd;
-                color: #aaa !important;
-                background: 0 0 !important
-            }                        
             
         </style>`;
 }

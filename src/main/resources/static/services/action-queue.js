@@ -1,4 +1,4 @@
-import {registerUser, loginUser} from "./api.js";
+import {registerUser, loginUser, favorite, unfavorite} from "./api.js";
 import {store} from "./store.js";
 
 class ActionQueue {
@@ -14,6 +14,8 @@ class ActionQueue {
             'register-user': this.registerUserAction,
             'login': this.loginAction,
             'route': this.routeAction,
+            'favorite': this.favoriteAction,
+            'unfavorite': this.unfavoriteAction,
         }
     }
 
@@ -28,10 +30,14 @@ class ActionQueue {
         console.log('action-queue::run(): action:', action);
 
         const executor = this.actionExecutor[action.type];
-        executor && await executor(action.data);
+        if (!executor) return;
 
+        const result = await executor(action.data);
         action.nextRoute && this.routeAction({name: action.nextRoute});
+        action.callback && action.callback(result);
     }
+
+
 
     registerUserAction = async (data) => {
         const json = await registerUser(data);
@@ -54,6 +60,32 @@ class ActionQueue {
         if (!this.navbar) return;
 
         this.navbar.setCurrentLink(data.name);
+    }
+
+    checkAuth() {
+        const user = store.get('user');
+        if (!user)
+            throw Error('login first');
+    }
+
+    favoriteAction = async (data) => {
+        console.log('action-queue::favoriteAction(): data:', data);
+        this.checkAuth();
+
+        const result = await favorite(data.name);
+        console.log('action-queue::favoriteAction(): result:', result);
+
+        return result.article;
+    }
+
+    unfavoriteAction = async (data) => {
+        console.log('action-queue::unfavoriteAction(): data:', data);
+        this.checkAuth();
+
+        const result = await unfavorite(data.name);
+        console.log('action-queue::unfavoriteAction(): result:', result);
+
+        return result.article;
     }
 }
 

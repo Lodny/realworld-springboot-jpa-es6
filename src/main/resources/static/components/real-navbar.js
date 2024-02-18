@@ -1,4 +1,5 @@
 import {store} from "../services/store.js";
+import {iconCdn} from "../services/icon-cdn.js"
 
 class RealNavbar extends HTMLElement {
 
@@ -100,6 +101,7 @@ function style() {
     console.log('real-navbar::style(): :');
 
     return`
+        ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
 
         <style>

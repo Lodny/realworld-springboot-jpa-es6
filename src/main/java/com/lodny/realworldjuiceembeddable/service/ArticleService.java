@@ -73,10 +73,10 @@ public class ArticleService {
         return PageRequest.of(pageNo, pageSize);
     }
 
-    private static ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
+    private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
         log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
         log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
-        if (articleAndOther.length < 4)
+        if (articleAndOther.length < 4 || articleAndOther[0] == null)
             throw new IllegalArgumentException("The article is not found");
 
         return ArticleResponse.of(

@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -25,13 +22,26 @@ public class FavoriteController {
 
     @JwtTokenRequired
     @PostMapping("/favorite")
-    public ResponseEntity<?> addFavorite(@PathVariable final String slug,
+    public ResponseEntity<?> favorite(@PathVariable final String slug,
                                          @LoginUser final UserResponse loginUser) {
-        log.info("[C] addFavorite() : slug={}", slug);
-        log.info("[C] addFavorite() : loginUser={}", loginUser);
+        log.info("[C] favorite() : slug={}", slug);
+        log.info("[C] favorite() : loginUser={}", loginUser);
 
-        ArticleResponse articleResponse = favoriteService.addFavorite(slug, loginUser.id());
-        log.info("[C] addFavorite() : articleResponse={}", articleResponse);
+        ArticleResponse articleResponse = favoriteService.favorite(slug, loginUser.id());
+        log.info("[C] favorite() : articleResponse={}", articleResponse);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new WrapArticleResponse(articleResponse));
+    }
+
+    @JwtTokenRequired
+    @DeleteMapping("/favorite")
+    public ResponseEntity<?> unfavorite(@PathVariable final String slug,
+                                         @LoginUser final UserResponse loginUser) {
+        log.info("[C] unfavorite() : slug={}", slug);
+        log.info("[C] unfavorite() : loginUser={}", loginUser);
+
+        ArticleResponse articleResponse = favoriteService.unfavorite(slug, loginUser.id());
+        log.info("[C] unfavorite() : articleResponse={}", articleResponse);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new WrapArticleResponse(articleResponse));
     }

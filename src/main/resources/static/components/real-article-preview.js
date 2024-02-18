@@ -1,4 +1,6 @@
 import {store} from "../services/store.js";
+import {iconCdn} from "../services/icon-cdn.js";
+import {actionQueue} from "../services/action-queue.js";
 
 class RealArticlePreview extends HTMLElement {
     constructor() {
@@ -21,6 +23,12 @@ class RealArticlePreview extends HTMLElement {
     render() {
         const article = this.article;
         const author = article.author;
+        console.log('real-article-preview::render(): article:', article);
+        console.log('real-article-preview::render(): author:', author);
+
+        console.log('real-article-preview::render(): article.favorited:', article.favorited);
+        console.log('real-article-preview::render(): article.favorited:', article.favorited === true);
+
 
         this.shadow.innerHTML = `
             ${style()}
@@ -32,7 +40,7 @@ class RealArticlePreview extends HTMLElement {
                         <a href="/profile/eric-simons" class="author">${author.username}</a>
                         <span class="date">${article.createdAt}</span>
                     </div>
-                    <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                    <button class="btn btn-outline-primary btn-sm pull-xs-right ${article.favorited ? 'focus' : ''}">
                         <i class="ion-heart"></i> 29
                     </button>
                 </div>
@@ -51,10 +59,42 @@ class RealArticlePreview extends HTMLElement {
         this.setEventHandler();
     }
 
-
-
     setEventHandler() {
         console.log('real-article::setEventHandler(): 1:', 1);
+
+        this.shadow.querySelector('button').addEventListener('click', this.favorite);
+    }
+
+    favorite = () => {
+        console.log('real-article-preview::favorite(): 1:', 1);
+        const user = store.get("user");
+        if (!user) {
+            actionQueue.addAction({
+                type: 'route',
+                data: {
+                    name: 'login'
+                }
+            });
+
+            return;
+        }
+
+        console.log('real-article-preview::favorite(): this.article:', this.article);
+        actionQueue.addAction({
+            type: this.article.favorited === false ? 'favorite' : 'unfavorite',
+            data: {
+                name: this.article.slug,
+            },
+            callback: this.callback
+        });
+    }
+
+    callback = (article) => {
+        console.log('real-article-preview::callback(): article:', article);
+        this.article = store.setFavorite(article);
+        console.log('real-article-preview::callback(): this.article:', this.article);
+
+        this.render();
     }
 }
 
@@ -63,12 +103,22 @@ export {RealArticlePreview}
 
 function style() {
     return `
+        ${iconCdn}
+
         <link rel="stylesheet" href="../css/common.css">
 
         <style>
             img {
                 overflow-clip-margin: content-box;
                 overflow: clip;
+            }
+            
+            a {
+                color: #5CB85C;
+            }
+            
+            a h1 {
+                color: black;
             }
             
             .article-preview {
@@ -158,11 +208,6 @@ function style() {
                 background-color: #818a91
             }
             
-            ul.tag-list {
-                padding-left: 0px !important;
-                display: inline-block;
-                list-style: none !important;
-            }
         </style>`;
 }
             // .article-page .banner .article-meta .author {
