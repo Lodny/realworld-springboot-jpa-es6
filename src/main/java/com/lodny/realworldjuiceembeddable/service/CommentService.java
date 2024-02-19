@@ -37,23 +37,25 @@ public class CommentService {
     public void deleteComment(final String slug, final Long commentId, final Long loginUserId) {
         log.info("[S] deleteComment() : loginUserId={}", loginUserId);
 
-        Article article = articleRepository.findBySlug(slug);
-        if (article == null)
-            throw new IllegalArgumentException("article not found");
-        log.info("[S] deleteComment() : article={}", article);
+//        Article article = articleRepository.findBySlug(slug);
+//        if (article == null)
+//            throw new IllegalArgumentException("article not found");
+//        log.info("[S] deleteComment() : article={}", article);
+//
+//        Comment foundComment = commentRepository.findById(commentId);
+//        if (foundComment == null)
+//            throw new IllegalArgumentException("comment not found");
+//        log.info("[S] deleteComment() : foundComment={}", foundComment);
+//
+//        if (! foundComment.getArticleId().equals(article.getId()))
+//            throw new IllegalArgumentException("The comment article id does not match slug-based article id.");
+//
+//        if (! foundComment.getAuthorId().equals(loginUserId))
+//            throw new IllegalArgumentException("Author Id of Slug-based article does not match the login user id.");
+//
+//        commentRepository.delete(foundComment);
 
-        Comment foundComment = commentRepository.findById(commentId);
-        if (foundComment == null)
-            throw new IllegalArgumentException("comment not found");
-        log.info("[S] deleteComment() : foundComment={}", foundComment);
-
-        if (! foundComment.getArticleId().equals(article.getId()))
-            throw new IllegalArgumentException("The comment article id does not match slug-based article id.");
-
-        if (! foundComment.getAuthorId().equals(loginUserId))
-            throw new IllegalArgumentException("Author Id of Slug-based article does not match the login user id.");
-
-        commentRepository.delete(foundComment);
+        commentRepository.deleteDirectly(slug, commentId, loginUserId);
     }
 
     public List<CommentResponse> getComments(final String slug, final UserResponse loginUser) {

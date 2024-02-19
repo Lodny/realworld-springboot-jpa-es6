@@ -1,8 +1,10 @@
 package com.lodny.realworldjuiceembeddable.repository;
 
 import com.lodny.realworldjuiceembeddable.entity.Comment;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,6 +14,16 @@ public interface CommentRepository extends Repository<Comment, Long> {
 
     // todo::delete one query
     void delete(Comment foundComment);
+
+    @Transactional
+    @Modifying
+    @Query("""
+        DELETE  FROM    Comment c
+        WHERE   c.id = :commentId
+        AND     c.articleId = (SELECT a.id FROM Article a WHERE a.slug = :slug)
+        AND     c.authorId = (SELECT u.id FROM RealWorldUser u WHERE u.id = :loginUserId)
+    """)
+    void deleteDirectly(final String slug, final Long commentId, final Long loginUserId);
 
     @Query("""
         SELECT  c
