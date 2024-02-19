@@ -41,13 +41,16 @@ const routeInfo = {
 };
 
 function extractPath(url, basePath) {
-    const regex = new RegExp('(?:^https?://localhost:\\d+)?(' + basePath.replace(/:[a-zA-Z0-9]+/g, '[a-zA-Z0-9]+') + ')(/.*)?');
+    // const regex = new RegExp('(?:^https?://localhost:\\d+)?(' + basePath.replace(/:[a-zA-Z0-9-]+/g, '[a-zA-Z0-9-]+') + ')(/.*)?');
+    const regex = new RegExp(basePath.replace(/:[a-zA-Z0-9-]+/g, '([a-zA-Z0-9-]+)'));
     const match = url.match(regex);
     if (!match) return null;
 
-    const link = match[1];
-    const pathName = match[2] ? match[2].substring(1) : null;
-    return [link, pathName]
+    console.log('routes::extractPath(): match:', match);
+
+    // const link = match[1];
+    // const pathName = match[2] ? match[2].substring(1) : null;
+    return [match[0], match[1]];
 }
 
 const getRouteByUrl = (url) => {
@@ -60,7 +63,6 @@ const getRouteByUrl = (url) => {
 
     const [link, pathName] = extractPath(url, foundRoute.url);
     console.log('routes::getRouteNameByUrl(): pathName:', pathName);
-
 
     return {...foundRoute, pathName};
 }

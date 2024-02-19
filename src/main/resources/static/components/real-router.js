@@ -32,7 +32,11 @@ class RealRouter extends HTMLElement {
     getCurrentTagString() {
         const className = this.active.element.name;
         const tagName = className.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-        return `<${tagName}></${tagName}>`;
+
+        const pathName = `pathName="${this.active.pathName ?? ''}"`
+        console.log('real-router::getCurrentTagString(): pathName:', pathName);
+
+        return `<${tagName} ${pathName}></${tagName}>`;
     }
 
     render() {

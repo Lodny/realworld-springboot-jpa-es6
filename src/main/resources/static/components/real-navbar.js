@@ -15,6 +15,24 @@ class RealNavbar extends HTMLElement {
         this.render();
     }
 
+    /*// 컴포넌트 속성 정의
+    static get observedAttributes() {
+        return ['name'];
+    }
+
+    // 컴포넌트가 DOM에 추가될 때 호출되는 메서드
+    connectedCallback() {
+        this.updateName();
+    }
+
+    // 컴포넌트 속성 변경 시 호출되는 메서드
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'name' && oldValue !== newValue) {
+            this.updateName();
+        }
+    }*/
+
+
     isActive = (name) => this.active?.name === name ? 'active' : '';
     setCallback = (cb) => this.callback = cb;
 

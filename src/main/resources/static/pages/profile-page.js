@@ -3,6 +3,7 @@ class ProfilePage extends HTMLElement {
         super();
 
         this.shadow = this.attachShadow({mode: 'open'});
+        this.pathName = this.getAttribute('pathName');
     }
 
     connectedCallback() {
@@ -14,6 +15,7 @@ class ProfilePage extends HTMLElement {
             ${style()}
             
             <h1>ProfilePage</h1>
+            <h2>${this.pathName}</h2>
         `;
 
         this.setEventHandler();
@@ -31,6 +33,6 @@ function style() {
         <link rel="stylesheet" href="../css/common.css">
 
         <style>
-        
+                    
         </style>`;
 }

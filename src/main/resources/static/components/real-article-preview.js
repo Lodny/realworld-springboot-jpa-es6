@@ -1,6 +1,7 @@
 import {store} from "../services/store.js";
 import {iconCdn} from "../services/icon-cdn.js";
 import {actionQueue} from "../services/action-queue.js";
+import {getRouteByUrl} from "../services/routes.js";
 
 class RealArticlePreview extends HTMLElement {
     constructor() {
@@ -35,9 +36,9 @@ class RealArticlePreview extends HTMLElement {
             
             <div class="article-preview">
                 <div class="article-meta">
-                    <a href="/profile/eric-simons"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+                    <a href="/profile/${author.username}"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
                     <div class="info">
-                        <a href="/profile/eric-simons" class="author">${author.username}</a>
+                        <a href="/profile/${author.username}" class="author">${author.username}</a>
                         <span class="date">${article.createdAt}</span>
                     </div>
                     <button class="btn btn-outline-primary btn-sm pull-xs-right ${article.favorited ? 'focus' : ''}">
@@ -63,6 +64,9 @@ class RealArticlePreview extends HTMLElement {
         console.log('real-article::setEventHandler(): 1:', 1);
 
         this.shadow.querySelector('button').addEventListener('click', this.favorite);
+        this.shadow.querySelectorAll('.article-meta a')
+            .forEach(link => link.addEventListener('click', this.goProfile));
+        this.shadow.querySelector('.preview-link').addEventListener('click', this.goArticle);
     }
 
     favorite = () => {
@@ -87,6 +91,28 @@ class RealArticlePreview extends HTMLElement {
             },
             callback: this.callback
         });
+    }
+
+    goProfile = (evt) => {
+        evt.preventDefault();
+        console.log('real-article-preview::profile(): 1:', 1);
+        console.log('real-article-preview::goProfile(): evt.target.href:', evt.target.href);
+
+        const route = getRouteByUrl(evt.target.href);
+        console.log('real-article-preview::goProfile(): route:', route);
+        actionQueue.addAction({
+            type: 'route',
+            data: {
+                name: route,
+            },
+        });
+    }
+
+    goArticle = (evt) => {
+        evt.preventDefault();
+        console.log('real-article-preview::goArticle(): 1:', 1);
+        console.log('real-article-preview::goArticle(): evt.target.href:', evt.target.href);
+
     }
 
     callback = (article) => {
