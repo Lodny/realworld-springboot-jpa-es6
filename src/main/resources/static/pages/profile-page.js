@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {store} from "../services/store.js";
 import {actionQueue} from "../services/action-queue.js";
-import {getProfile} from "../services/api.js";
+import {followUser, unfollowUser, getProfile} from "../services/api.js";
 
 const style = `<style>
     img {
@@ -94,10 +94,6 @@ class ProfilePage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-
-        this.profileUsername = this.getAttribute('pathName');
-        console.log('profile-page::constructor(): this.profileUsername:', this.profileUsername);
-
         this.shadowRoot.innerHTML = getTemplate();
 
         this.findElement();
@@ -105,11 +101,12 @@ class ProfilePage extends HTMLElement {
     }
 
     async connectedCallback() {
-        const data = await getProfile(this.profileUsername)
+        const profileUsername = this.getAttribute('pathName');
+        const data = await getProfile(profileUsername);
         this.profile = data.profile;
         console.log('profile-page::connectedCallback(): this.profile:', this.profile);
 
-        this.updateProfile(this.profile);
+        this.render(this.profile);
     }
 
     findElement() {
@@ -122,26 +119,72 @@ class ProfilePage extends HTMLElement {
 
     setEventHandler() {
         console.log('profile-page::setEventHandler(): 1:', 1);
+        this.followButton.addEventListener('click', this.follow);
+        this.editButton.addEventListener('click', this.edit);
+    }
+
+    render(profile) {
+        console.log('profile-page::render(): profile:', profile);
+
+        this.updateProfile(profile);
+        this.updateButtons(profile);
+        this.updateFollowing(profile);
     }
 
     updateProfile(profile) {
-        console.log('profile-page::updateProfile(): profile:', profile);
-
-        const username = profile.username;
-        this.profileNameH4.innerHTML = username;
+        this.profileNameH4.innerHTML = profile.username;
         this.bioP.innerHTML = profile.bio;
         if (profile.image)
             this.image.src = profile.image;
-        this.followButton.innerHTML = `<i class="ion-plus-round"></i> &nbsp; Follow ${username}`;
+    }
 
+    updateButtons(profile) {
         this.user = store.get('user');
-        if (username === this.user?.username) {
+        if (profile.username === this.user?.username) {
             this.followButton.style.display = 'none'
             this.editButton.style.display = 'block'
         } else {
             this.followButton.style.display = 'block'
             this.editButton.style.display = 'none'
         }
+    }
+
+    updateFollowing(profile) {
+        if (profile.following)
+            this.followButton.innerHTML = `<i class="ion-minus-round"></i> &nbsp; Unfollow ${profile.username}`;
+        else
+            this.followButton.innerHTML = `<i class="ion-plus-round"></i> &nbsp; Follow ${profile.username}`;
+    }
+
+    follow = async (evt) => {
+        evt.preventDefault();
+        console.log('profile-page::follow(): 1:', 1);
+
+        const user = store.get('user');
+        if (!user) {
+            actionQueue.addAction({
+                type: 'route',
+                data: {
+                    name: 'login'
+                }
+            })
+            return;
+        }
+
+        let data;
+        if (this.profile.following)
+            data = await unfollowUser(this.profile.username);
+        else
+            data = await followUser(this.profile.username);
+        this.profile = data.profile;
+        console.log('profile-page::follow(): this.profile:', this.profile);
+        this.updateFollowing(this.profile);
+    }
+
+    edit = (evt) => {
+        evt.preventDefault();
+        console.log('profile-page::edit(): 1:', 1);
+
     }
 }
 customElements.define('profile-page', ProfilePage);

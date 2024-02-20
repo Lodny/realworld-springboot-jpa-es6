@@ -70,6 +70,16 @@ const getProfile = (username) => {
     return apiGet(`/profiles/${username}`);
 }
 
+const followUser = (username) => {
+    return apiPost(`/profiles/${username}/follow`, {});
+}
+
+const unfollowUser = (username) => {
+    console.log('api::unfollowUser(): username:', username);
+
+    return apiDelete(`/profiles/${username}/follow`, {});
+}
+
 const getGlobalArticles = () => {
     return apiGet('/articles?offset=0&limit=20');
 }
@@ -83,4 +93,6 @@ export {
     , favorite
     , unfavorite
     , getProfile
+    , followUser
+    , unfollowUser
 }

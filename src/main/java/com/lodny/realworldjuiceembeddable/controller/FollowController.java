@@ -9,10 +9,7 @@ import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -35,4 +32,16 @@ public class FollowController {
         return ResponseEntity.ok(new WrapProfileResponse(profileResponse));
     }
 
+    @JwtTokenRequired
+    @DeleteMapping("/follow")
+    public ResponseEntity<?> unfollow(@PathVariable final String username,
+                                      @LoginUser final UserResponse loginUser) {
+        log.info("[C] unfollow() : username={}", username);
+        log.info("[C] unfollow() : loginUser={}", loginUser);
+
+        ProfileResponse profileResponse = followService.unfollow(username, loginUser.id());
+        log.info("[C] unfollow() : profileResponse={}", profileResponse);
+
+        return ResponseEntity.ok(new WrapProfileResponse(profileResponse));
+    }
 }
