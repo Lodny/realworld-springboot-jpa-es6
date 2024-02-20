@@ -185,6 +185,12 @@ class ProfilePage extends HTMLElement {
         evt.preventDefault();
         console.log('profile-page::edit(): 1:', 1);
 
+        actionQueue.addAction({
+            type: 'route',
+            data: {
+                name: 'settings'
+            }
+        })
     }
 }
 customElements.define('profile-page', ProfilePage);
