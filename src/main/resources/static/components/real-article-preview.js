@@ -111,7 +111,7 @@ const style = `<style>
         margin-bottom: .2rem;
         display: inline-block
     }
-    </style>`;
+</style>`;
 // .article-page .banner .article-meta .author {
 //     color: #fff
 // }
@@ -128,7 +128,7 @@ const getTemplate = (article) => {
     
         <div class="article-preview">
             <div class="article-meta">
-                <a href="/profile/${author.username}"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+                <a href="/profile/${author.username}"><img src="https://api.realworld.io/images/demo-avatar.png" /></a>
                 <div class="info">
                     <a href="/profile/${author.username}" class="author">${author.username}</a>
                     <span class="date">${article.createdAt}</span>

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profile")
+@RequestMapping("/api/profiles")
 public class ProfileController {
 
     private final ProfileService profileService;

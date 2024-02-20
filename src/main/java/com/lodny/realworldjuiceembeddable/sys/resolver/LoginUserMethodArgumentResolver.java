@@ -2,7 +2,6 @@ package com.lodny.realworldjuiceembeddable.sys.resolver;
 
 import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
 import com.lodny.realworldjuiceembeddable.sys.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -13,19 +12,17 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor
 public class LoginUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasAnnotation = parameter.hasParameterAnnotation(LoginUser.class);
-//        boolean hasUserType = User.class.isAssignableFrom(parameter.getParameterType());
+        //        boolean hasUserType = User.class.isAssignableFrom(parameter.getParameterType());
 //        return hasAnnotation && hasUserType;
-        return hasAnnotation;
+        return parameter.hasParameterAnnotation(LoginUser.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         return JwtUtil.currentUser();
 //        User user = userService.getLoginUserById(webRequest.getSessionId()).orElse(null);
 //        webRequest.setAttribute("user",user,0);

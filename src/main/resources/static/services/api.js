@@ -2,7 +2,6 @@ import {store} from "./store.js";
 
 const BASE_URL = 'api';
 
-
 function makeHeaders() {
     const headers = new Map();
     const user = store.get("user");
@@ -67,7 +66,9 @@ const unfavorite = (slug) => {
     return apiDelete(`/articles/${slug}/favorite`, {});
 }
 
-
+const getProfile = (username) => {
+    return apiGet(`/profiles/${username}`);
+}
 
 const getGlobalArticles = () => {
     return apiGet('/articles?offset=0&limit=20');
@@ -81,4 +82,5 @@ export {
     , getGlobalArticles
     , favorite
     , unfavorite
+    , getProfile
 }
