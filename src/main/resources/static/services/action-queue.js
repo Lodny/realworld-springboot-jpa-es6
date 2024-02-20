@@ -42,13 +42,13 @@ class ActionQueue {
     registerUserAction = async (data) => {
         const json = await registerUser(data);
         console.log('action-queue::registerUserAction(): json:', json);
-        store.add('user', json.user);
+        store.set('user', json.user);
     }
 
     loginAction = async (data) => {
         const json = await loginUser(data);
         console.log('action-queue::loginAction(): json:', json);
-        store.add('user', json.user);
+        store.set('user', json.user);
     }
 
     logoutAction = () => {

@@ -42,6 +42,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         jwtUtil.putLoginUser(sessionId, UserResponse.of(currentUser, token));
         filterChain.doFilter(request, response);
-        jwtUtil.removeLoginUser(sessionId);
+        jwtUtil.removeLoginUser(sessionId); //todo::중간에 exception 나게 되면?
     }
 }

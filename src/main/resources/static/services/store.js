@@ -1,34 +1,30 @@
-class Store {
+class Store extends Map {
     constructor() {
-        this.store = new Map();
-        this.store.set('articles', []);
+        super();
+
+        this.set('articles', []);
     }
 
-    add(name, data) {
-        this.store.set(name, data);
-        console.log('store::addItem(): this.store:', this.store);
-    }
-
-    remove(name) {
-        this.store.delete(name);
-        console.log('store::remove(): this.store:', this.store);
-    }
-
-    get(name) {
-        return this.store.get(name);
-    }
-
-    addArticles(data) {
-        console.log('store::addArticles(): data:', data);
-        this.store['articles'] = data.articles;
-    }
-
-    getArticle(slug) {
-        return this.store['articles'].find(article => article.slug === slug);
+    setArticles(articles) {
+        console.log('store::addArticles(): articles:', articles);
+        this.set('articles', articles);
     }
 
     getArticles() {
-        return this.store['articles'];
+        return this.get('articles');
+    }
+
+    getArticle(slug) {
+        return this.get('articles').find(article => article.slug === slug);
+    }
+
+    setArticle(newArticle) {
+        const articles = this.get('articles');
+        const idx = articles.findIndex(article => article.slug === newArticle.slug);
+        if (idx < 0)
+            throw Error('not found article');
+
+        articles[idx] = newArticle;
     }
 
     setFavorite(article) {

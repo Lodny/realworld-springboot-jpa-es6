@@ -17,9 +17,9 @@ class RealTab extends HTMLElement {
         const user = store.get('user');
         console.log('real-tab::connectedCallback(): user:', user);
 
-        const articles = await getGlobalArticles(user?.token);
-        console.log('real-tab::connectedCallback(): articles:', articles);
-        store.addArticles(articles);
+        const data = await getGlobalArticles(user?.token);
+        console.log('real-tab::connectedCallback(): data.articles:', data.articles);
+        store.setArticles(data.articles);
 
         this.render();
     }

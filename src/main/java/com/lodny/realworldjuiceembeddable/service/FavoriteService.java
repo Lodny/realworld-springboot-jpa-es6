@@ -46,14 +46,16 @@ public class FavoriteService {
     }
 
     private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
+        final int ARRAY_COUNT = 5;
+
         log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
         log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
-        if (articleAndOther.length < 4 || articleAndOther[0] == null)
+        if (articleAndOther.length < ARRAY_COUNT || articleAndOther[0] == null)
             throw new IllegalArgumentException("The article is not found");
 
-        return ArticleResponse.of(
-                (Article) articleAndOther[0],
+        return ArticleResponse.of((Article) articleAndOther[0],
                 ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
-                (Boolean) articleAndOther[2]);
+                (Boolean) articleAndOther[2],
+                (Long) articleAndOther[4]);
     }
 }

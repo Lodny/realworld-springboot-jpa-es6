@@ -2,12 +2,10 @@ package com.lodny.realworldjuiceembeddable.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lodny.realworldjuiceembeddable.entity.Article;
-import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Builder
 public record ArticleResponse(
         @JsonIgnore Long id,
         String slug,
@@ -21,19 +19,22 @@ public record ArticleResponse(
         Long favoritesCount,
         ProfileResponse author
 ) {
-    public static ArticleResponse of(final Article article, final ProfileResponse author, final Boolean favorited) {
+    public static ArticleResponse of(final Article article,
+                                     final ProfileResponse author,
+                                     final Boolean favorited,
+                                     final Long favoritesCount) {
         // todo : BeanUtils.copyProperites
-        return ArticleResponse.builder()
-                .id(article.getId())
-                .slug(article.getSlug())
-                .title(article.getTitle())
-                .description(article.getDescription())
-                .body(article.getBody())
-                .tagList(article.getTagList())
-                .createdAt(article.getCreatedAt())
-                .updatedAt(article.getUpdatedAt())
-                .favorited(favorited)
-                .author(author)
-                .build();
+        return new ArticleResponse(
+                article.getId(),
+                article.getSlug(),
+                article.getTitle(),
+                article.getDescription(),
+                article.getBody(),
+                article.getTagList(),
+                article.getCreatedAt(),
+                article.getUpdatedAt(),
+                favorited,
+                favoritesCount,
+                author);
     }
 }

@@ -19,6 +19,7 @@ public interface ArticleRepository extends Repository<Article, Long> {
               , u
               , CASE WHEN fa IS NULL THEN false ELSE true END
               , CASE WHEN fo IS NULL THEN false ELSE true END
+              , (SELECT COUNT(f) FROM Favorite f WHERE f.id.articleId = a.id)
         FROM    Article a
         JOIN    RealWorldUser u ON u.id = a.authorId
         LEFT JOIN Favorite fa ON fa.id.articleId = a.id AND fa.id.userId = :loginUserId
@@ -38,6 +39,7 @@ public interface ArticleRepository extends Repository<Article, Long> {
               , u
               , CASE WHEN fa IS NULL THEN false ELSE true END
               , CASE WHEN fo IS NULL THEN false ELSE true END
+              , (SELECT COUNT(f) FROM Favorite f WHERE f.id.articleId = a.id)
         FROM    Article a
         JOIN    RealWorldUser u ON u.id = a.authorId
         LEFT JOIN Favorite fa ON fa.id.articleId = a.id AND fa.id.userId = :loginUserId

@@ -1,8 +1,11 @@
 package com.lodny.realworldjuiceembeddable.sys.config;
 
+import com.lodny.realworldjuiceembeddable.sys.filter.JwtFilter;
 import com.lodny.realworldjuiceembeddable.sys.interceptor.JwtTokenInterceptor;
 import com.lodny.realworldjuiceembeddable.sys.resolver.LoginUserMethodArgumentResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final JwtTokenInterceptor jwtTokenInterceptor;
     private final LoginUserMethodArgumentResolver loginUserMethodArgumentResolver;
-//    private final JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -30,14 +33,13 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(loginUserMethodArgumentResolver);
     }
 
-//    @Bean
-//    public FilterRegistrationBean<JwtFilter> addJwtFilter() {
-//
-//        FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
-//
-//        registrationBean.setFilter(jwtFilter);
-//        registrationBean.addUrlPatterns("/api/*");
-//
-//        return registrationBean;
-//    }
+    @Bean
+    public FilterRegistrationBean<JwtFilter> addJwtFilter() {
+        FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
+
+        registrationBean.setFilter(jwtFilter);
+        registrationBean.addUrlPatterns("/api/*");
+
+        return registrationBean;
+    }
 }
