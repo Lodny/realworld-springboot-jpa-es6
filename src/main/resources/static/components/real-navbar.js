@@ -46,10 +46,7 @@ const style = `
         }            
     </style>`;
 
-const getTemplate = (user) => {
-    const username = user?.username || 'Profile';
-    console.log('real-navbar::getTemplate(): user:', user);
-
+const getTemplate = () => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
@@ -62,25 +59,23 @@ const getTemplate = (user) => {
                     <li class="nav-item">
                         <a class="nav-link active" href="/">Home</a>
                     </li>
-                    ${!user
-                ? ` <li class="nav-item">
+                    <li class="nav-item off">
                         <a class="nav-link" href="/login">Sign in</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item off">
                         <a class="nav-link" href="/register">Sign up</a>
-                    </li>`
-                : ` <li class="nav-item">
+                    </li>
+                    <li class="nav-item on" style="display: none">
                         <a class="nav-link" href="/editor"><i class="ion-compose"></i> New Article</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item on" style="display: none">
                         <a class="nav-link" href="/settings"><i class="ion-gear-a"></i> Settings</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile/${username}">
-                            <img src="" class="user-pic" />${username}
+                    <li class="nav-item on" style="display: none">
+                        <a class="nav-link username" href="/profile/username">
+                            <img src="" class="user-pic" />username
                         </a>
-                    </li>`
-                    }
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -92,27 +87,29 @@ class RealNavbar extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-
-        this.user = store.get('user');
-        console.log('real-navbar::render(): this.user:', this.user);
-        this.shadowRoot.innerHTML = getTemplate(this.user);
+        this.shadowRoot.innerHTML = getTemplate();
 
         this.findElement();
         this.setEventHandler();
-
-        console.log('real-navbar::constructor(): this.links:', this.links);
 
         this.active = getRouteByUrl('/');
         console.log('real-navbar::constructor(): this.active:', this.active);
     }
 
     connectedCallback() {
-        this.updateActiveLink(null, this.active);
+        this.render(null, this.active);
     }
 
-    findElement = () => this.links = Array.from(this.shadowRoot.querySelectorAll('.nav-link'));
+    findElement = () => {
+        this.links = Array.from(this.shadowRoot.querySelectorAll('a'));
+        this.offLis = Array.from(this.shadowRoot.querySelectorAll('.nav-item.off'));
+        this.onLis = Array.from(this.shadowRoot.querySelectorAll('.nav-item.on'));
+        this.usernameLink = this.shadowRoot.querySelector('.nav-link.username');
+    }
 
-    setEventHandler = () => this.links.forEach(aTag => aTag.addEventListener('click', this.clickLink));
+    setEventHandler = () => {
+        this.links.forEach(aTag => aTag.addEventListener('click', this.clickLink));
+    }
 
     setCallback = (cb) => this.callback = cb;
 
@@ -132,22 +129,36 @@ class RealNavbar extends HTMLElement {
 
         const prevActive = this.active;
         this.active = link;
-        this.updateActiveLink(prevActive, this.active);
+        this.render(prevActive, this.active);
 
         if (this.callback)
             this.callback(this.active);
     }
 
-    // get currMenu() {
-    //     return this.active;
-    // }
+    render(prevActive, currActive) {
+        this.updateLinks();
+        this.updateActiveLink(prevActive, currActive);
+    }
+
+    updateLinks() {
+        const user = store.get('user');
+        console.log('real-navbar::updateLinks(): user:', user);
+
+        this.offLis.forEach(link => link.style.display = user ? 'none' : 'block');
+        this.onLis.forEach(link => link.style.display = user ? 'block' : 'none');
+
+        if (user) {
+            this.usernameLink.innerHTML = `<img src="" class="user-pic"/>${user.username}`;
+            this.usernameLink.href = `href="/profile/${user.username}`
+        }
+    }
 
     updateActiveLink(prevActive, currActive) {
         console.log('real-navbar::updateActiveLink(): prevActive:', prevActive);
         console.log('real-navbar::updateActiveLink(): currActive:', currActive);
 
         this.links
-            .find(link => getRouteByUrl(link.href)?.name === prevActive.name)
+            .find(link => getRouteByUrl(link.href)?.name === prevActive?.name)
             ?.classList.remove('active');
 
         this.links

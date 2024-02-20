@@ -58,7 +58,7 @@ const style = `<style>
     }
 </style>`;
 
-const getTemplate = (yourself, profile) => {
+const getTemplate = () => {
 
     return `
         ${iconCdn}
@@ -98,9 +98,7 @@ class ProfilePage extends HTMLElement {
         this.profileUsername = this.getAttribute('pathName');
         console.log('profile-page::constructor(): this.profileUsername:', this.profileUsername);
 
-        this.user = store.get('user');
-        console.log('profile-page::constructor(): user:', this.user);
-        this.shadowRoot.innerHTML = getTemplate(this.user?.username === this.profileUsername);
+        this.shadowRoot.innerHTML = getTemplate();
 
         this.findElement();
         this.setEventHandler();
@@ -116,6 +114,8 @@ class ProfilePage extends HTMLElement {
 
     findElement() {
         this.profileNameH4 = this.shadowRoot.querySelector('h4');
+        this.bioP = this.shadowRoot.querySelector('p');
+        this.image = this.shadowRoot.querySelector('img');
         this.followButton = this.shadowRoot.querySelector('button.follow');
         this.editButton = this.shadowRoot.querySelector('button.edit');
     }
@@ -129,8 +129,19 @@ class ProfilePage extends HTMLElement {
 
         const username = profile.username;
         this.profileNameH4.innerHTML = username;
-        this.followButton.innerHTML = `<i class="ion-plus-round"></i> &nbsp; ${username}`;
-        this.editButton.innerHTML = `<i class="ion-gear-a"></i> &nbsp; ${username}`;
+        this.bioP.innerHTML = profile.bio;
+        if (profile.image)
+            this.image.src = profile.image;
+        this.followButton.innerHTML = `<i class="ion-plus-round"></i> &nbsp; Follow ${username}`;
+
+        this.user = store.get('user');
+        if (username === this.user?.username) {
+            this.followButton.style.display = 'none'
+            this.editButton.style.display = 'block'
+        } else {
+            this.followButton.style.display = 'block'
+            this.editButton.style.display = 'none'
+        }
     }
 }
 customElements.define('profile-page', ProfilePage);
