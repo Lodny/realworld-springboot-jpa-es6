@@ -10,9 +10,6 @@ const style = `<style>
 </style>`;
 
 const getTemplate = (tabTitles, activeTab) => {
-    console.log('home-page::getTemplate(): tabTitles:', tabTitles);
-    console.log('home-page::getTemplate(): activeTab:', activeTab);
-
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">

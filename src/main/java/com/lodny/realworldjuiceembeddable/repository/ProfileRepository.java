@@ -13,13 +13,14 @@ public class ProfileRepository {
     private final EntityManager entityManager;
 
     public ProfileResponse findByUsernameAndGetProfile(final String username, final Long loginUserId) {
+        log.info("findByUsernameAndGetProfile() : username={}", username);
+
         return entityManager
                 .createQuery("""
-                    select  new com.lodny.realworldjuiceembeddable.entity.dto.ProfileResponse(
-                        u.username
-                      , u.bio
-                      , u.image
-                      , CASE WHEN f.id.followeeId IS NULL THEN FALSE ELSE TRUE END)
+                    select  u.username
+                          , u.bio
+                          , u.image
+                          , CASE WHEN f.id.followeeId IS NULL THEN FALSE ELSE TRUE END
                     from    RealWorldUser u
                     left join Follow f on f.id.followerId = :loginUserId
                     where   u.username = :username

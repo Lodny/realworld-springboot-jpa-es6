@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
-import {currentUser} from "../services/store.js";
+import {currentUser, store} from "../services/store.js";
 import {actionQueue} from "../services/action-queue.js";
-import {apiFollow, apiUnfollow, apiGetProfile} from "../services/api.js";
+import {apiFollow, apiUnfollow, apiGetProfile, apiGetArticles} from "../services/api.js";
 
 const style = `<style>
     img {
@@ -52,14 +52,9 @@ const style = `<style>
         color: #999;
         border: 1px solid #999
     }
-    
-    .profile-page .articles-toggle {
-        margin: 1.5rem 0 -1px
-    }
 </style>`;
 
-const getTemplate = () => {
-
+const getTemplate = (tabTitles, activeTab) => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
@@ -86,6 +81,14 @@ const getTemplate = () => {
                     </div>
                 </div>
             </div>
+            <div class="container page">
+                <div class="row">
+                    <real-tab class="col-xs-12 col-md-10 offset-md-1" tab-titles="${tabTitles}" active-tab="${activeTab}">
+                        <div class="articles"></div>
+                        <real-paging></real-paging>
+                    </real-tab>
+                </div>
+            </div>
         </div>
     `;
 }
@@ -94,10 +97,19 @@ class ProfilePage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.shadowRoot.innerHTML = getTemplate();
+
+        const [tabTitles, activeTab] = this.getTabTitles();
+        this.shadowRoot.innerHTML = getTemplate(tabTitles, activeTab);
 
         this.findElements();
         this.setEventHandler();
+    }
+
+    getTabTitles() {
+        let activeTab = 'My Articles';
+        let tabTitles = [activeTab, 'Favorited Articles'];
+
+        return [tabTitles, activeTab];
     }
 
     async connectedCallback() {
@@ -115,12 +127,22 @@ class ProfilePage extends HTMLElement {
         this.image = this.shadowRoot.querySelector('img');
         this.followButton = this.shadowRoot.querySelector('button.follow');
         this.editButton = this.shadowRoot.querySelector('button.edit');
+
+        this.tabTag = this.shadowRoot.querySelector('real-tab');
+        this.articlesTag = this.shadowRoot.querySelector('.articles');
     }
 
     setEventHandler() {
         console.log('profile-page::setEventHandler(): 1:', 1);
         this.followButton.addEventListener('click', this.follow);
         this.editButton.addEventListener('click', this.edit);
+
+        this.tabTag?.setCallback(this.tabEventHandler);
+    }
+
+    tabEventHandler = (activeTab) => {
+        console.log('profile-page::tabEventHandler(): activeTab:', activeTab);
+        this.updateArticles();
     }
 
     render(profile) {
@@ -129,6 +151,7 @@ class ProfilePage extends HTMLElement {
         this.updateProfile(profile);
         this.updateButtons(profile);
         this.updateFollowing(profile);
+        this.updateArticles();
     }
 
     updateProfile(profile) {
@@ -154,6 +177,29 @@ class ProfilePage extends HTMLElement {
             this.followButton.innerHTML = `<i class="ion-minus-round"></i> &nbsp; Unfollow ${profile.username}`;
         else
             this.followButton.innerHTML = `<i class="ion-plus-round"></i> &nbsp; Follow ${profile.username}`;
+    }
+
+    async updateArticles() {
+        const activeTab = this.tabTag.getAttribute('active-tab');
+        console.log('profile-page::updateArticles(): activeTab:', activeTab);
+
+        const articles = await this.getArticles(activeTab);
+
+        this.articlesTag.innerHTML = articles
+            .map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
+            .join('')
+    }
+
+    async getArticles(activeTab) {
+        let param = {};
+        if (activeTab === 'My Articles')
+            param = {author: this.profile.username}
+        else if (activeTab === 'Favorited Articles')
+            param = {favorited: this.profile.username}
+
+        const data = await apiGetArticles(param);
+        store.setArticles(data?.articles);
+        return data?.articles;
     }
 
     follow = async (evt) => {
