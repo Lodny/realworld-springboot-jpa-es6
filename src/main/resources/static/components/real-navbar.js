@@ -125,7 +125,7 @@ class RealNavbar extends HTMLElement {
 
     setCurrentLink(link) {
         if (typeof link === 'string')
-            link = getRouteByName(link);
+            link = getRouteByUrl(link);
 
         const prevActive = this.active;
         this.active = link;

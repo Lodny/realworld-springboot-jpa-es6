@@ -1,7 +1,6 @@
 import {store} from "../services/store.js";
 import {iconCdn} from "../services/icon-cdn.js";
-import {actionQueue} from "../services/action-queue.js";
-import {getRouteByUrl} from "../services/routes.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
 
 const style = `<style>
     img {
@@ -155,13 +154,7 @@ class RealArticlePreview extends HTMLElement {
         console.log('real-article-preview::apiFavorite(): 1:', 1);
         const user = store.get("user");
         if (!user) {
-            actionQueue.addAction({
-                type: 'route',
-                data: {
-                    name: 'login'
-                }
-            });
-
+            addGoAction('/login');
             return;
         }
 
@@ -185,14 +178,8 @@ class RealArticlePreview extends HTMLElement {
         console.log('real-article-preview::goLink(): evt.target.closest(a):', evt.target.closest('a'));
 
         const url = evt.target.closest('a')?.href;
-        const route = getRouteByUrl(url);
-        console.log('real-article-preview::goLink(): route:', route);
-        actionQueue.addAction({
-            type: 'route',
-            data: {
-                name: route,
-            },
-        });
+        console.log('real-article-preview::goLink(): url:', url);
+        addGoAction(url);
     }
 
     callback = (article) => {

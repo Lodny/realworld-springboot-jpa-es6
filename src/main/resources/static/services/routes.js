@@ -24,7 +24,7 @@ const routeInfo = {
             element: RegisterPage
         },
         {
-            url: '/editor',
+            url: '/editor/:slug',
             name: 'editor',
             element: EditorPage
         },

@@ -60,10 +60,6 @@ const style = `<style>
         margin: 1.5rem 0 3rem
     }
     
-    .article-page .article-actions .article-meta .info {
-        text-align: left
-    }
-    
     .col-xs-12 {
         position: relative;
         min-height: 1px;
@@ -104,7 +100,7 @@ const getTemplate = (article, bLogin) => {
             <div class="banner">
                 <div class="container">
                     <h1>${article.title}</h1>
-                    <real-article-meta slug="${article.slug}"></real-article-meta>
+                    <real-article-meta slug="${article.slug}" color="white"></real-article-meta>
                 </div>
             </div>
             
@@ -125,7 +121,7 @@ const getTemplate = (article, bLogin) => {
                 <hr />
                 
                 <div class="article-actions">
-                    <real-article-meta slug="${article.slug}"></real-article-meta>
+                    <real-article-meta slug="${article.slug}" color="#5CB85C"></real-article-meta>
                 </div>          
                 
                 <div class="row">

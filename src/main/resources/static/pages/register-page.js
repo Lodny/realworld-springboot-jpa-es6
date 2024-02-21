@@ -22,7 +22,7 @@ class RegisterPage extends HTMLElement {
                 email: 'cider@drink.com',
                 password: '1234'
             },
-            nextRoute: 'home'
+            nextRoute: '/'
         });
     }
 

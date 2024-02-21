@@ -90,4 +90,17 @@ class ActionQueue {
 }
 
 const actionQueue = new ActionQueue();
-export {actionQueue}
+
+const addGoAction = (routeName) => {
+    actionQueue.addAction({
+        type: 'route',
+        data: {
+            name: routeName,
+        },
+    });
+}
+
+export {
+    actionQueue
+    , addGoAction
+}

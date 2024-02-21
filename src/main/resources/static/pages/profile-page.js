@@ -1,6 +1,6 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {actionQueue} from "../services/action-queue.js";
+import {addGoAction} from "../services/action-queue.js";
 import {apiFollow, apiUnfollow, apiGetProfile, apiGetArticles} from "../services/api.js";
 
 const style = `<style>
@@ -208,12 +208,7 @@ class ProfilePage extends HTMLElement {
 
         const user = currentUser();
         if (!user) {
-            actionQueue.addAction({
-                type: 'route',
-                data: {
-                    name: 'login'
-                }
-            })
+            addGoAction('/login');
             return;
         }
 
@@ -231,12 +226,7 @@ class ProfilePage extends HTMLElement {
         evt.preventDefault();
         console.log('profile-page::edit(): 1:', 1);
 
-        actionQueue.addAction({
-            type: 'route',
-            data: {
-                name: 'settings'
-            }
-        })
+        addGoAction('/settings');
     }
 }
 customElements.define('profile-page', ProfilePage);
