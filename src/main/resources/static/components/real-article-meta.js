@@ -5,7 +5,7 @@ const style = `<style>
 
 </style>`;
 
-const getTemplate = (article, bLogin) => {
+const getTemplate = (article, isMyArticle) => {
     const author = article.author;
 
     return `
@@ -23,23 +23,23 @@ const getTemplate = (article, bLogin) => {
                 <span class="date">${article.createdAt}</span>
             </div>
             
-            <button class="btn btn-sm btn-outline-secondary">
-                <i class="ion-plus-round"></i>
-                &nbsp; Follow ${author.username}
-            </button>
-            &nbsp;&nbsp;
-            <button class="btn btn-sm btn-outline-primary">
-                <i class="ion-heart"></i>
-                &nbsp; Favorite Article <span class="counter">(${article.favoritesCount})</span>
-            </button>
-            ${bLogin ? `
+            ${isMyArticle ? `
             <button class="btn btn-sm btn-outline-secondary">
                 <i class="ion-edit"></i> Edit Article
             </button>
             <button class="btn btn-sm btn-outline-danger">
                 <i class="ion-trash-a"></i> Delete Article
             </button>`
-            : ''}
+            : `
+            <button class="btn btn-sm btn-outline-secondary">
+                <i class="ion-plus-round"></i>
+                &nbsp; Follow ${author.username}
+            </button>
+            <button class="btn btn-sm btn-outline-primary">
+                <i class="ion-heart"></i>
+                &nbsp; Favorite Article <span class="counter">(${article.favoritesCount})</span>
+            </button>
+            `}
         </div>        
     `;
 }
@@ -52,11 +52,16 @@ class RealArticleMeta extends HTMLElement {
 
         const slug = this.getAttribute('slug');
         console.log('real-comment-list::constructor(): slug:', slug);
+
         const article = store.getArticle(slug);
         console.log('real-article-meta::constructor(): article:', article);
+
         const user = currentUser();
         console.log('real-comment-list::constructor(): user:', user);
-        this.shadowRoot.innerHTML = getTemplate(article, !!user);
+
+        const isMyArticle = user && user.username === article.author.username;
+        console.log('real-article-meta::constructor(): isMyArticle:', isMyArticle);
+        this.shadowRoot.innerHTML = getTemplate(article, isMyArticle);
 
         this.findElements();
         this.setEventHandler();

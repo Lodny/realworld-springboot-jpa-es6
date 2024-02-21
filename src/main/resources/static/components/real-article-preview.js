@@ -166,6 +166,11 @@ class RealArticlePreview extends HTMLElement {
         }
 
         console.log('real-article-preview::apiFavorite(): this.article:', this.article);
+        if (this.article.author.username === user.username) {
+            console.log('real-article-preview::apiFavorite(): this.article.author.username === user.username');
+            return;
+        }
+
         actionQueue.addAction({
             type: this.article.favorited === false ? 'favorite' : 'unfavorite',
             data: {
