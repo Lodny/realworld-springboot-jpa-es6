@@ -10,6 +10,10 @@ public record ProfileResponse(
     String image,
     Boolean following
 ) {
+    public ProfileResponse {
+        if (image == null)
+            image = "https://api.realworld.io/images/demo-avatar.png";
+    }
 
     public static ProfileResponse of(final RealWorldUser user, final Boolean following) {
         if (user == null)

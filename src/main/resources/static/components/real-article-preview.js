@@ -118,7 +118,6 @@ const style = `<style>
 
 const getTemplate = (article) => {
     const author = article.author;
-    //todo::image
     //todo::tag
 
     return `
@@ -128,7 +127,7 @@ const getTemplate = (article) => {
     
         <div class="article-preview">
             <div class="article-meta">
-                <a href="/profile/${author.username}"><img src="https://api.realworld.io/images/demo-avatar.png" /></a>
+                <a href="/profile/${author.username}"><img src="${author.image}" /></a>
                 <div class="info">
                     <a href="/profile/${author.username}" class="author">${author.username}</a>
                     <span class="date">${article.createdAt}</span>
@@ -137,7 +136,7 @@ const getTemplate = (article) => {
                     <i class="ion-heart"></i> 10
                 </button>
             </div>
-            <a href="/article/how-to-build-webapps-that-scale" class="preview-link">
+            <a href="/article/${article.slug}" class="preview-link">
                 <h1>${article.title}</h1>
                 <p>${article.description}</p>
                 <span>Read more...</span>
@@ -190,6 +189,7 @@ class RealArticlePreview extends HTMLElement {
     // }
 
     findElements() {
+        this.articleLink = this.shadowRoot.querySelector('a.preview-link');
         this.favoriteButton = this.shadowRoot.querySelector('button');
     }
 
@@ -198,8 +198,8 @@ class RealArticlePreview extends HTMLElement {
 
         this.favoriteButton.addEventListener('click', this.favorite);
         this.shadowRoot.querySelectorAll('.article-meta a')
-            .forEach(link => link.addEventListener('click', this.goProfile));
-        this.shadowRoot.querySelector('.preview-link').addEventListener('click', this.goArticle);
+            .forEach(link => link.addEventListener('click', this.goLink));
+        this.articleLink.addEventListener('click', this.goLink);
     }
 
     favorite = () => {
@@ -226,26 +226,19 @@ class RealArticlePreview extends HTMLElement {
         });
     }
 
-    goProfile = (evt) => {
+    goLink = (evt) => {
         evt.preventDefault();
-        console.log('real-article-preview::profile(): 1:', 1);
-        console.log('real-article-preview::goProfile(): evt.target.href:', evt.target.href);
+        console.log('real-article-preview::goLink(): evt.target.closest(a):', evt.target.closest('a'));
 
-        const route = getRouteByUrl(evt.target.href);
-        console.log('real-article-preview::goProfile(): route:', route);
+        const url = evt.target.closest('a')?.href;
+        const route = getRouteByUrl(url);
+        console.log('real-article-preview::goLink(): route:', route);
         actionQueue.addAction({
             type: 'route',
             data: {
                 name: route,
             },
         });
-    }
-
-    goArticle = (evt) => {
-        evt.preventDefault();
-        console.log('real-article-preview::goArticle(): 1:', 1);
-        console.log('real-article-preview::goArticle(): evt.target.href:', evt.target.href);
-
     }
 
     callback = (article) => {

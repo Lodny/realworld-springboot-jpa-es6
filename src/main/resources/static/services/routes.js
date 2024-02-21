@@ -4,6 +4,7 @@ import {LoginPage} from '../pages/login-page.js';
 import {EditorPage} from "../pages/editor-page.js";
 import {SettingsPage} from "../pages/settings-page.js";
 import {ProfilePage} from "../pages/profile-page.js";
+import {ArticlePage} from "../pages/article-page.js";
 
 const routeInfo = {
     routes: [
@@ -36,6 +37,11 @@ const routeInfo = {
             url: '/profile/:username',
             name: 'profile',
             element: ProfilePage
+        },
+        {
+            url: '/article/:slug',
+            name: 'article',
+            element: ArticlePage
         },
     ]
 };
