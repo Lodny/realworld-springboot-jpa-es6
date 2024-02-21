@@ -91,12 +91,12 @@ public class JwtUtil {
         userMap.remove(sessionId);
     }
 
-    public static UserResponse currentUser() {
+    public static UserResponse getAuthenticatedUser() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) return null;
 
         String sessionId = attributes.getSessionId();
-        log.info("currentUser() : sessionId={}", sessionId);
+        log.info("getAuthenticatedUser() : sessionId={}", sessionId);
         return userMap.get(sessionId);
     }
 }

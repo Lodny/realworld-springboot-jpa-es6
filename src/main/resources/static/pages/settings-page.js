@@ -62,7 +62,7 @@ class SettingsPage extends HTMLElement {
         this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = getTemplate();
 
-        this.findElement();
+        this.findElements();
         this.setEventHandler();
     }
 
@@ -70,7 +70,7 @@ class SettingsPage extends HTMLElement {
         this.render();
     }
 
-    findElement() {
+    findElements() {
 
     }
 

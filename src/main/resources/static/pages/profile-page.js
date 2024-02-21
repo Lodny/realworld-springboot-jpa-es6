@@ -1,5 +1,5 @@
 import {iconCdn} from "../services/icon-cdn.js";
-import {store} from "../services/store.js";
+import {currentUser} from "../services/store.js";
 import {actionQueue} from "../services/action-queue.js";
 import {followUser, unfollowUser, getProfile} from "../services/api.js";
 
@@ -96,7 +96,7 @@ class ProfilePage extends HTMLElement {
         this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = getTemplate();
 
-        this.findElement();
+        this.findElements();
         this.setEventHandler();
     }
 
@@ -109,7 +109,7 @@ class ProfilePage extends HTMLElement {
         this.render(this.profile);
     }
 
-    findElement() {
+    findElements() {
         this.profileNameH4 = this.shadowRoot.querySelector('h4');
         this.bioP = this.shadowRoot.querySelector('p');
         this.image = this.shadowRoot.querySelector('img');
@@ -139,7 +139,7 @@ class ProfilePage extends HTMLElement {
     }
 
     updateButtons(profile) {
-        this.user = store.get('user');
+        this.user = currentUser();
         if (profile.username === this.user?.username) {
             this.followButton.style.display = 'none'
             this.editButton.style.display = 'block'
@@ -160,7 +160,7 @@ class ProfilePage extends HTMLElement {
         evt.preventDefault();
         console.log('profile-page::follow(): 1:', 1);
 
-        const user = store.get('user');
+        const user = currentUser();
         if (!user) {
             actionQueue.addAction({
                 type: 'route',

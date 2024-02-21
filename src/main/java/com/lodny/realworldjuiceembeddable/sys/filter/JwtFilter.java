@@ -37,10 +37,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String sessionId = request.getSession().getId();
         String email = jwtUtil.getEmailByToken(auth);
         String token = auth.replace(jwtProperty.getTokenTitle(), "");
-        RealWorldUser currentUser = userRepository.findByEmail(email);
-        log.info("[F] doFilterInternal() : currentUser={}", currentUser);
+        RealWorldUser foundUser = userRepository.findByEmail(email);
+        log.info("[F] doFilterInternal() : foundUser={}", foundUser);
 
-        jwtUtil.putLoginUser(sessionId, UserResponse.of(currentUser, token));
+        jwtUtil.putLoginUser(sessionId, UserResponse.of(foundUser, token));
         filterChain.doFilter(request, response);
         jwtUtil.removeLoginUser(sessionId); //todo::중간에 exception 나게 되면?
     }

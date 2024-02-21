@@ -1,4 +1,4 @@
-import {store} from "../services/store.js";
+import {currentUser} from "../services/store.js";
 import {iconCdn} from "../services/icon-cdn.js"
 import {getRouteByName, getRouteByUrl} from "../services/routes.js";
 
@@ -89,7 +89,7 @@ class RealNavbar extends HTMLElement {
         this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = getTemplate();
 
-        this.findElement();
+        this.findElements();
         this.setEventHandler();
 
         this.active = getRouteByUrl('/');
@@ -100,7 +100,7 @@ class RealNavbar extends HTMLElement {
         this.render(null, this.active);
     }
 
-    findElement = () => {
+    findElements = () => {
         this.links = Array.from(this.shadowRoot.querySelectorAll('a'));
         this.offLis = Array.from(this.shadowRoot.querySelectorAll('.nav-item.off'));
         this.onLis = Array.from(this.shadowRoot.querySelectorAll('.nav-item.on'));
@@ -141,7 +141,7 @@ class RealNavbar extends HTMLElement {
     }
 
     updateLinks() {
-        const user = store.get('user');
+        const user = currentUser();
         console.log('real-navbar::updateLinks(): user:', user);
 
         this.offLis.forEach(link => link.style.display = user ? 'none' : 'block');

@@ -1,5 +1,5 @@
 import {registerUser, loginUser, favorite, unfavorite} from "./api.js";
-import {store} from "./store.js";
+import {currentUser, store} from "./store.js";
 
 class ActionQueue {
     constructor() {
@@ -63,7 +63,7 @@ class ActionQueue {
     }
 
     checkAuth() {
-        const user = store.get('user');
+        const user = currentUser();
         if (!user)
             throw Error('login first');
     }

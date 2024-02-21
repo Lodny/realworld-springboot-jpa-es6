@@ -57,7 +57,7 @@ class EditorPage extends HTMLElement {
         this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = getTemplate();
 
-        this.findElement();
+        this.findElements();
         this.setEventHandler();
     }
 
@@ -65,7 +65,7 @@ class EditorPage extends HTMLElement {
         this.render();
     }
 
-    findElement() {
+    findElements() {
 
     }
 

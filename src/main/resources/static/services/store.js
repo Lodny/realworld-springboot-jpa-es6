@@ -35,7 +35,11 @@ class Store extends Map {
         return foundArticle;
     }
 }
-
 const store = new Store();
 
-export {store}
+const currentUser = () => store.get('user');
+
+export {
+    store
+    , currentUser
+}

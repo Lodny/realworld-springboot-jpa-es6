@@ -21,7 +21,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             if (!method.getMethod().isAnnotationPresent(JwtTokenRequired.class))
                 return true;
 
-            if (JwtUtil.currentUser() == null)
+            if (JwtUtil.getAuthenticatedUser() == null)
                 throw new IllegalArgumentException("token not found");
 //                    response.sendRedirect("/my-error");
         }

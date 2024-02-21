@@ -23,7 +23,7 @@ public class LoginUserMethodArgumentResolver implements HandlerMethodArgumentRes
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        return JwtUtil.currentUser();
+        return JwtUtil.getAuthenticatedUser();
 //        User user = userService.getLoginUserById(webRequest.getSessionId()).orElse(null);
 //        webRequest.setAttribute("user",user,0);
 //        return user;

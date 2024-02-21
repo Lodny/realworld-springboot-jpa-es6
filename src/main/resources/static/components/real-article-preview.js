@@ -162,7 +162,7 @@ class RealArticlePreview extends HTMLElement {
 
         this.shadowRoot.innerHTML = getTemplate(this.article);
 
-        this.findElement();
+        this.findElements();
         this.setEventHandler();
     }
 
@@ -189,7 +189,7 @@ class RealArticlePreview extends HTMLElement {
     //     }
     // }
 
-    findElement() {
+    findElements() {
         this.favoriteButton = this.shadowRoot.querySelector('button');
     }
 
