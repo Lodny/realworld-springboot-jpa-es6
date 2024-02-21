@@ -50,49 +50,49 @@ const apiDelete = (url, data, token = null) => {
 
 
 
-const registerUser = (data) => {
+const apiRegisterUser = (data) => {
     return apiPost('/users', {user: data});
 }
 
-const loginUser = (data) => {
+const apiLoginUser = (data) => {
     return apiPost('/users/login', {user: data});
 }
 
-const favorite = (slug) => {
+const apiFavorite = (slug) => {
     return apiPost(`/articles/${slug}/favorite`, {});
 }
 
-const unfavorite = (slug) => {
+const apiUnfavorite = (slug) => {
     return apiDelete(`/articles/${slug}/favorite`, {});
 }
 
-const getProfile = (username) => {
+const apiGetProfile = (username) => {
     return apiGet(`/profiles/${username}`);
 }
 
-const followUser = (username) => {
+const apiFollow = (username) => {
     return apiPost(`/profiles/${username}/follow`, {});
 }
 
-const unfollowUser = (username) => {
-    console.log('api::unfollowUser(): username:', username);
+const apiUnfollow = (username) => {
+    console.log('api::apiUnfollow(): username:', username);
 
     return apiDelete(`/profiles/${username}/follow`, {});
 }
 
-const getGlobalArticles = () => {
+const apiGetArticles = () => {
     return apiGet('/articles?offset=0&limit=20');
 }
 
 
 
 export {
-    registerUser
-    , loginUser
-    , getGlobalArticles
-    , favorite
-    , unfavorite
-    , getProfile
-    , followUser
-    , unfollowUser
+    apiRegisterUser
+    , apiLoginUser
+    , apiGetArticles
+    , apiFavorite
+    , apiUnfavorite
+    , apiGetProfile
+    , apiFollow
+    , apiUnfollow
 }

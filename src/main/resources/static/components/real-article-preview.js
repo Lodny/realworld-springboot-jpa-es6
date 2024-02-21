@@ -203,7 +203,7 @@ class RealArticlePreview extends HTMLElement {
     }
 
     favorite = () => {
-        console.log('real-article-preview::favorite(): 1:', 1);
+        console.log('real-article-preview::apiFavorite(): 1:', 1);
         const user = store.get("user");
         if (!user) {
             actionQueue.addAction({
@@ -216,7 +216,7 @@ class RealArticlePreview extends HTMLElement {
             return;
         }
 
-        console.log('real-article-preview::favorite(): this.article:', this.article);
+        console.log('real-article-preview::apiFavorite(): this.article:', this.article);
         actionQueue.addAction({
             type: this.article.favorited === false ? 'favorite' : 'unfavorite',
             data: {

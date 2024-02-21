@@ -1,7 +1,7 @@
 import {RealArticlePreview} from "./real-article-preview.js";
 import {RealPaging} from "./real-paging.js";
 import {currentUser, store} from "../services/store.js";
-import {getGlobalArticles} from "../services/api.js";
+import {apiGetArticles} from "../services/api.js";
 import {iconCdn} from "../services/icon-cdn.js";
 
 const style = ` <style>

@@ -1,4 +1,4 @@
-import {registerUser, loginUser, favorite, unfavorite} from "./api.js";
+import {apiRegisterUser, apiLoginUser, apiFavorite, apiUnfavorite} from "./api.js";
 import {currentUser, store} from "./store.js";
 
 class ActionQueue {
@@ -40,13 +40,13 @@ class ActionQueue {
 
 
     registerUserAction = async (data) => {
-        const json = await registerUser(data);
+        const json = await apiRegisterUser(data);
         console.log('action-queue::registerUserAction(): json:', json);
         store.set('user', json.user);
     }
 
     loginAction = async (data) => {
-        const json = await loginUser(data);
+        const json = await apiLoginUser(data);
         console.log('action-queue::loginAction(): json:', json);
         store.set('user', json.user);
     }
@@ -72,7 +72,7 @@ class ActionQueue {
         console.log('action-queue::favoriteAction(): data:', data);
         this.checkAuth();
 
-        const result = await favorite(data.name);
+        const result = await apiFavorite(data.name);
         console.log('action-queue::favoriteAction(): result:', result);
 
         return result.article;
@@ -82,7 +82,7 @@ class ActionQueue {
         console.log('action-queue::unfavoriteAction(): data:', data);
         this.checkAuth();
 
-        const result = await unfavorite(data.name);
+        const result = await apiUnfavorite(data.name);
         console.log('action-queue::unfavoriteAction(): result:', result);
 
         return result.article;

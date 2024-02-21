@@ -3,7 +3,7 @@ import {RealTab} from '../components/real-tab.js'
 import {RealSidebar} from '../components/real-sidebar.js'
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {getGlobalArticles} from "../services/api.js";
+import {apiGetArticles} from "../services/api.js";
 
 const style = `<style>
 
@@ -115,18 +115,18 @@ class HomePage extends HTMLElement {
             .join('')
     }
 
-    async getArticles(tab) {
+    async getArticles(activeTab) {
         let param = {};
-        if (tab === 'Global Feed') {
+        if (activeTab === 'Global Feed') {
 
-        } else if (innerHTML === 'Your Feed') {
+        } else if (activeTab === 'Your Feed') {
             const user = currentUser();
             param = {author: user.username}
         } else {
-            param = {tag: 'tagName'}
+            param = {tag: activeTab}
         }
 
-        const data = await getGlobalArticles(param);
+        const data = await apiGetArticles(param);
         store.setArticles(data?.articles);
         return data?.articles;
     }

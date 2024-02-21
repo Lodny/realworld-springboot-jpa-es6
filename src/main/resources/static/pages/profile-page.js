@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser} from "../services/store.js";
 import {actionQueue} from "../services/action-queue.js";
-import {followUser, unfollowUser, getProfile} from "../services/api.js";
+import {apiFollow, apiUnfollow, apiGetProfile} from "../services/api.js";
 
 const style = `<style>
     img {
@@ -102,7 +102,7 @@ class ProfilePage extends HTMLElement {
 
     async connectedCallback() {
         const profileUsername = this.getAttribute('pathName');
-        const data = await getProfile(profileUsername);
+        const data = await apiGetProfile(profileUsername);
         this.profile = data.profile;
         console.log('profile-page::connectedCallback(): this.profile:', this.profile);
 
@@ -173,9 +173,9 @@ class ProfilePage extends HTMLElement {
 
         let data;
         if (this.profile.following)
-            data = await unfollowUser(this.profile.username);
+            data = await apiUnfollow(this.profile.username);
         else
-            data = await followUser(this.profile.username);
+            data = await apiFollow(this.profile.username);
         this.profile = data.profile;
         console.log('profile-page::follow(): this.profile:', this.profile);
         this.updateFollowing(this.profile);
