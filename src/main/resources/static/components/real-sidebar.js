@@ -10,38 +10,13 @@ const style = `<style>
     .sidebar p {
         margin-bottom: .2rem
     }            
-    
-   .tag-pill {
-        padding-right: .6em;
-        padding-left: .6em;
-        border-radius: 10rem
-    }
-    
-    .tag-default[href]:focus, .tag-default[href]:hover {
-        background-color: #687077
-    }
-    
-    .tag-default {
-        color: #fff !important;
-        background-color: #818a91;
-        font-size: .8rem;
-        padding-top: .1rem;
-        padding-bottom: .1rem;
-        white-space: nowrap;
-        margin-right: 3px;
-        margin-bottom: .2rem;
-        display: inline-block
-    }
-    
-    .tag-default:hover {
-        text-decoration: none
-    }
 </style>`;
 
 const getTemplate = () => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/tag.css">
         ${style}
         
         <div class="sidebar">

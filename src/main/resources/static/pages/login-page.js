@@ -9,6 +9,7 @@ const getTemplate = () => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/form.css">
         <link rel="stylesheet" href="../css/register-login.css">
         
         ${style}

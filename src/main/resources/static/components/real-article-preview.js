@@ -61,60 +61,7 @@ const style = `<style>
         padding-top: 0 !important;
         padding-bottom: 0 !important
     }
-    
-    .article-meta {
-        display: block;
-        position: relative;
-        font-weight: 300
-    }
-    
-    .article-meta img {
-        display: inline-block;
-        vertical-align: middle;
-        height: 32px;
-        width: 32px;
-        border-radius: 30px
-    }
-    
-    .article-meta .info {
-        margin: 0 1.5rem 0 .3rem;
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 1rem
-    }
-    
-    .article-meta .info .author {
-        display: block;
-        font-weight: 500 !important
-    }
-    
-    .article-meta .info .date {
-        color: #bbb;
-        font-size: .8rem;
-        display: block
-    }
-    
-    .tag-pill {
-        padding-right: .6em;
-        padding-left: .6em;
-        border-radius: 10rem
-    }
-    
-    .tag-default {
-        color: #fff !important;
-        background-color: #818a91;
-        font-size: .8rem;
-        padding-top: .1rem;
-        padding-bottom: .1rem;
-        white-space: nowrap;
-        margin-right: 3px;
-        margin-bottom: .2rem;
-        display: inline-block
-    }
 </style>`;
-// .article-page .banner .article-meta .author {
-//     color: #fff
-// }
 
 const getTemplate = (article) => {
     const author = article.author;
@@ -123,6 +70,8 @@ const getTemplate = (article) => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/article-meta.css">
+        <link rel="stylesheet" href="../css/tag.css">
         ${style}
     
         <div class="article-preview">
