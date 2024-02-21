@@ -75,13 +75,35 @@ const apiFollow = (username) => {
 }
 
 const apiUnfollow = (username) => {
-    console.log('api::apiUnfollow(): username:', username);
-
     return apiDelete(`/profiles/${username}/follow`, {});
 }
 
-const apiGetArticles = () => {
-    return apiGet('/articles?offset=0&limit=20');
+const apiGetArticles = (param) => {
+    const {
+        tag,
+        author,
+        favorited,
+        offset = 0,
+        limit = 20,
+    } = param;
+    console.log('api::apiGetArticles(): param:', param);
+
+    console.log('api::apiGetArticles(): tag:', tag);
+    console.log('api::apiGetArticles(): author:', author);
+    console.log('api::apiGetArticles(): favorited:', favorited);
+    
+    console.log('api::apiGetArticles(): offset:', offset);
+    console.log('api::apiGetArticles(): limit:', limit);
+
+    let url = `/articles?offset=${offset}&limit=${limit}`;
+    if (tag)
+        return apiGet(url + `&tag=${tag}`);
+    else if (author)
+        return apiGet(url + `&author=${author}`);
+    else if (favorited)
+        return apiGet(url + `&favorited=${favorited}`);
+
+    return apiGet(`/articles?offset=${offset}&limit=${limit}`);
 }
 
 

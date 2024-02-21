@@ -91,6 +91,8 @@ class HomePage extends HTMLElement {
             const [tabTitles, activeTab] = this.getTabTitles();
             this.tabTag.setAttribute('tab-titles', tabTitles);
         }
+
+        this.updateArticles();
     }
 
     tagEventHandler = (tagName) => {
@@ -123,7 +125,7 @@ class HomePage extends HTMLElement {
             const user = currentUser();
             param = {author: user.username}
         } else {
-            param = {tag: activeTab}
+            param = {tag: activeTab.slice(1)}
         }
 
         const data = await apiGetArticles(param);

@@ -53,25 +53,42 @@ public class ArticleService {
         return articleRepository.deleteBySlugAndAuthorId(slug, loginUserId);
     }
 
-    public List<ArticleResponse> getArticles(final ArticleParam articleParam, final UserResponse loginUser) {
-        final Long loginUserId = loginUser == null ? -1 : loginUser.id();
-        log.info("[S] getArticles() : loginUserId={}", loginUserId);
-
-        PageRequest pageRequest = getPageRequest(articleParam);
-        log.info("[S] getArticles() : pageRequest={}", pageRequest);
+    public List<ArticleResponse> getArticles(final PageRequest pageRequest, final Long loginUserId) {
         Page<Object> objs = articleRepository.getArticles(loginUserId, pageRequest);
         log.info("[S] getArticles() : objs={}", objs);
 
-        return objs.stream()
-                .map(obj -> getArticleResponseByObjs((Object[])obj))
-                .toList();
+        return getArticleResponses(objs);
     }
 
-    private static PageRequest getPageRequest(final ArticleParam articleParam) {
-        int pageSize = articleParam.limit();
-        int pageNo = articleParam.offset() / pageSize;
+    public List<ArticleResponse> getArticlesByTag(final String tag,
+                                                  final Long loginUserId,
+                                                  final PageRequest pageRequest) {
+        Page<Object> objs = articleRepository.getArticlesByTag(tag, loginUserId, pageRequest);
+        log.info("[S] getArticlesByTag() : objs={}", objs);
 
-        return PageRequest.of(pageNo, pageSize);
+        return getArticleResponses(objs);
+    }
+
+    public List<ArticleResponse> getArticlesByAuthor(final String author,
+                                                     final Long loginUserId,
+                                                     final PageRequest pageRequest) {
+        Page<Object> objs = articleRepository.getArticlesByAuthor(author, loginUserId, pageRequest);
+        log.info("[S] getArticlesByTag() : objs={}", objs);
+
+        return getArticleResponses(objs);
+    }
+
+    public List<ArticleResponse> getArticlesByFavorited(final String favorited, final Long loginUserId, final PageRequest pageRequest) {
+        Page<Object> objs = articleRepository.getArticlesByFavorited(favorited, loginUserId, pageRequest);
+        log.info("[S] getArticlesByFavorited() : objs={}", objs);
+
+        return getArticleResponses(objs);
+    }
+
+    private List<ArticleResponse> getArticleResponses(final Page<Object> objs) {
+        return objs.stream()
+                .map(obj -> getArticleResponseByObjs((Object[]) obj))
+                .toList();
     }
 
     private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {

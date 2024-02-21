@@ -12,6 +12,7 @@ import com.lodny.realworldjuiceembeddable.sys.annotation.JwtTokenRequired;
 import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,15 +54,36 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getArticles(final ArticleParam articleParam,
+    public ResponseEntity<?> getArticles(@ModelAttribute final ArticleParam articleParam,
                                          @LoginUser final UserResponse loginUser) {
         log.info("[C] getArticles() : articleParam={}", articleParam);
         log.info("[C] getArticles() : loginUser={}", loginUser);
 
-        List<ArticleResponse> articleResponses = articleService.getArticles(articleParam, loginUser);
+        PageRequest pageRequest = getPageRequest(articleParam);
+        log.info("[C] getArticles() : pageRequest={}", pageRequest);
+
+        final Long loginUserId = loginUser == null ? -1 : loginUser.id();
+        log.info("[S] getArticles() : loginUserId={}", loginUserId);
+
+        log.info("getArticles() : articleParam.type()={}", articleParam.type());
+
+        final List<ArticleResponse> articleResponses =
+                switch (articleParam.type()) {
+                    case "tag"       -> articleService.getArticlesByTag(articleParam.tag(), loginUserId, pageRequest);
+                    case "author"    -> articleService.getArticlesByAuthor(articleParam.author(), loginUserId, pageRequest);
+                    case "favorited" -> articleService.getArticlesByFavorited(articleParam.favorited(), loginUserId, pageRequest);
+                    default          -> articleService.getArticles(pageRequest, loginUserId);
+                };
         log.info("[C] getArticles() : articleResponses={}", articleResponses);
 
         return ResponseEntity.ok(new WrapArticleResponses(articleResponses, articleResponses.size()));
+    }
+
+    private static PageRequest getPageRequest(final ArticleParam articleParam) {
+        int pageSize = articleParam.limit();
+        int pageNo = articleParam.offset() / pageSize;
+
+        return PageRequest.of(pageNo, pageSize);
     }
 
     @JwtTokenRequired
