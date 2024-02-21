@@ -7,10 +7,11 @@ import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CommentRepository extends Repository<Comment, Long> {
     Comment save(Comment comment);
-    Comment findById(Long commentId);
+    Optional<Comment> findById(Long commentId);
 
     // todo::delete one query
     void delete(Comment foundComment);

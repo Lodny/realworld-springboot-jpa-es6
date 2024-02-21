@@ -37,7 +37,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String sessionId = request.getSession().getId();
         String email = jwtUtil.getEmailByToken(auth);
         String token = auth.replace(jwtProperty.getTokenTitle(), "");
-        RealWorldUser foundUser = userRepository.findByEmail(email);
+        RealWorldUser foundUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("user not found"));
         log.info("[F] doFilterInternal() : foundUser={}", foundUser);
 
         jwtUtil.putLoginUser(sessionId, UserResponse.of(foundUser, token));

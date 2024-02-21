@@ -30,10 +30,9 @@ public class UserService {
     }
 
     public UserResponse login(final LoginRequest loginRequest) {
-        RealWorldUser foundUser = userRepository.findByEmail(loginRequest.email());
+        RealWorldUser foundUser = userRepository.findByEmail(loginRequest.email())
+                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
         log.info("[S] login() : foundUser={}", foundUser);
-        if (foundUser == null)
-            throw new IllegalArgumentException("user not found");
 
         if (! loginRequest.password().equals(foundUser.getPassword()))
             throw new IllegalArgumentException("invalid user or password");

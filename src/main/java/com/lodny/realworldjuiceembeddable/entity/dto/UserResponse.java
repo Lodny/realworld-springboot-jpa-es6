@@ -14,6 +14,11 @@ public record UserResponse(
     @JsonIgnore Long id,
     @JsonIgnore RealWorldUser user) {
 
+    public UserResponse {
+        if (image == null)
+            image = "https://api.realworld.io/images/demo-avatar.png";
+    }
+
     public static UserResponse of(final RealWorldUser user, final String token) {
        return UserResponse.builder()
                .token(token)

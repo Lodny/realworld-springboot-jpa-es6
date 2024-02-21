@@ -1,6 +1,8 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {apiGetProfile} from "../services/api.js";
 import {currentUser, store} from "../services/store.js";
+import {RealCommentList} from "../components/real-comment-list.js";
+import {RealArticleMeta} from "../components/real-article-meta.js";
 
 const style = `<style>
     .banner {
@@ -62,73 +64,6 @@ const style = `<style>
         text-align: left
     }
     
-    .article-page .comment-form .card-block {
-        padding: 0
-    }
-    
-    .article-page .comment-form .card-block textarea {
-        border: 0;
-        padding: 1.25rem
-    }
-    
-    .article-page .comment-form .card-footer .btn {
-        font-weight: 700;
-        float: right
-    }
-    
-    .article-page .comment-form .card-footer .comment-author-img {
-        height: 30px;
-        width: 30px
-    }
-    
-    .article-page .card {
-        border: 1px solid #e5e5e5;
-        box-shadow: none !important
-    }
-    
-    .article-page .card .card-footer {
-        border-top: 1px solid #e5e5e5;
-        box-shadow: none !important;
-        font-size: .8rem;
-        font-weight: 300
-    }
-    
-    .article-page .card .comment-author-img {
-        display: inline-block;
-        vertical-align: middle;
-        height: 20px;
-        width: 20px;
-        border-radius: 30px
-    }
-    
-    .article-page .card .comment-author {
-        display: inline-block;
-        vertical-align: middle
-    }
-    
-    .article-page .card .date-posted {
-        display: inline-block;
-        vertical-align: middle;
-        margin-left: 5px;
-        color: #bbb
-    }
-    
-    .article-page .card .mod-options {
-        float: right;
-        color: #333;
-        font-size: 1rem
-    }
-    
-    .article-page .card .mod-options i {
-        margin-left: 5px;
-        opacity: .6;
-        cursor: pointer
-    }
-    
-    .article-page .card .mod-options i:hover {
-        opacity: 1
-    }     
-    
     .col-xs-12 {
         position: relative;
         min-height: 1px;
@@ -160,7 +95,6 @@ const getTemplate = (article, bLogin) => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
-        <link rel="stylesheet" href="../css/article-meta.css">
         <link rel="stylesheet" href="../css/tag.css">
         <link rel="stylesheet" href="../css/card.css">
         <link rel="stylesheet" href="../css/form.css">
@@ -170,32 +104,7 @@ const getTemplate = (article, bLogin) => {
             <div class="banner">
                 <div class="container">
                     <h1>${article.title}</h1>
-        
-                    <div class="article-meta">
-                        <a href="/profile/${author.username}"><img src="${author.image}" /></a>
-                        <div class="info">
-                            <a href="/profile/${author.username}" class="author">${author.username}</a>
-                            <span class="date">${article.createdAt}</span>
-                        </div>
-                        
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="ion-plus-round"></i>
-                            &nbsp; Follow ${author.username} <span class="counter">(?)</span>
-                        </button>
-                        &nbsp;&nbsp;
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="ion-heart"></i>
-                            &nbsp; Favorite Post <span class="counter">(${article.favoritesCount})</span>
-                        </button>
-                        ${bLogin ? `
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="ion-edit"></i> Edit Article
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="ion-trash-a"></i> Delete Article
-                        </button>`
-                        : ''}
-                    </div>
+                    <real-article-meta slug="${article.slug}"></real-article-meta>
                 </div>
             </div>
             
@@ -216,83 +125,12 @@ const getTemplate = (article, bLogin) => {
                 <hr />
                 
                 <div class="article-actions">
-                    <div class="article-meta">
-                        <a href="/profile/${author.username}"><img src="${author.image}" /></a>
-                        <div class="info">
-                            <a href="/profile/${author.username}" class="author">${author.username}</a>
-                            <span class="date">${article.createdAt}</span>
-                        </div>
-                        
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="ion-plus-round"></i>
-                            &nbsp; Follow ${author.username} <span class="counter">(?)</span>
-                        </button>
-                        &nbsp;&nbsp;
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="ion-heart"></i>
-                            &nbsp; Favorite Post <span class="counter">(${article.favoritesCount})</span>
-                        </button>
-                        ${bLogin ? `
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="ion-edit"></i> Edit Article
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="ion-trash-a"></i> Delete Article
-                        </button>`
-                        : ''}
-                    </div>
+                    <real-article-meta slug="${article.slug}"></real-article-meta>
                 </div>          
                 
                 <div class="row">
-                    <div class="col-md-8 offset-md-2">
-                        <p>
-                            <a href="#/login">Sign in</a> or <a href="#/register">sign up</a> to add comments on this article.
-                        </p>
-                        <form class="card comment-form">
-                            <div class="card-block">
-                                <textarea class="form-control" placeholder="Write a comment..." rows="3"></textarea>
-                            </div>
-                            <div class="card-footer">
-                                <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
-                                <button class="btn btn-sm btn-primary">Post Comment</button>
-                            </div>
-                        </form>
-                
-                        <div class="card">
-                            <div class="card-block">
-                                <p class="card-text">
-                                    With supporting text below as a natural lead-in to additional content.
-                                </p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="/profile/author" class="comment-author">
-                                    <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
-                                </a>
-                                &nbsp;
-                                <a href="/profile/jacob-schmidt" class="comment-author">Jacob Schmidt</a>
-                                <span class="date-posted">Dec 29th</span>
-                            </div>
-                        </div>
-                
-                        <div class="card">
-                            <div class="card-block">
-                                <p class="card-text">
-                                    With supporting text below as a natural lead-in to additional content.
-                                </p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="/profile/author" class="comment-author">
-                                    <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
-                                </a>
-                                &nbsp;
-                                <a href="/profile/jacob-schmidt" class="comment-author">Jacob Schmidt</a>
-                                <span class="date-posted">Dec 29th</span>
-                                <span class="mod-options">
-                              <i class="ion-trash-a"></i>
-                            </span>
-                            </div>
-                        </div>
-                    </div>
+                    <real-comment-list class="col-md-8 offset-md-2">
+                    </real-comment-list>
                 </div>           
             </div>
         </div>

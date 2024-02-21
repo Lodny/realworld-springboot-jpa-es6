@@ -22,9 +22,8 @@ public class FavoriteService {
 
     public ArticleResponse favorite(final String slug, final Long loginUserId) {
         log.info("[S] favorite() : loginUserId={}", loginUserId);
-        Article article = articleRepository.findBySlug(slug);
-        if (article == null)
-            throw new IllegalArgumentException("article not found");
+        Article article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new IllegalArgumentException("article not found"));
 
         Favorite favorite = favoriteRepository.save(Favorite.of(article.getId(), loginUserId));
         log.info("[S] addFavorite() : favorite={}", favorite);
@@ -35,9 +34,9 @@ public class FavoriteService {
 
     public ArticleResponse unfavorite(final String slug, final Long loginUserId) {
         log.info("[S] unfavorite() : loginUserId={}", loginUserId);
-        Article article = articleRepository.findBySlug(slug);
-        if (article == null)
-            throw new IllegalArgumentException("article not found");
+        Article article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new IllegalArgumentException("article not found"));
+        log.info("[S] unfavorite() : article={}", article);
 
         favoriteRepository.deleteById(new FavoriteId(article.getId(), loginUserId));
 

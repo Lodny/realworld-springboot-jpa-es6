@@ -19,10 +19,9 @@ public class FollowService {
     private final FollowRepository followRepository;
 
     public ProfileResponse follow(final String followeeUsername, final Long followerId) {
-        RealWorldUser followeeUser = userRepository.findByUsername(followeeUsername);
+        RealWorldUser followeeUser = userRepository.findByUsername(followeeUsername)
+                .orElseThrow(() -> new IllegalArgumentException("user not found"));
         log.info("[S] follow() : followeeUser={}", followeeUser);
-        if (followeeUser == null)
-            throw new IllegalArgumentException("The followee is not found");
 
         Follow savedFollow = followRepository.save(Follow.of(followeeUser.getId(), followerId));
         log.info("[S] follow() : savedFollow={}", savedFollow);
@@ -31,10 +30,9 @@ public class FollowService {
     }
 
     public ProfileResponse unfollow(final String followeeUsername, final Long followerId) {
-        RealWorldUser followeeUser = userRepository.findByUsername(followeeUsername);
+        RealWorldUser followeeUser = userRepository.findByUsername(followeeUsername)
+                .orElseThrow(() -> new IllegalArgumentException("The followee is not found"));
         log.info("[S] unfollow() : followeeUser={}", followeeUser);
-        if (followeeUser == null)
-            throw new IllegalArgumentException("The followee is not found");
 
         followRepository.deleteById(new FollowId(followeeUser.getId(), followerId));
 

@@ -8,10 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
+import java.util.Optional;
+
 public interface ArticleRepository extends Repository<Article, Long> {
     Article save(final Article article);
 
-    Article findBySlug(final String slug);
+    Optional<Article> findBySlug(final String slug);
 
 //    SELECT  NEW com.lodny.realworldjuiceembeddable.entity.dto.Dto01(a, u, fa, fo)
 //    FROM    Article a JOIN FETCH a.tagList
