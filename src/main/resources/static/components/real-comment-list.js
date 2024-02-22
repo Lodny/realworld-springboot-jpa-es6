@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {addGoAction} from "../services/action-queue.js";
-import {apiGetComments} from "../services/api.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
+import {apiAddComment, apiGetComments} from "../services/api.js";
 import {RealComment} from "./real-comment.js";
 
 const style = `<style>
@@ -98,11 +98,16 @@ class RealCommentList extends HTMLElement {
     findElements() {
         this.links = this.shadowRoot.querySelectorAll('a');
         this.commentsTag = this.shadowRoot.querySelector('.comments')
+        this.textareaTag = this.shadowRoot.querySelector('textarea');
     }
 
     setEventHandler() {
         console.log('real-comment-list::setEventHandler(): 1:', 1);
         this.links.forEach(link => link.addEventListener('click', this.goLink));
+
+        this.shadowRoot
+            .querySelector('button')
+            ?.addEventListener('click', this.addComment);
     }
 
     goLink = (evt) => {
@@ -112,13 +117,47 @@ class RealCommentList extends HTMLElement {
         addGoAction(evt.target.href);
     }
 
+    addComment = (evt) => {
+        evt.preventDefault();
+
+        const body = this.textareaTag.value;
+        console.log('real-comment-list::addComment(): body:', body);
+
+        actionQueue.addAction({
+            type: 'addComment',
+            data: {
+                slug: this.slug,
+                value: body,
+            },
+            callback: this.callback
+        });
+    }
+
+    callback = ({type, result}) => {
+        console.log('real-comment-list::callback(): type, result', type, result);
+
+        if (type === 'addComment') {
+            this.comments = store.get('comments');
+            console.log('real-comment-list::callback(): this.comments:', this.comments);
+
+            // this.updateComments(this.comments);
+            this.insertComment(result.id);
+        }
+    }
+
     render() {
+
+    }
+
+    insertComment(commentId) {
+        const newComment = `<real-comment slug="${this.slug}" id="${commentId}"></real-comment>`
+        this.commentsTag.insertAdjacentHTML('afterbegin', newComment);
 
     }
 
     updateComments(comments) {
         this.commentsTag.innerHTML = comments
-            .map(comment => `<real-comment id="${comment.id}"></real-comment>`)
+            .map(comment => `<real-comment slug="${this.slug}" id="${comment.id}"></real-comment>`)
             .join('');
     }
 }

@@ -1,4 +1,13 @@
-import {apiRegisterUser, apiLoginUser, apiFavorite, apiUnfavorite, apiFollow, apiUnfollow} from "./api.js";
+import {
+    apiRegisterUser,
+    apiLoginUser,
+    apiFavorite,
+    apiUnfavorite,
+    apiFollow,
+    apiUnfollow,
+    apiDeleteComment,
+    apiAddComment
+} from "./api.js";
 import {currentUser, store} from "./store.js";
 
 class ActionQueue {
@@ -18,6 +27,9 @@ class ActionQueue {
             'unfavorite': this.unfavoriteAction,
             'follow': this.followAction,
             'unfollow': this.unfollowAction,
+            'deleteArticle': this.deleteArticle,
+            'addComment': this.addComment,
+            'deleteComment': this.deleteComment,
         }
     }
 
@@ -144,6 +156,35 @@ class ActionQueue {
         console.log('action-queue::unfollowAction(): result:', result);
 
         return result.profile;
+    }
+
+    deleteArticle = ({value: slug}) => {
+        console.log('action-queue::deleteArticle(): slug:', slug);
+
+        this.checkAuth();
+        // return await apiDeleteArticle(slug);
+    }
+
+    addComment = async ({slug, value: body}) => {
+        console.log('action-queue::addComment(): slug, value:', slug, body);
+        this.checkAuth();
+
+        const data = await apiAddComment(slug, body);
+        const comments = store.get('comments');
+        store.set('comments', [data.comment, ...comments]);
+
+        return data.comment;
+    }
+
+    deleteComment = async ({slug, value: id}) => {
+        console.log('action-queue::deleteComment(): slug, id:', slug, id);
+        this.checkAuth();
+
+        const count = await apiDeleteComment(slug, id);
+        const comments = store.get('comments').filter(comment => comment.id !== Number(id));
+        store.set('comments', comments);
+
+        return count;
     }
 }
 

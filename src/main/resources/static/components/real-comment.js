@@ -1,6 +1,6 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {actionQueue} from "../services/action-queue.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
 
 const style = `<style>
     .card {
@@ -85,6 +85,9 @@ class RealComment extends HTMLElement {
         this.commentId = this.getAttribute('id');
         console.log('real-comment::constructor(): this.commentId:', this.commentId);
 
+        this.slug = this.getAttribute('slug');
+        console.log('real-comment::constructor(): this.slug:', this.slug);
+
         const comment = store.getComment(Number(this.commentId));
         console.log('real-comment::constructor(): comment:', comment);
 
@@ -107,6 +110,13 @@ class RealComment extends HTMLElement {
         this.shadowRoot
             .querySelector('.ion-trash-a')
             ?.addEventListener('click', this.deleteComment);
+
+        this.shadowRoot
+            .querySelectorAll('a')
+            .forEach(aTag => aTag.addEventListener('click', (evt) => {
+                evt.preventDefault();
+                addGoAction(evt.target.closest('a')?.href);
+            }))
     }
 
     deleteComment = (evt) => {
@@ -116,6 +126,7 @@ class RealComment extends HTMLElement {
         actionQueue.addAction({
             type: 'deleteComment',
             data: {
+                slug: this.slug,
                 value: this.commentId,
             },
             callback: this.callback
@@ -124,7 +135,7 @@ class RealComment extends HTMLElement {
 
     callback = ({type, result}) => {
         console.log('real-comment::callback(): type, result', type, result);
-
+        this.remove();
     }
 
     render() {

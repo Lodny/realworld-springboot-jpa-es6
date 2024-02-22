@@ -110,6 +110,14 @@ const apiGetComments = (slug) => {
     return apiGet(`/articles/${slug}/comments`);
 }
 
+const apiAddComment = (slug, data) => {
+    return apiPost(`/articles/${slug}/comments`, {comment: {body: data}});
+}
+
+const apiDeleteComment = (slug, id) => {
+    return apiDelete(`/articles/${slug}/comments/${id}`, {});
+}
+
 
 export {
     apiRegisterUser
@@ -121,4 +129,6 @@ export {
     , apiFollow
     , apiUnfollow
     , apiGetComments
+    , apiAddComment
+    , apiDeleteComment
 }

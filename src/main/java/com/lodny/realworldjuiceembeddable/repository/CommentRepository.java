@@ -24,7 +24,7 @@ public interface CommentRepository extends Repository<Comment, Long> {
         AND     c.articleId = (SELECT a.id FROM Article a WHERE a.slug = :slug)
         AND     c.authorId = (SELECT u.id FROM RealWorldUser u WHERE u.id = :loginUserId)
     """)
-    void deleteDirectly(final String slug, final Long commentId, final Long loginUserId);
+    int deleteDirectly(final String slug, final Long commentId, final Long loginUserId);
 
     @Query("""
         SELECT  c
@@ -35,6 +35,7 @@ public interface CommentRepository extends Repository<Comment, Long> {
         JOIN    RealWorldUser u ON u.id = c.authorId
         LEFT JOIN Follow f ON f.id.followeeId = c.authorId AND f.id.followerId = :loginUserId
         WHERE   a.slug = :slug
+        ORDER BY c.createdAt DESC
     """)
     List<Object> findByArticleIdIncludeUser(String slug, Long loginUserId);
 }

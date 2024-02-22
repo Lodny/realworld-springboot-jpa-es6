@@ -22,19 +22,19 @@ public class CommentService {
     public CommentResponse registerComment(final String slug,
                                            final RegisterCommentRequest registerCommentRequest,
                                            final UserResponse loginUser) {
-        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUser.id());
-        ArticleResponse articleResponse = getArticleResponseByObjs(articleAndOther);
-        log.info("registerComment() : articleResponse={}", articleResponse);
+        Article foundArticle = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new IllegalArgumentException("article not found"));
+        log.info("[S] registerComment() : foundArticle={}", foundArticle);
 
-        Comment comment = Comment.of(registerCommentRequest, articleResponse.id(), loginUser.id());
-        log.info("registerComment() : comment={}", comment);
+        Comment comment = Comment.of(registerCommentRequest, foundArticle.getId(), loginUser.id());
+        log.info("[S] registerComment() : comment={}", comment);
         Comment savedComment = commentRepository.save(comment);
-        log.info("registerComment() : savedComment={}", savedComment);
+        log.info("[S] registerComment() : savedComment={}", savedComment);
 
-        return CommentResponse.of(savedComment, articleResponse.author());
+        return CommentResponse.of(savedComment, ProfileResponse.of(loginUser.user(), false));
     }
 
-    public void deleteComment(final String slug, final Long commentId, final Long loginUserId) {
+    public int deleteComment(final String slug, final Long commentId, final Long loginUserId) {
         log.info("[S] deleteComment() : loginUserId={}", loginUserId);
 
 //        Article article = articleRepository.findBySlug(slug);
@@ -55,7 +55,7 @@ public class CommentService {
 //
 //        commentRepository.delete(foundComment);
 
-        commentRepository.deleteDirectly(slug, commentId, loginUserId);
+        return commentRepository.deleteDirectly(slug, commentId, loginUserId);
     }
 
     public List<CommentResponse> getComments(final String slug, final UserResponse loginUser) {
@@ -85,6 +85,6 @@ public class CommentService {
                 (Article) articleAndOther[0],
                 ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
                 (Boolean) articleAndOther[2],
-                (Long) articleAndOther[3]);
+                (Long) articleAndOther[4]);
     }
 }

@@ -52,13 +52,16 @@ public class CommentController {
 
     @JwtTokenRequired
     @DeleteMapping("/comments/{id}")
-    public void deleteComment(@PathVariable final String slug,
+    public ResponseEntity<?> deleteComment(@PathVariable final String slug,
                               @PathVariable final Long id,
                               @LoginUser final UserResponse loginUser) {
         log.info("[C] deleteComment() : slug={}", slug);
         log.info("[C] deleteComment() : comment id={}", id);
         log.info("[C] deleteComment() : loginUser={}", loginUser);
 
-        commentService.deleteComment(slug, id, loginUser.id());
+        final Integer count = commentService.deleteComment(slug, id, loginUser.id());
+        log.info("[C] deleteComment() : count={}", count);
+
+        return ResponseEntity.ok(count);
     }
 }
