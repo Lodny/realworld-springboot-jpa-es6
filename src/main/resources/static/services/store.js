@@ -34,6 +34,10 @@ class Store extends Map {
         foundArticle.favorited = !foundArticle.favorited;
         return foundArticle;
     }
+
+    getComment(id) {
+        return this.get('comments').find(comment => comment.id === id);
+    }
 }
 const store = new Store();
 

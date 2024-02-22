@@ -1,4 +1,5 @@
 import {iconCdn} from "../services/icon-cdn.js";
+import {store} from "../services/store.js";
 
 const style = `<style>
     .card {
@@ -85,9 +86,14 @@ class RealComment extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+
         const commentId = this.getAttribute('id');
-        const comment = getComment(commentId);
-        this.shadowRoot = getTemplate(comment);
+        console.log('real-comment::constructor(): commentId:', commentId);
+
+        const comment = store.getComment(Number(commentId));
+        console.log('real-comment::constructor(): comment:', comment);
+
+        this.shadowRoot.innerHTML = getTemplate(comment);
 
         this.findElements();
         this.setEventHandler();

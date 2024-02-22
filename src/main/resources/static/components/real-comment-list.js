@@ -1,5 +1,8 @@
 import {iconCdn} from "../services/icon-cdn.js";
-import {currentUser} from "../services/store.js";
+import {currentUser, store} from "../services/store.js";
+import {addGoAction} from "../services/action-queue.js";
+import {apiGetComments} from "../services/api.js";
+import {RealComment} from "./real-comment.js";
 
 const style = `<style>
     .comment-form {
@@ -23,6 +26,10 @@ const style = `<style>
     .comment-form .card-footer .comment-author-img {
         height: 30px;
         width: 30px
+    }
+    
+    p {
+        margin-bottom: 1rem;
     }
     
     p a {
@@ -65,30 +72,54 @@ class RealCommentList extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
 
-        // const slug = this.getAttribute('slug');
-        // console.log('real-comment-list::constructor(): slug:', slug);
+        this.slug = this.getAttribute('slug');
+        console.log('real-comment-list::constructor(): this.slug:', this.slug);
+
         const user = currentUser();
         console.log('real-comment-list::constructor(): user:', user);
+
         this.shadowRoot.innerHTML = getTemplate(user);
 
         this.findElements();
         this.setEventHandler();
     }
 
-    connectedCallback() {
+    async connectedCallback() {
+        const data = await apiGetComments(this.slug);
+        console.log('real-comment-list::connectedCallback(): data:', data);
 
+        this.comments = data.comments;
+        console.log('real-comment-list::connectedCallback(): this.comments:', this.comments);
+
+        store.set("comments", this.comments);
+        this.updateComments(this.comments);
     }
 
     findElements() {
-
+        this.links = this.shadowRoot.querySelectorAll('a');
+        this.commentsTag = this.shadowRoot.querySelector('.comments')
     }
 
     setEventHandler() {
+        console.log('real-comment-list::setEventHandler(): 1:', 1);
+        this.links.forEach(link => link.addEventListener('click', this.goLink));
+    }
 
+    goLink = (evt) => {
+        evt.preventDefault();
+        console.log('real-comment-list::goLink(): evt.target.href', evt.target.href);
+
+        addGoAction(evt.target.href);
     }
 
     render() {
 
+    }
+
+    updateComments(comments) {
+        this.commentsTag.innerHTML = comments
+            .map(comment => `<real-comment id="${comment.id}"></real-comment>`)
+            .join('');
     }
 }
 customElements.define('real-comment-list', RealCommentList);

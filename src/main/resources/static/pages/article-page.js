@@ -125,7 +125,7 @@ const getTemplate = (article, bLogin) => {
                 </div>          
                 
                 <div class="row">
-                    <real-comment-list class="col-md-8 offset-md-2">
+                    <real-comment-list class="col-md-8 offset-md-2" slug="${article.slug}">
                     </real-comment-list>
                 </div>           
             </div>

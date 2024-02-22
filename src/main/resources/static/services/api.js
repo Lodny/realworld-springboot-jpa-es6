@@ -91,7 +91,7 @@ const apiGetArticles = (param) => {
     console.log('api::apiGetArticles(): tag:', tag);
     console.log('api::apiGetArticles(): author:', author);
     console.log('api::apiGetArticles(): favorited:', favorited);
-    
+
     console.log('api::apiGetArticles(): offset:', offset);
     console.log('api::apiGetArticles(): limit:', limit);
 
@@ -106,6 +106,9 @@ const apiGetArticles = (param) => {
     return apiGet(`/articles?offset=${offset}&limit=${limit}`);
 }
 
+const apiGetComments = (slug) => {
+    return apiGet(`/articles/${slug}/comments`);
+}
 
 
 export {
@@ -117,4 +120,5 @@ export {
     , apiGetProfile
     , apiFollow
     , apiUnfollow
+    , apiGetComments
 }
