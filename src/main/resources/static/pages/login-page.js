@@ -1,4 +1,4 @@
-import {actionQueue} from "../services/action-queue.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
 import {iconCdn} from "../services/icon-cdn.js";
 
 const style = `<style>
@@ -65,6 +65,13 @@ class LoginPage extends HTMLElement {
     setEventHandler() {
         console.log('login-page::setEventHandler(): 1:', 1);
         this.loginBtn.addEventListener('click', this.login);
+
+        this.shadowRoot
+            .querySelector('a')
+            .addEventListener('click', (evt) => {
+                evt.preventDefault();
+                addGoAction(evt.target.href);
+            });
     }
 
     login(evt) {

@@ -15,14 +15,6 @@ const style = `<style>
         font-weight: 300
     }
     
-    .card .comment-author-img {
-        display: inline-block;
-        vertical-align: middle;
-        height: 20px;
-        width: 20px;
-        border-radius: 30px
-    }
-    
     .card .comment-author {
         display: inline-block;
         vertical-align: middle
