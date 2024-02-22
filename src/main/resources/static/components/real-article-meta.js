@@ -153,7 +153,7 @@ class RealArticleMeta extends HTMLElement {
         console.log('real-article-meta::callback(): type:', type);
         console.log('real-article-meta::callback(): result:', result);
 
-        if (type.endsWith('favorite')) {
+        if (type.endsWith('favorite') && result) {
             this.article = result;
             store.setArticle(this.article);
             console.log('real-article-meta::callback(): this.article:', this.article);
@@ -182,7 +182,11 @@ class RealArticleMeta extends HTMLElement {
     }
 
     updateFavorite(article) {
-        console.log('real-article-meta::updateFavorite(): 1:', 1);
+        console.log('real-article-meta::updateFavorite(): article:', article);
+
+        const user = currentUser();
+        if (article.author.username === user?.username) return;
+
         this.favoritesCountTag.innerHTML = `(${article.favoritesCount})`;
         article.favorited
             ? this.favoriteBtn.classList.add('focus')
@@ -194,6 +198,11 @@ class RealArticleMeta extends HTMLElement {
     }
 
     updateFollowing(author) {
+        console.log('real-article-meta::updateFollowing(): author:', author);
+
+        const user = currentUser();
+        if (author.username === user?.username) return;
+
         if (author.following)
             this.followBtn.innerHTML = `<i class="ion-minus-round"></i> &nbsp; Unfollow ${author.username}`;
         else

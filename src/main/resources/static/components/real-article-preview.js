@@ -141,10 +141,10 @@ class RealArticlePreview extends HTMLElement {
     }
 
     favorite = () => {
-        console.log('real-article-preview::apiFavorite(): 1:', 1);
+        console.log('real-article-preview::favorite(): this.article:', this.article);
 
         actionQueue.addAction({
-            type: this.article.favorited === false ? 'favorite' : 'unfavorite',
+            type: this.article.favorited ? 'unfavorite' : 'favorite',
             data: {
                 name: this.article.slug,
             },
@@ -164,6 +164,8 @@ class RealArticlePreview extends HTMLElement {
     callback = ({type, result}) => {
         console.log('real-article-preview::callback(): type:', type);
         console.log('real-article-preview::callback(): result:', result);
+
+        if (!result) return;
 
         this.article = result;
         store.setArticle(this.article);
