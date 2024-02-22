@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {addGoAction} from "../services/action-queue.js";
-import {apiFollow, apiUnfollow, apiGetProfile, apiGetArticles} from "../services/api.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
+import {apiGetProfile, apiGetArticles} from "../services/api.js";
 
 const style = `<style>
     img {
@@ -202,24 +202,24 @@ class ProfilePage extends HTMLElement {
         return data?.articles;
     }
 
+    callback = ({type, result}) => {
+        this.profile = result;
+        console.log('profile-page::callback(): this.profile:', this.profile);
+        this.updateFollowing(this.profile);
+    }
+
     follow = async (evt) => {
         evt.preventDefault();
         console.log('profile-page::follow(): 1:', 1);
 
-        const user = currentUser();
-        if (!user) {
-            addGoAction('/login');
-            return;
-        }
-
-        let data;
-        if (this.profile.following)
-            data = await apiUnfollow(this.profile.username);
-        else
-            data = await apiFollow(this.profile.username);
-        this.profile = data.profile;
-        console.log('profile-page::follow(): this.profile:', this.profile);
-        this.updateFollowing(this.profile);
+        const profile = this.profile;
+        actionQueue.addAction({
+            type: profile.following ? 'unfollow' : 'follow',
+            data: {
+                name: profile.username,
+            },
+            callback: this.callback
+        });
     }
 
     edit = (evt) => {

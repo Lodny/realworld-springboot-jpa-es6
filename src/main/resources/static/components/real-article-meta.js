@@ -1,6 +1,6 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {addGoAction} from "../services/action-queue.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
 
 const getStyle = (color) => {
     return `<style>
@@ -41,12 +41,11 @@ const getTemplate = (article, isMyArticle, color) => {
             </button>`
             : `
             <button class="btn btn-sm btn-outline-secondary follow">
-                <i class="ion-plus-round"></i>
-                Follow ${author.username}
+                <i class="ion-plus-round"></i> &nbsp; Follow ${author.username}
             </button>
             <button class="btn btn-sm btn-outline-primary favorite">
                 <i class="ion-heart"></i>
-                Favorite Article <span class="counter">(${article.favoritesCount})</span>
+                 &nbsp; Favorite Article <span class="counter">(${article.favoritesCount})</span>
             </button>
             `}
         </div>        
@@ -59,27 +58,28 @@ class RealArticleMeta extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
 
-        this.slug = this.getAttribute('slug');
-        console.log('real-comment-list::constructor(): slug:', this.slug);
-        const article = store.getArticle(this.slug);
-        console.log('real-article-meta::constructor(): article:', article);
+        const slug = this.getAttribute('slug');
+        console.log('real-comment-list::constructor(): slug:', slug);
+        this.article = store.getArticle(slug);
+        console.log('real-article-meta::constructor(): this.article:', this.article);
 
         const user = currentUser();
         console.log('real-comment-list::constructor(): user:', user);
-        const isMyArticle = user && user.username === article.author.username;
+        const isMyArticle = user && user.username === this.article.author.username;
         console.log('real-article-meta::constructor(): isMyArticle:', isMyArticle);
 
         const color = this.getAttribute('color');
         console.log('real-article-meta::constructor(): color:', color);
 
-        this.shadowRoot.innerHTML = getTemplate(article, isMyArticle, color);
+        this.shadowRoot.innerHTML = getTemplate(this.article, isMyArticle, color);
 
         this.findElements();
         this.setEventHandler();
     }
 
     connectedCallback() {
-
+        this.updateFollowing(this.article.author);
+        this.updateFavorite(this.article);
     }
 
     findElements() {
@@ -92,13 +92,18 @@ class RealArticleMeta extends HTMLElement {
         console.log('real-article-meta::findElements(): this.deleteBtn:', this.deleteBtn);
         console.log('real-article-meta::findElements(): this.followBtn:', this.followBtn);
         console.log('real-article-meta::findElements(): this.favoriteBtn:', this.favoriteBtn);
+
+        this.favoritesCountTag = this.shadowRoot.querySelector('.counter');
     }
 
     setEventHandler() {
         this.shadowRoot.querySelectorAll('.article-meta a')
             .forEach(link => link.addEventListener('click', this.goLink));
 
-        this.editBtn.addEventListener('click', this.edit);
+        this.editBtn?.addEventListener('click', this.editArticle);
+        this.deleteBtn?.addEventListener('click', this.deleteArticle);
+        this.followBtn?.addEventListener('click', this.follow);
+        this.favoriteBtn?.addEventListener('click', this.favorite);
     }
 
     goLink = (evt) => {
@@ -110,15 +115,89 @@ class RealArticleMeta extends HTMLElement {
         addGoAction(url)
     }
 
-    edit = (evt) => {
+    editArticle = (evt) => {
         evt.preventDefault();
-        console.log('real-article-meta::edit(): evt.target:', evt.target);
+        console.log('real-article-meta::editArticle(): evt.target:', evt.target);
 
-        addGoAction(`/editor/${this.slug}`)
+        addGoAction(`/editor/${this.article.slug}`)
+    }
+
+    deleteArticle = (evt) => {
+        evt.preventDefault();
+        console.log('real-article-meta::deleteArticle(): evt.target:', evt.target);
+
+        actionQueue.addAction({
+            type: 'deleteArticle',
+            data: {
+                name: this.article.slug
+            },
+            nextRoute: '/'
+        })
+    }
+
+    follow = async (evt) => {
+        evt.preventDefault();
+        console.log('real-article-meta::follow1(): evt.target', evt.target);
+
+        const author = this.article.author;
+        actionQueue.addAction({
+            type: author.following ? 'unfollow' : 'follow',
+            data: {
+                name: author.username,
+            },
+            callback: this.callback
+        });
+    }
+
+    callback = ({type, result}) => {
+        console.log('real-article-meta::callback(): type:', type);
+        console.log('real-article-meta::callback(): result:', result);
+
+        if (type.endsWith('favorite')) {
+            this.article = result;
+            store.setArticle(this.article);
+            console.log('real-article-meta::callback(): this.article:', this.article);
+
+            this.updateFavorite(this.article);
+        } else if (type === 'follow') {
+            this.article.author.following = true;
+            this.updateFollowing(this.article.author);
+        } else if (type === 'unfollow') {
+            this.article.author.following = false;
+            this.updateFollowing(this.article.author);
+        }
+    }
+
+    favorite = (evt) => {
+        evt.preventDefault();
+        console.log('real-article-meta::favorite(): 1:', 1);
+
+        actionQueue.addAction({
+            type: this.article.favorited === false ? 'favorite' : 'unfavorite',
+            data: {
+                name: this.article.slug,
+            },
+            callback: this.callback
+        });
+    }
+
+    updateFavorite(article) {
+        console.log('real-article-meta::updateFavorite(): 1:', 1);
+        this.favoritesCountTag.innerHTML = `(${article.favoritesCount})`;
+        article.favorited
+            ? this.favoriteBtn.classList.add('focus')
+            : this.favoriteBtn.classList.remove('focus');
     }
 
     render() {
 
+    }
+
+    updateFollowing(author) {
+        if (author.following)
+            this.followBtn.innerHTML = `<i class="ion-minus-round"></i> &nbsp; Unfollow ${author.username}`;
+        else
+            this.followBtn.innerHTML = `<i class="ion-plus-round"></i> &nbsp; Follow ${author.username}`;
     }
 }
 customElements.define('real-article-meta', RealArticleMeta);

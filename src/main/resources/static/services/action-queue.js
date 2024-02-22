@@ -1,4 +1,4 @@
-import {apiRegisterUser, apiLoginUser, apiFavorite, apiUnfavorite} from "./api.js";
+import {apiRegisterUser, apiLoginUser, apiFavorite, apiUnfavorite, apiFollow, apiUnfollow} from "./api.js";
 import {currentUser, store} from "./store.js";
 
 class ActionQueue {
@@ -16,6 +16,8 @@ class ActionQueue {
             'route': this.routeAction,
             'favorite': this.favoriteAction,
             'unfavorite': this.unfavoriteAction,
+            'follow': this.followAction,
+            'unfollow': this.unfollowAction,
         }
     }
 
@@ -34,10 +36,8 @@ class ActionQueue {
 
         const result = await executor(action.data);
         action.nextRoute && this.routeAction({name: action.nextRoute});
-        action.callback && action.callback(result);
+        action.callback && action.callback({type: action.type, result});
     }
-
-
 
     registerUserAction = async (data) => {
         const json = await apiRegisterUser(data);
@@ -66,26 +66,84 @@ class ActionQueue {
         const user = currentUser();
         if (!user)
             throw Error('login first');
+
+        return user;
     }
 
-    favoriteAction = async (data) => {
-        console.log('action-queue::favoriteAction(): data:', data);
-        this.checkAuth();
+    checkFavoriteAction = (slug) => {
+        const user = currentUser();
 
-        const result = await apiFavorite(data.name);
+        if (!user) {
+            addGoAction('/login');
+            return false;
+        }
+
+        const article = store.getArticle(slug);
+        if (article.author.username === user.username) {
+            console.log('action-queue::favoriteAction(): article.author.username === user.username');
+            return false;
+        }
+
+        return true;
+    }
+
+    favoriteAction = async ({name: slug}) => {
+        console.log('action-queue::favoriteAction(): slug:', slug);
+
+        if (!this.checkFavoriteAction(slug)) return;
+
+        const result = await apiFavorite(slug);
         console.log('action-queue::favoriteAction(): result:', result);
 
         return result.article;
     }
 
-    unfavoriteAction = async (data) => {
-        console.log('action-queue::unfavoriteAction(): data:', data);
-        this.checkAuth();
+    unfavoriteAction = async ({name: slug}) => {
+        console.log('action-queue::unfavoriteAction(): slug:', slug);
 
-        const result = await apiUnfavorite(data.name);
+        if (!this.checkFavoriteAction(slug)) return;
+
+        const result = await apiUnfavorite(slug);
         console.log('action-queue::unfavoriteAction(): result:', result);
 
         return result.article;
+    }
+
+    checkFollowAction = (username) => {
+        const user = currentUser();
+
+        if (!user) {
+            addGoAction('/login');
+            return false;
+        }
+
+        if (username === user.username) {
+            console.log('action-queue::followAction(): username === user.username');
+            return false;
+        }
+
+        return true;
+    }
+
+    followAction = async ({name: username}) => {
+        console.log('action-queue::followAction(): username:', username);
+
+        if (!this.checkFollowAction(username)) return;
+
+        const result = await apiFollow(username);
+        console.log('action-queue::followAction(): result:', result);
+
+        return result.profile;
+    }
+
+    unfollowAction = async ({name: username}) => {
+        console.log('action-queue::unfollowAction(): username:', username);
+        if (!this.checkFollowAction(username)) return;
+
+        const result = await apiUnfollow(username);
+        console.log('action-queue::unfollowAction(): result:', result);
+
+        return result.profile;
     }
 }
 

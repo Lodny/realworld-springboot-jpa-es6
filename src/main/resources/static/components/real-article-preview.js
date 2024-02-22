@@ -122,19 +122,9 @@ class RealArticlePreview extends HTMLElement {
         return store.getArticle(slug);
     }
 
-    // static get observedAttributes() {
-    //     return ['favoritesCount'];
-    // }
-
     connectedCallback() {
         this.updateFavorite(this.article);
     }
-
-    // attributeChangedCallback(name, oldValue, newValue) {
-    //     if (name === 'favoritesCount' && oldValue !== newValue) {
-    //         this.updateFavorite(newValue);
-    //     }
-    // }
 
     findElements() {
         this.articleLink = this.shadowRoot.querySelector('a.preview-link');
@@ -152,17 +142,6 @@ class RealArticlePreview extends HTMLElement {
 
     favorite = () => {
         console.log('real-article-preview::apiFavorite(): 1:', 1);
-        const user = store.get("user");
-        if (!user) {
-            addGoAction('/login');
-            return;
-        }
-
-        console.log('real-article-preview::apiFavorite(): this.article:', this.article);
-        if (this.article.author.username === user.username) {
-            console.log('real-article-preview::apiFavorite(): this.article.author.username === user.username');
-            return;
-        }
 
         actionQueue.addAction({
             type: this.article.favorited === false ? 'favorite' : 'unfavorite',
@@ -182,18 +161,16 @@ class RealArticlePreview extends HTMLElement {
         addGoAction(url);
     }
 
-    callback = (article) => {
-        console.log('real-article-preview::callback(): article:', article);
-        this.article = article;
+    callback = ({type, result}) => {
+        console.log('real-article-preview::callback(): type:', type);
+        console.log('real-article-preview::callback(): result:', result);
+
+        this.article = result;
         store.setArticle(this.article);
         console.log('real-article-preview::callback(): this.article:', this.article);
 
         this.updateFavorite(this.article);
     }
-
-    // changeFavoritesCount(article) {
-    //     this.setAttribute('favoritesCount', article.favoritesCount);
-    // }
 
     updateFavorite(article) {
         console.log('real-article-preview::updateFavorite(): 1:', 1);

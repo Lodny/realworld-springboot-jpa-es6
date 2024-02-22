@@ -29,6 +29,11 @@ const routeInfo = {
             element: EditorPage
         },
         {
+            url: '/editor',
+            name: 'editor',
+            element: EditorPage
+        },
+        {
             url: '/settings',
             name: 'settings',
             element: SettingsPage

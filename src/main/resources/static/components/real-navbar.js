@@ -117,10 +117,7 @@ class RealNavbar extends HTMLElement {
         evt.preventDefault();
         console.log('real-navbar::clickLink(): evt.target.href:', evt.target.href);
 
-        const route = getRouteByUrl(evt.target.href);
-        console.log('real-navbar::clickLink(): route:', route);
-
-        this.setCurrentLink(route);
+        this.setCurrentLink(evt.target.href);
     }
 
     setCurrentLink(link) {
