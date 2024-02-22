@@ -129,7 +129,7 @@ class RealArticleMeta extends HTMLElement {
         actionQueue.addAction({
             type: 'deleteArticle',
             data: {
-                name: this.article.slug
+                value: this.article.slug
             },
             nextRoute: '/'
         })
@@ -143,7 +143,7 @@ class RealArticleMeta extends HTMLElement {
         actionQueue.addAction({
             type: author.following ? 'unfollow' : 'follow',
             data: {
-                name: author.username,
+                value: author.username,
             },
             callback: this.callback
         });
@@ -175,7 +175,7 @@ class RealArticleMeta extends HTMLElement {
         actionQueue.addAction({
             type: this.article.favorited === false ? 'favorite' : 'unfavorite',
             data: {
-                name: this.article.slug,
+                value: this.article.slug,
             },
             callback: this.callback
         });

@@ -35,7 +35,7 @@ class ActionQueue {
         if (!executor) return;
 
         const result = await executor(action.data);
-        action.nextRoute && this.routeAction({name: action.nextRoute});
+        action.nextRoute && this.routeAction({value: action.nextRoute});
         action.callback && action.callback({type: action.type, result});
     }
 
@@ -59,7 +59,7 @@ class ActionQueue {
         console.log('action-queue::routeAction(): this.navbar:', this.navbar);
         if (!this.navbar) return;
 
-        this.navbar.setCurrentLink(data.name);
+        this.navbar.setCurrentLink(data.value);
     }
 
     checkAuth() {
@@ -87,7 +87,7 @@ class ActionQueue {
         return true;
     }
 
-    favoriteAction = async ({name: slug}) => {
+    favoriteAction = async ({value: slug}) => {
         console.log('action-queue::favoriteAction(): slug:', slug);
 
         if (!this.checkFavoriteAction(slug)) return;
@@ -98,7 +98,7 @@ class ActionQueue {
         return result.article;
     }
 
-    unfavoriteAction = async ({name: slug}) => {
+    unfavoriteAction = async ({value: slug}) => {
         console.log('action-queue::unfavoriteAction(): slug:', slug);
 
         if (!this.checkFavoriteAction(slug)) return;
@@ -125,7 +125,7 @@ class ActionQueue {
         return true;
     }
 
-    followAction = async ({name: username}) => {
+    followAction = async ({value: username}) => {
         console.log('action-queue::followAction(): username:', username);
 
         if (!this.checkFollowAction(username)) return;
@@ -136,7 +136,7 @@ class ActionQueue {
         return result.profile;
     }
 
-    unfollowAction = async ({name: username}) => {
+    unfollowAction = async ({value: username}) => {
         console.log('action-queue::unfollowAction(): username:', username);
         if (!this.checkFollowAction(username)) return;
 
@@ -153,7 +153,7 @@ const addGoAction = (routeName) => {
     actionQueue.addAction({
         type: 'route',
         data: {
-            name: routeName,
+            value: routeName,
         },
     });
 }

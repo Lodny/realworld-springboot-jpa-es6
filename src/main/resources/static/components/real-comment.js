@@ -1,5 +1,6 @@
 import {iconCdn} from "../services/icon-cdn.js";
-import {store} from "../services/store.js";
+import {currentUser, store} from "../services/store.js";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = `<style>
     .card {
@@ -51,7 +52,7 @@ const style = `<style>
     }     
 </style>`;
 
-const getTemplate = (comment) => {
+const getTemplate = (comment, isOwnComment) => {
     const author = comment.author;
 
     return `
@@ -63,7 +64,7 @@ const getTemplate = (comment) => {
         <div class="card">
             <div class="card-block">
                 <p class="card-text">
-                    ${comment.comment}
+                    ${comment.body}
                 </p>
             </div>
             <div class="card-footer">
@@ -73,9 +74,11 @@ const getTemplate = (comment) => {
                 &nbsp;
                 <a href="/profile/${author.username}" class="comment-author">${author.username}</a>
                 <span class="date-posted">${comment.createdAt}</span>
+                ${isOwnComment ? `
                 <span class="mod-options">
                     <i class="ion-trash-a"></i>
-                </span>
+                </span>`
+                : ''}
             </div>
         </div>
     `;
@@ -87,13 +90,15 @@ class RealComment extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
 
-        const commentId = this.getAttribute('id');
-        console.log('real-comment::constructor(): commentId:', commentId);
+        this.commentId = this.getAttribute('id');
+        console.log('real-comment::constructor(): this.commentId:', this.commentId);
 
-        const comment = store.getComment(Number(commentId));
+        const comment = store.getComment(Number(this.commentId));
         console.log('real-comment::constructor(): comment:', comment);
 
-        this.shadowRoot.innerHTML = getTemplate(comment);
+        const user = currentUser();
+        const isOwnComment = user?.username === comment.author.username;
+        this.shadowRoot.innerHTML = getTemplate(comment, isOwnComment);
 
         this.findElements();
         this.setEventHandler();
@@ -104,10 +109,29 @@ class RealComment extends HTMLElement {
     }
 
     findElements() {
-
     }
 
     setEventHandler() {
+        this.shadowRoot
+            .querySelector('.ion-trash-a')
+            ?.addEventListener('click', this.deleteComment);
+    }
+
+    deleteComment = (evt) => {
+        evt.preventDefault();
+        console.log('real-comment::deleteComment(): evt', evt);
+
+        actionQueue.addAction({
+            type: 'deleteComment',
+            data: {
+                value: this.commentId,
+            },
+            callback: this.callback
+        });
+    }
+
+    callback = ({type, result}) => {
+        console.log('real-comment::callback(): type, result', type, result);
 
     }
 

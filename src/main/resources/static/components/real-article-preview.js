@@ -146,7 +146,7 @@ class RealArticlePreview extends HTMLElement {
         actionQueue.addAction({
             type: this.article.favorited ? 'unfavorite' : 'favorite',
             data: {
-                name: this.article.slug,
+                value: this.article.slug,
             },
             callback: this.callback
         });

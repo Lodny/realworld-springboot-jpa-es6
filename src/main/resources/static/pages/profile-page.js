@@ -216,7 +216,7 @@ class ProfilePage extends HTMLElement {
         actionQueue.addAction({
             type: profile.following ? 'unfollow' : 'follow',
             data: {
-                name: profile.username,
+                value: profile.username,
             },
             callback: this.callback
         });
