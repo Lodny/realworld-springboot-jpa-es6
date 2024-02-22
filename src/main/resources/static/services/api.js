@@ -78,6 +78,10 @@ const apiUnfollow = (username) => {
     return apiDelete(`/profiles/${username}/follow`, {});
 }
 
+const apiRegisterArticle = (article) => {
+    return apiPost(`/articles`, {article});
+}
+
 const apiGetArticles = (param) => {
     const {
         tag,
@@ -106,6 +110,10 @@ const apiGetArticles = (param) => {
     return apiGet(`/articles?offset=${offset}&limit=${limit}`);
 }
 
+const apiDeleteArticle = (slug) => {
+    return apiDelete(`/articles/${slug}`, {});
+}
+
 const apiGetComments = (slug) => {
     return apiGet(`/articles/${slug}/comments`);
 }
@@ -122,7 +130,9 @@ const apiDeleteComment = (slug, id) => {
 export {
     apiRegisterUser
     , apiLoginUser
+    , apiRegisterArticle
     , apiGetArticles
+    , apiDeleteArticle
     , apiFavorite
     , apiUnfavorite
     , apiGetProfile

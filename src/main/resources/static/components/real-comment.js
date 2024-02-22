@@ -42,6 +42,10 @@ const style = `<style>
     .card .mod-options i:hover {
         opacity: 1
     }     
+    
+    a {
+        color: #5CB85C;
+    }
 </style>`;
 
 const getTemplate = (comment, isOwnComment) => {

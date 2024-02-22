@@ -6,7 +6,8 @@ import {
     apiFollow,
     apiUnfollow,
     apiDeleteComment,
-    apiAddComment
+    apiAddComment,
+    apiRegisterArticle
 } from "./api.js";
 import {currentUser, store} from "./store.js";
 
@@ -27,6 +28,7 @@ class ActionQueue {
             'unfavorite': this.unfavoriteAction,
             'follow': this.followAction,
             'unfollow': this.unfollowAction,
+            'registerArticle': this.registerArticle,
             'deleteArticle': this.deleteArticle,
             'addComment': this.addComment,
             'deleteComment': this.deleteComment,
@@ -148,6 +150,16 @@ class ActionQueue {
         return result.profile;
     }
 
+    registerArticle = async ({value: article}) => {
+        console.log('action-queue::registerArticle(): article', article);
+        this.checkAuth();
+
+        const data = await apiRegisterArticle(article);
+        console.log('action-queue::registerArticle(): data.article:', data.article);
+
+        return data.article;
+    }
+
     unfollowAction = async ({value: username}) => {
         console.log('action-queue::unfollowAction(): username:', username);
         if (!this.checkFollowAction(username)) return;
@@ -160,7 +172,6 @@ class ActionQueue {
 
     deleteArticle = ({value: slug}) => {
         console.log('action-queue::deleteArticle(): slug:', slug);
-
         this.checkAuth();
         // return await apiDeleteArticle(slug);
     }

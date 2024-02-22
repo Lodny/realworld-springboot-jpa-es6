@@ -131,6 +131,8 @@ class RealCommentList extends HTMLElement {
             },
             callback: this.callback
         });
+
+        this.textareaTag.value = '';
     }
 
     callback = ({type, result}) => {
