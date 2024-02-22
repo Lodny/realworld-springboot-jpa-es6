@@ -7,7 +7,8 @@ import {
     apiUnfollow,
     apiDeleteComment,
     apiAddComment,
-    apiRegisterArticle
+    apiRegisterArticle,
+    apiDeleteArticle
 } from "./api.js";
 import {currentUser, store} from "./store.js";
 
@@ -170,10 +171,11 @@ class ActionQueue {
         return result.profile;
     }
 
-    deleteArticle = ({value: slug}) => {
+    deleteArticle = async ({value: slug}) => {
         console.log('action-queue::deleteArticle(): slug:', slug);
         this.checkAuth();
-        // return await apiDeleteArticle(slug);
+
+        return await apiDeleteArticle(slug);
     }
 
     addComment = async ({slug, value: body}) => {
