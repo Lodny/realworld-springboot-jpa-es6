@@ -1,4 +1,5 @@
 import {iconCdn} from "../services/icon-cdn.js";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = `<style>
 </style>`;
@@ -7,6 +8,8 @@ const getTemplate = () => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/form.css">
+        <link rel="stylesheet" href="../css/register-login.css">
         ${style}
         
         <div class="settings-page">
@@ -44,11 +47,11 @@ const getTemplate = () => {
                                 placeholder="New Password"
                             />
                             </fieldset>
-                            <button class="btn btn-lg btn-primary pull-xs-right">Update Settings</button>
+                            <button class="btn btn-lg btn-primary pull-xs-right update">Update Settings</button>
                         </fieldset>
                     </form>
                     <hr />
-                    <button class="btn btn-outline-danger">Or click here to logout.</button>
+                    <button class="btn btn-outline-danger logout">Or click here to logout.</button>
                 </div>
             </div>
         </div>
@@ -71,11 +74,20 @@ class SettingsPage extends HTMLElement {
     }
 
     findElements() {
-
     }
 
     setEventHandler() {
         console.log('settings-page::setEventHandler(): 1:', 1);
+
+        this.updateBtn = this.shadowRoot.querySelector('button.update');
+        this.shadowRoot.querySelector('button.logout')
+            ?.addEventListener('click', (evt) => {
+                evt.preventDefault();
+                actionQueue.addAction({
+                    type: 'logout',
+                    nextRoute: '/'
+                });
+            });
     }
 
     render() {

@@ -33,6 +33,7 @@ class ActionQueue {
             'deleteArticle': this.deleteArticle,
             'addComment': this.addComment,
             'deleteComment': this.deleteComment,
+            'logout': this.logout,
         }
     }
 
@@ -198,6 +199,12 @@ class ActionQueue {
         store.set('comments', comments);
 
         return count;
+    }
+
+    logout = () => {
+        console.log('action-queue::logout(): ');
+
+        store.delete('user');
     }
 }
 
