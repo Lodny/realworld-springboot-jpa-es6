@@ -3,14 +3,16 @@ package com.lodny.realworldjuiceembeddable.service;
 import com.lodny.realworldjuiceembeddable.entity.Article;
 import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
 import com.lodny.realworldjuiceembeddable.entity.dto.*;
+import com.lodny.realworldjuiceembeddable.mapper.ArticleMapper;
 import com.lodny.realworldjuiceembeddable.repository.ArticleRepository;
+import com.lodny.realworldjuiceembeddable.sys.util.MapToDto.MapToDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -18,6 +20,7 @@ import java.util.List;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final ArticleMapper articleMapper;
 
     public ArticleResponse registerArticle(final RegisterArticleRequest registerArticleRequest,
                                            final RealWorldUser loginUser) {
@@ -38,8 +41,14 @@ public class ArticleService {
         final Long loginUserId = loginUser == null ? -1 : loginUser.id();
         log.info("[S] getArticleBySlug() : loginUserId={}", loginUserId);
 
-        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
-        return getArticleResponseByObjs(articleAndOther);
+//        Object[] articleAndOther = articleRepository.findBySlugIncludeUser(slug, loginUserId);
+//        log.info("getArticleBySlug() : articleAndOther={}", articleAndOther);
+//        return getArticleResponseByObjs(articleAndOther);
+
+        Map<String, Object> map = articleMapper.selectArticleBySlug(slug, loginUserId);
+        log.info("[S] getArticleBySlug() : map={}", map);
+
+        return MapToDto.convert(map, ArticleResponse.class);
     }
 
     public int deleteArticleBySlug(final String slug, final Long loginUserId) {
@@ -94,15 +103,19 @@ public class ArticleService {
     private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
         final int ARRAY_COUNT = 5;
 
-        log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
-        log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
-        if (articleAndOther.length < ARRAY_COUNT || articleAndOther[0] == null)
+        if (articleAndOther.length == 0)
             throw new IllegalArgumentException("The article is not found");
 
+        final Object[] articleObjects = (Object[])articleAndOther[0];
+        log.info("[S] getArticleResponseByObjs() : articleObjects.length={}", articleObjects.length);
+        log.info("[S] getArticleResponseByObjs() : articleObjects={}", articleObjects);
+        if (articleObjects.length < ARRAY_COUNT || articleObjects[0] == null)
+            throw new IllegalArgumentException("The article is not found 2");
+
         return ArticleResponse.of(
-                (Article) articleAndOther[0],
-                ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
-                (Boolean) articleAndOther[2],
-                (Long) articleAndOther[4]);
+                (Article) articleObjects[0],
+                ProfileResponse.of((RealWorldUser) articleObjects[1], (Boolean)articleObjects[3]),
+                (Boolean) articleObjects[2],
+                (Long) articleObjects[4]);
     }
 }

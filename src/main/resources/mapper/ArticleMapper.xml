@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lodny.realworldjuiceembeddable.mapper.ArticleMapper">
+
+<!--    <select id="selectArticleBySlug" resultType="ArticleResponse2"> type-aliases-package: com.lodny.realworldjuiceembeddable.entity.dto -->
+<!--    <select id="selectArticleBySlug" resultType="Map"> : upper case -->
+    <select id="selectArticleBySlug" resultType="CamelHashMap">
+        select  a.ID
+              , a.SLUG
+              , a.TITLE
+              , a.DESCRIPTION
+              , a.BODY
+              , (select GROUP_CONCAT(TAG SEPARATOR ',') from ARTICLE_TAG where ARTICLE_ID = a.ID) as TAG_LIST
+              , a.CREATED_AT
+              , a.UPDATED_AT
+              , (case when fa.ARTICLE_ID is null then false else true end) as FAVORITED
+              , (select COUNT(*) from FAVORITE where ARTICLE_ID = a.ID) as FAVORITES_COUNT
+              , u.USERNAME
+              , u.BIO
+              , u.IMAGE
+              , (case when fo.FOLLOWER_ID is null then false else true end) as FOLLOWING
+        from    ARTICLE a
+        inner join REAL_WORLD_USER u on u.ID = a.AUTHOR_ID
+        left join FAVORITE fa on fa.ARTICLE_ID = a.ID and fa.USER_ID = #{loginUserId}
+        left join FOLLOW fo on fo.FOLLOWEE_ID = a.AUTHOR_ID and fo.FOLLOWER_ID = #{loginUserId}
+        where   SLUG = #{slug}
+    </select>
+
+</mapper>
