@@ -154,11 +154,11 @@ class RealNavbar extends HTMLElement {
         console.log('real-navbar::updateActiveLink(): prevActive:', prevActive);
         console.log('real-navbar::updateActiveLink(): currActive:', currActive);
 
-        this.links
+        this.links.toReversed()
             .find(link => getRouteByUrl(link.href)?.name === prevActive?.name)
             ?.classList.remove('active');
 
-        this.links
+        this.links.toReversed()
             .find(link => getRouteByUrl(link.href)?.name === currActive.name)
             ?.classList.add('active');
     }

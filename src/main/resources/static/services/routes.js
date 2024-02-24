@@ -57,7 +57,7 @@ function extractPath(url, basePath) {
     const match = url.match(regex);
     if (!match) return null;
 
-    console.log('routes::extractPath(): match:', match);
+    // console.log('routes::extractPath(): match:', match);
 
     // const link = match[1];
     // const pathName = match[2] ? match[2].substring(1) : null;
