@@ -2,13 +2,13 @@ import {store} from "./store.js";
 
 const BASE_URL = 'api';
 
-function makeHeaders() {
+function initHeaders() {
     const headers = new Map();
     const user = store.get("user");
     if (user)
         headers.set('Authorization', 'Token ' + user.token);
 
-    console.log('api::makeHeaders(): headers:', headers);
+    console.log('api::initHeaders(): headers:', headers);
 
     return headers;
 }
@@ -16,16 +16,25 @@ function makeHeaders() {
 const apiGet = (url) => {
     console.log('api::get(): BASE_URL + url:', BASE_URL + url);
 
-    const headers = makeHeaders();
+    const headers = initHeaders();
     return fetch(BASE_URL + url, {headers})
         .then(response => response.json())
         .catch(error => console.log('[E] api::apiGet():', error));
+
+    // try {
+    //     const response = await fetch(BASE_URL + url, {headers});
+    //     console.log('api::apiGet(): response:', response);
+    //
+    //     return response.json();
+    // } catch (e) {
+    //     console.log('[E] api::apiGet(): e:', e);
+    // }
 }
 
 const apiPost = (url, data, token = null) => {
     console.log('api::post(): BASE_URL + url:', BASE_URL + url);
 
-    const headers = makeHeaders();
+    const headers = initHeaders();
     headers.set('Content-Type', 'application/json');
     return fetch(BASE_URL + url, {
         method: 'POST',
@@ -39,7 +48,7 @@ const apiPost = (url, data, token = null) => {
 const apiDelete = (url, data, token = null) => {
     console.log('api::apiDelete(): BASE_URL + url:', BASE_URL + url);
 
-    const headers = makeHeaders();
+    const headers = initHeaders();
     return fetch(BASE_URL + url, {
         method: 'DELETE',
         headers,

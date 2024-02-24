@@ -12,17 +12,19 @@ import lombok.NoArgsConstructor;
 public class ProfileResponse {
     private String username;
     private String bio;
-    private String image = "https://api.realworld.io/images/demo-avatar.png";
+    private String image;
     private Boolean following;
 
     public static ProfileResponse of(final RealWorldUser user, final Boolean following) {
         if (user == null)
             return null;
 
+        final String image = user.getImage() == null ? "https://api.realworld.io/images/demo-avatar.png" : user.getImage();;
+
         return new ProfileResponse(
                 user.getUsername(),
                 user.getBio(),
-                user.getImage(),
+                image,
                 following);
     }
 }

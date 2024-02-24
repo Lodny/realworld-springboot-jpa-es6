@@ -29,7 +29,7 @@ public interface ArticleRepository extends Repository<Article, Long> {
         LEFT JOIN Follow fo ON fo.id.followeeId = a.authorId AND fo.id.followerId = :loginUserId
         WHERE   a.slug = :slug
     """)
-    Object[] findBySlugIncludeUser(final String slug, final Long loginUserId);
+    Object findBySlugIncludeUser(final String slug, final Long loginUserId);
 
     @Transactional
     int deleteBySlugAndAuthorId(final String slug, final Long authorId);

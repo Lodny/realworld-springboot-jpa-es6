@@ -41,7 +41,7 @@ public class ArticleService {
         final Long loginUserId = loginUser == null ? -1 : loginUser.id();
         log.info("[S] getArticleBySlug() : loginUserId={}", loginUserId);
 
-//        Object[] articleAndOther = articleRepository.findBySlugIncludeUser(slug, loginUserId);
+//        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
 //        log.info("getArticleBySlug() : articleAndOther={}", articleAndOther);
 //        return getArticleResponseByObjs(articleAndOther);
 
@@ -103,19 +103,18 @@ public class ArticleService {
     private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
         final int ARRAY_COUNT = 5;
 
-        if (articleAndOther.length == 0)
+        if (articleAndOther == null)
             throw new IllegalArgumentException("The article is not found");
 
-        final Object[] articleObjects = (Object[])articleAndOther[0];
-        log.info("[S] getArticleResponseByObjs() : articleObjects.length={}", articleObjects.length);
-        log.info("[S] getArticleResponseByObjs() : articleObjects={}", articleObjects);
-        if (articleObjects.length < ARRAY_COUNT || articleObjects[0] == null)
+        log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
+        log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
+        if (articleAndOther.length < ARRAY_COUNT || articleAndOther[0] == null)
             throw new IllegalArgumentException("The article is not found 2");
 
         return ArticleResponse.of(
-                (Article) articleObjects[0],
-                ProfileResponse.of((RealWorldUser) articleObjects[1], (Boolean)articleObjects[3]),
-                (Boolean) articleObjects[2],
-                (Long) articleObjects[4]);
+                (Article) articleAndOther[0],
+                ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
+                (Boolean) articleAndOther[2],
+                (Long) articleAndOther[4]);
     }
 }

@@ -37,6 +37,7 @@ class HomePage extends HTMLElement {
         this.attachShadow({mode: 'open'});
 
         const [tabTitles, activeTab] = this.getTabTitles();
+        this.activeTab = activeTab;
         this.shadowRoot.innerHTML = getTemplate(tabTitles, activeTab);
 
         this.findElements();
@@ -59,8 +60,12 @@ class HomePage extends HTMLElement {
         return [tabTitles, activeTab];
     }
 
-    connectedCallback() {
-        this.render();
+    async connectedCallback() {
+        const data = await this.getArticles(this.activeTab);
+        this.articles = data?.articles;
+        store.setArticles(this.articles);
+
+        this.updateArticles();
     }
 
     findElements() {
@@ -76,7 +81,7 @@ class HomePage extends HTMLElement {
         this.sidebarTag?.setCallback(this.tagEventHandler);
     }
 
-    tabEventHandler = (activeTab) => {
+    tabEventHandler = async (activeTab) => {
         console.log('home-page::tabEventHandler(): activeTab:', activeTab);
 
         const existTagTab = this.tabTag
@@ -89,6 +94,10 @@ class HomePage extends HTMLElement {
             this.tabTag.setAttribute('tab-titles', tabTitles);
         }
 
+        const data = await this.getArticles(activeTab);
+        this.articles = data?.articles;
+        store.setArticles(this.articles);
+
         this.updateArticles();
     }
 
@@ -100,21 +109,18 @@ class HomePage extends HTMLElement {
     }
 
     render() {
-        this.updateArticles()
     }
 
-    async updateArticles() {
+    updateArticles(articles) {
         const activeTab = this.tabTag.getAttribute('active-tab');
         console.log('home-page::updateArticles(): activeTab:', activeTab);
 
-        const articles = await this.getArticles(activeTab);
-
-        this.articlesTag.innerHTML = articles
-            .map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
+        this.articlesTag.innerHTML = this.articles
+            ?.map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
             .join('')
     }
 
-    async getArticles(activeTab) {
+    getArticles(activeTab) {
         let param = {};
         if (activeTab === 'Global Feed') {
 
@@ -125,9 +131,7 @@ class HomePage extends HTMLElement {
             param = {tag: activeTab.slice(1)}
         }
 
-        const data = await apiGetArticles(param);
-        store.setArticles(data?.articles);
-        return data?.articles;
+        return apiGetArticles(param);
     }
 }
 customElements.define('home-page', HomePage);

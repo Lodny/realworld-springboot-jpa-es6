@@ -47,6 +47,9 @@ public class FavoriteService {
     private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
         final int ARRAY_COUNT = 5;
 
+        if (articleAndOther == null)
+            throw new IllegalArgumentException("The article is not found");
+
         log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
         log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
         if (articleAndOther.length < ARRAY_COUNT || articleAndOther[0] == null)
