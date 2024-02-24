@@ -41,14 +41,14 @@ public class ArticleService {
         final Long loginUserId = loginUser == null ? -1 : loginUser.id();
         log.info("[S] getArticleBySlug() : loginUserId={}", loginUserId);
 
-//        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
-//        log.info("getArticleBySlug() : articleAndOther={}", articleAndOther);
-//        return getArticleResponseByObjs(articleAndOther);
+//        Object[] objects = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
+//        log.info("getArticleBySlug() : objects={}", objects);
+//        return ArticleResponse.of(objects);
 
         Map<String, Object> map = articleMapper.selectArticleBySlug(slug, loginUserId);
         log.info("[S] getArticleBySlug() : map={}", map);
 
-        return MapToDto.convert(map, ArticleResponse.class);
+        return ArticleResponse.of(map);
     }
 
     public int deleteArticleBySlug(final String slug, final Long loginUserId) {
@@ -96,25 +96,7 @@ public class ArticleService {
 
     private List<ArticleResponse> getArticleResponses(final Page<Object> objs) {
         return objs.stream()
-                .map(obj -> getArticleResponseByObjs((Object[]) obj))
+                .map(obj -> ArticleResponse.of((Object[]) obj))
                 .toList();
-    }
-
-    private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
-        final int ARRAY_COUNT = 5;
-
-        if (articleAndOther == null)
-            throw new IllegalArgumentException("The article is not found");
-
-        log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
-        log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
-        if (articleAndOther.length < ARRAY_COUNT || articleAndOther[0] == null)
-            throw new IllegalArgumentException("The article is not found 2");
-
-        return ArticleResponse.of(
-                (Article) articleAndOther[0],
-                ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
-                (Boolean) articleAndOther[2],
-                (Long) articleAndOther[4]);
     }
 }

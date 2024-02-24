@@ -28,8 +28,8 @@ public class FavoriteService {
         Favorite favorite = favoriteRepository.save(Favorite.of(article.getId(), loginUserId));
         log.info("[S] addFavorite() : favorite={}", favorite);
 
-        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
-        return getArticleResponseByObjs(articleAndOther);
+        Object[] objets = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
+        return ArticleResponse.of(objets);
     }
 
     public ArticleResponse unfavorite(final String slug, final Long loginUserId) {
@@ -40,24 +40,7 @@ public class FavoriteService {
 
         favoriteRepository.deleteById(new FavoriteId(article.getId(), loginUserId));
 
-        Object[] articleAndOther = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
-        return getArticleResponseByObjs(articleAndOther);
-    }
-
-    private ArticleResponse getArticleResponseByObjs(final Object[] articleAndOther) {
-        final int ARRAY_COUNT = 5;
-
-        if (articleAndOther == null)
-            throw new IllegalArgumentException("The article is not found");
-
-        log.info("[S] getArticleResponseByObjs() : articleAndOther.length={}", articleAndOther.length);
-        log.info("[S] getArticleResponseByObjs() : articleAndOther={}", articleAndOther);
-        if (articleAndOther.length < ARRAY_COUNT || articleAndOther[0] == null)
-            throw new IllegalArgumentException("The article is not found");
-
-        return ArticleResponse.of((Article) articleAndOther[0],
-                ProfileResponse.of((RealWorldUser) articleAndOther[1], (Boolean)articleAndOther[3]),
-                (Boolean) articleAndOther[2],
-                (Long) articleAndOther[4]);
+        Object[] objets = (Object[])articleRepository.findBySlugIncludeUser(slug, loginUserId);
+        return ArticleResponse.of(objets);
     }
 }

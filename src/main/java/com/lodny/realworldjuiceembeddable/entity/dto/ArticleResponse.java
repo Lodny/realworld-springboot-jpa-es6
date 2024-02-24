@@ -2,14 +2,19 @@ package com.lodny.realworldjuiceembeddable.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lodny.realworldjuiceembeddable.entity.Article;
+import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
+import com.lodny.realworldjuiceembeddable.sys.util.MapToDto.MapToDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 
 @Data
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticleResponse {
@@ -48,8 +53,30 @@ public class ArticleResponse {
                 author);
     }
 
+    public static ArticleResponse of(final Object[] objects) {
+        final int ARRAY_COUNT = 5;
+
+        if (objects == null)
+            throw new IllegalArgumentException("The article is not found");
+
+        log.info("[St] ArticleResponse of() : objects.length={}", objects.length);
+        log.info("[St] ArticleResponse of() : objects={}", objects);
+        if (objects.length < ARRAY_COUNT || objects[0] == null)
+            throw new IllegalArgumentException("The article is not found");
+
+        return ArticleResponse.of((Article) objects[0],
+                ProfileResponse.of((RealWorldUser) objects[1], (Boolean)objects[3]),
+                (Boolean) objects[2],
+                (Long) objects[4]);
+    }
+
+    public static ArticleResponse of(final Map<String, Object> map) {
+        return MapToDto.convert(map, ArticleResponse.class);
+    }
+
     public void tagListToDto(Object value) {
         this.tagList = Set.of(((String)value).split(","));
 //        log.info("tagListToDto() : this.tagList={}", this.tagList);
     }
+
 }
