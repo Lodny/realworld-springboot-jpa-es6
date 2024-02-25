@@ -145,12 +145,13 @@ class ArticlePage extends HTMLElement {
         console.log('article-page::constructor(): article:', article);
         const user = currentUser();
         this.shadowRoot.innerHTML = getTemplate(article, !!user);
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     async connectedCallback() {
+        console.log('article-page::connectedCallback(): 1:', 1);
+
+        this.findElements();
+        this.setEventHandler();
         // const data = await apiGetProfile(profileUsername);
         // this.profile = data.profile;
         // console.log('profile-page::connectedCallback(): this.profile:', this.profile);
@@ -158,11 +159,23 @@ class ArticlePage extends HTMLElement {
         // this.render(this.profile);
     }
 
+    disconnectedCallback() {
+        console.log('article-page::disconnectedCallback(): 1:', 1);
+
+        this.removeListener();
+    }
     findElements() {
-        const metas = Array.from(this.shadowRoot.querySelectorAll('real-article-meta'));
-        console.log('article-page::findElements(): metas:', metas);
-        actionQueue.addListener('follow', metas);
-        actionQueue.addListener('favorite', metas);
+        this.articleMetas = Array.from(this.shadowRoot.querySelectorAll('real-article-meta'));
+        console.log('article-page::findElements(): this.articleMetas:', this.articleMetas);
+        actionQueue.addListener('follow', this.articleMetas);
+        actionQueue.addListener('favorite', this.articleMetas);
+    }
+
+    removeListener() {
+        console.log('article-page::removeListener(): 1:', 1);
+
+        actionQueue.removeListener('follow', this.articleMetas);
+        actionQueue.removeListener('favorite', this.articleMetas);
     }
 
     setEventHandler() {

@@ -65,8 +65,21 @@ class ActionQueue {
     }
 
     addListener(key, tags) {
-        this.listenerMap.set(key, (Array.isArray(tags) ? tags : [tags]));
+        const listeners = this.listenerMap.get(key) ?? [];
+        listeners.push(...(Array.isArray(tags) ? tags : [tags]));
+        this.listenerMap.set(key, listeners);
+
         console.log('action-queue::addListener(): key, this.listenerMap.get(key):', key, this.listenerMap.get(key));
+    }
+
+    removeListener(key, tags) {
+        tags = (Array.isArray(tags) ? tags : [tags]);
+
+        let listeners = this.listenerMap.get(key) ?? [];
+        listeners = listeners.filter(listener => !tags.includes(listener));
+        this.listenerMap.set(key, listeners);
+
+        console.log('action-queue::removeListener(): listeners:', listeners);
     }
 
     registerUserAction = async (data) => {
