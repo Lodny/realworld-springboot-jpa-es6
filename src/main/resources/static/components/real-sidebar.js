@@ -1,4 +1,5 @@
 import {iconCdn} from "../services/icon-cdn.js";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = `<style>
     .sidebar {
@@ -23,14 +24,7 @@ const getTemplate = () => {
             <p>Popular Tags</p>
 
             <div class="tag-list">
-                <a href="" class="tag-pill tag-default">programming</a>
-                <a href="" class="tag-pill tag-default">javascript</a>
-                <a href="" class="tag-pill tag-default">emberjs</a>
-                <a href="" class="tag-pill tag-default">angularjs</a>
-                <a href="" class="tag-pill tag-default">reactjs</a>
-                <a href="" class="tag-pill tag-default">mean</a>
-                <a href="" class="tag-pill tag-default">node</a>
-                <a href="" class="tag-pill tag-default">rails</a>
+<!--                <a href="" class="tag-pill tag-default">programming</a>-->
             </div>
         </div>    
     `;
@@ -42,21 +36,25 @@ class RealSidebar extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = getTemplate();
-
-        this.findElements();
-        this.setEventHandler();
     }
 
-    connectedCallback() {
-        this.render();
+    async connectedCallback() {
+        actionQueue.addAction({
+            type: 'tags',
+            callback: this.callback
+        });
+
+        this.findElements();
     }
 
     findElements() {
-        this.links = this.shadowRoot.querySelectorAll('a');
+        this.tagListTag = this.shadowRoot.querySelector('.tag-list');
     }
 
     setEventHandler() {
-        this.links.forEach(link => link.addEventListener('click', this.clickTag))
+        this.shadowRoot
+            .querySelectorAll('a')
+            .forEach(link => link.addEventListener('click', this.clickTag))
     }
 
     clickTag = (evt) => {
@@ -69,7 +67,20 @@ class RealSidebar extends HTMLElement {
 
     setCallback = callback => this.callback = callback;
 
+    callback = ({type, result: tags}) => {
+        console.log('real-sidebar::connectedCallback(): tags:', tags);
+
+        this.updateTags(tags);
+        this.setEventHandler();
+    }
+
     render() {
+    }
+
+    updateTags(tags) {
+        this.tagListTag.innerHTML = tags
+            .map(tag => `<a href="" class="tag-pill tag-default">${tag}</a>`)
+            .join('');
     }
 }
 customElements.define('real-sidebar', RealSidebar);

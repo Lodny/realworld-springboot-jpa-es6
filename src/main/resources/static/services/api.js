@@ -135,6 +135,9 @@ const apiDeleteComment = (slug, id) => {
     return apiDelete(`/articles/${slug}/comments/${id}`, {});
 }
 
+const apiGetTop10Tags = () => {
+    return apiGet(`/tags`);
+}
 
 export {
     apiRegisterUser
@@ -150,4 +153,5 @@ export {
     , apiGetComments
     , apiAddComment
     , apiDeleteComment
+    , apiGetTop10Tags
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ArticleRepository extends Repository<Article, Long> {
@@ -96,4 +97,12 @@ public interface ArticleRepository extends Repository<Article, Long> {
         ORDER BY a.createdAt DESC
     """)
     Page<Object> getArticlesByFavorited(String favorited, Long loginUserId, PageRequest pageRequest);
+
+    @Query(value = """
+        SELECT   TOP 10 tag
+        FROM     ARTICLE_TAG
+        GROUP BY tag
+        ORDER BY COUNT(tag) DESC
+    """, nativeQuery = true)
+    List<String> getTop10Tags();
 }

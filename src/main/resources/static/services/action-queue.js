@@ -8,7 +8,8 @@ import {
     apiDeleteComment,
     apiAddComment,
     apiRegisterArticle,
-    apiDeleteArticle
+    apiDeleteArticle,
+    apiGetTop10Tags
 } from "./api.js";
 import {currentUser, store} from "./store.js";
 
@@ -37,6 +38,7 @@ class ActionQueue {
             'addComment': this.addComment,
             'deleteComment': this.deleteComment,
             'logout': this.logout,
+            'tags': this.getTags,
         }
     }
 
@@ -232,6 +234,12 @@ class ActionQueue {
         console.log('action-queue::logout(): ');
 
         store.delete('user');
+    }
+
+    getTags = async () => {
+        const data = await apiGetTop10Tags();
+        console.log('action-queue::getTags(): data:', data);
+        return data?.tags;
     }
 }
 
