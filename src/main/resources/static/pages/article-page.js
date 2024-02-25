@@ -1,5 +1,4 @@
 import {iconCdn} from "../services/icon-cdn.js";
-import {apiGetProfile} from "../services/api.js";
 import {currentUser, store} from "../services/store.js";
 import {RealCommentList} from "../components/real-comment-list.js";
 import {RealArticleMeta} from "../components/real-article-meta.js";
@@ -152,7 +151,7 @@ class ArticlePage extends HTMLElement {
 
         this.findElements();
         this.setEventHandler();
-        // const data = await apiGetProfile(profileUsername);
+        // const data = await realApi.getProfile(profileUsername);
         // this.profile = data.profile;
         // console.log('profile-page::connectedCallback(): this.profile:', this.profile);
         //

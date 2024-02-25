@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
 import {actionQueue, addGoAction} from "../services/action-queue.js";
-import {apiAddComment, apiGetComments} from "../services/api.js";
+import {realApi} from "../services/api.js";
 import {RealComment} from "./real-comment.js";
 
 const style = `<style>
@@ -85,7 +85,7 @@ class RealCommentList extends HTMLElement {
     }
 
     async connectedCallback() {
-        const data = await apiGetComments(this.slug);
+        const data = await realApi.getComments(this.slug);
         console.log('real-comment-list::connectedCallback(): data:', data);
 
         this.comments = data.comments;

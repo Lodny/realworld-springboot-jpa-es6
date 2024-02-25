@@ -3,7 +3,7 @@ import {RealTab} from '../components/real-tab.js'
 import {RealSidebar} from '../components/real-sidebar.js'
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {apiGetArticles} from "../services/api.js";
+import {realApi} from "../services/api.js";
 
 const style = `<style>
 
@@ -131,7 +131,7 @@ class HomePage extends HTMLElement {
             param = {tag: activeTab.slice(1)}
         }
 
-        return apiGetArticles(param);
+        return realApi.getArticles(param);
     }
 }
 customElements.define('home-page', HomePage);

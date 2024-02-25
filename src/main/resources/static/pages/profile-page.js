@@ -1,7 +1,7 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
 import {actionQueue, addGoAction} from "../services/action-queue.js";
-import {apiGetProfile, apiGetArticles} from "../services/api.js";
+import {realApi} from "../services/api.js";
 
 const style = `<style>
     img {
@@ -111,7 +111,7 @@ class ProfilePage extends HTMLElement {
 
     async connectedCallback() {
         const profileUsername = this.getAttribute('pathName');
-        const data = await apiGetProfile(profileUsername);
+        const data = await realApi.getProfile(profileUsername);
         this.profile = data.profile;
         console.log('profile-page::connectedCallback(): this.profile:', this.profile);
 
@@ -194,7 +194,7 @@ class ProfilePage extends HTMLElement {
         else if (activeTab === 'Favorited Articles')
             param = {favorited: this.profile.username}
 
-        const data = await apiGetArticles(param);
+        const data = await realApi.getArticles(param);
         store.setArticles(data?.articles);
         return data?.articles;
     }

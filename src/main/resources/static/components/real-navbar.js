@@ -1,6 +1,6 @@
 import {currentUser} from "../services/store.js";
 import {iconCdn} from "../services/icon-cdn.js"
-import {getRouteByName, getRouteByUrl} from "../services/routes.js";
+import {getRouteByUrl} from "../services/routes.js";
 
 const style = `
     <style>

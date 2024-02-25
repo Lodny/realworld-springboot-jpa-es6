@@ -1,16 +1,4 @@
-import {
-    apiRegisterUser,
-    apiLoginUser,
-    apiFavorite,
-    apiUnfavorite,
-    apiFollow,
-    apiUnfollow,
-    apiDeleteComment,
-    apiAddComment,
-    apiRegisterArticle,
-    apiDeleteArticle,
-    apiGetTop10Tags
-} from "./api.js";
+import {realApi} from "./api.js";
 import {currentUser, store} from "./store.js";
 
 class ActionQueue {
@@ -85,13 +73,13 @@ class ActionQueue {
     }
 
     registerUserAction = async (data) => {
-        const json = await apiRegisterUser(data);
+        const json = await realApi.registerUser(data);
         console.log('action-queue::registerUserAction(): json:', json);
         store.set('user', json.user);
     }
 
     loginAction = async (data) => {
-        const json = await apiLoginUser(data);
+        const json = await realApi.loginUser(data);
         console.log('action-queue::loginAction(): json:', json);
         store.set('user', json.user);
     }
@@ -137,7 +125,7 @@ class ActionQueue {
 
         if (!this.checkFavoriteAction(slug)) return;
 
-        const result = await apiFavorite(slug);
+        const result = await realApi.favorite(slug);
         console.log('action-queue::favoriteAction(): result:', result);
 
         return result.article;
@@ -148,7 +136,7 @@ class ActionQueue {
 
         if (!this.checkFavoriteAction(slug)) return;
 
-        const result = await apiUnfavorite(slug);
+        const result = await realApi.unfavorite(slug);
         console.log('action-queue::unfavoriteAction(): result:', result);
 
         return result.article;
@@ -175,7 +163,7 @@ class ActionQueue {
 
         if (!this.checkFollowAction(username)) return;
 
-        const result = await apiFollow(username);
+        const result = await realApi.follow(username);
         console.log('action-queue::followAction(): result:', result);
 
         return result.profile;
@@ -185,7 +173,7 @@ class ActionQueue {
         console.log('action-queue::registerArticle(): article', article);
         this.checkAuth();
 
-        const data = await apiRegisterArticle(article);
+        const data = await realApi.registerArticle(article);
         console.log('action-queue::registerArticle(): data.article:', data.article);
 
         return data.article;
@@ -195,7 +183,7 @@ class ActionQueue {
         console.log('action-queue::unfollowAction(): username:', username);
         if (!this.checkFollowAction(username)) return;
 
-        const result = await apiUnfollow(username);
+        const result = await realApi.unfollow(username);
         console.log('action-queue::unfollowAction(): result:', result);
 
         return result.profile;
@@ -205,14 +193,14 @@ class ActionQueue {
         console.log('action-queue::deleteArticle(): slug:', slug);
         this.checkAuth();
 
-        return await apiDeleteArticle(slug);
+        return await realApi.deleteArticle(slug);
     }
 
     addComment = async ({slug, value: body}) => {
         console.log('action-queue::addComment(): slug, value:', slug, body);
         this.checkAuth();
 
-        const data = await apiAddComment(slug, body);
+        const data = await realApi.addComment(slug, body);
         const comments = store.get('comments');
         store.set('comments', [data.comment, ...comments]);
 
@@ -223,7 +211,7 @@ class ActionQueue {
         console.log('action-queue::deleteComment(): slug, id:', slug, id);
         this.checkAuth();
 
-        const count = await apiDeleteComment(slug, id);
+        const count = await realApi.deleteComment(slug, id);
         const comments = store.get('comments').filter(comment => comment.id !== Number(id));
         store.set('comments', comments);
 
@@ -237,7 +225,7 @@ class ActionQueue {
     }
 
     getTags = async () => {
-        const data = await apiGetTop10Tags();
+        const data = await realApi.getTop10Tags();
         console.log('action-queue::getTags(): data:', data);
         return data?.tags;
     }
