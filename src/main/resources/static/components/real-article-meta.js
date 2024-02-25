@@ -145,7 +145,8 @@ class RealArticleMeta extends HTMLElement {
             data: {
                 value: author.username,
             },
-            callback: this.callback
+            // callback: this.callback,
+            notify: 'follow'
         });
     }
 
@@ -177,7 +178,8 @@ class RealArticleMeta extends HTMLElement {
             data: {
                 value: this.article.slug,
             },
-            callback: this.callback
+            // callback: this.callback,
+            notify: 'favorite'
         });
     }
 

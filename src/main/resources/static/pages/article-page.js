@@ -3,6 +3,7 @@ import {apiGetProfile} from "../services/api.js";
 import {currentUser, store} from "../services/store.js";
 import {RealCommentList} from "../components/real-comment-list.js";
 import {RealArticleMeta} from "../components/real-article-meta.js";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = `<style>
     .banner {
@@ -158,6 +159,10 @@ class ArticlePage extends HTMLElement {
     }
 
     findElements() {
+        const metas = Array.from(this.shadowRoot.querySelectorAll('real-article-meta'));
+        console.log('article-page::findElements(): metas:', metas);
+        actionQueue.addListener('follow', metas);
+        actionQueue.addListener('favorite', metas);
     }
 
     setEventHandler() {

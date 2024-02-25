@@ -65,14 +65,11 @@ const getTemplate = (tabTitles, activeTab) => {
                 <div class="container">
                     <div class="row">
                         <div class="col-xs-12 col-md-10 offset-md-1">
-                            <img src="https://api.realworld.io/images/demo-avatar.png" class="user-img" />
-                            <h4>Eric Simons</h4>
-                            <p>
-                                Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from
-                                the Hunger Games
-                            </p>
+                            <img src="" class="user-img" />
+                            <h4></h4>
+                            <p></p>
                             <button class="btn btn-sm btn-outline-secondary action-btn follow">
-                                <i class="ion-plus-round"></i> &nbsp; Follow Eric Simons
+                                <i class="ion-plus-round"></i> &nbsp; Follow 
                             </button>
                             <button class="btn btn-sm btn-outline-secondary action-btn edit" style="display: none">
                                 <i class="ion-gear-a"></i> &nbsp; Edit Profile Settings

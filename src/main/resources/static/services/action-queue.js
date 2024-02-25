@@ -14,10 +14,13 @@ import {currentUser, store} from "./store.js";
 
 class ActionQueue {
     constructor() {
-        this.queue = [];
+        this.actionQueue = [];
+        this.listenerMap = new Map();
+
         this.timerId = setInterval(this.run, 100);
         // this.router = document.querySelector('real-router');
         // console.log('action-queue::constructor(): this.router:', this.router);
+
         this.navbar = document.querySelector('real-navbar');
         console.log('action-queue::constructor(): this.navbar:', this.navbar);
 
@@ -38,13 +41,13 @@ class ActionQueue {
     }
 
     addAction(action) {
-        this.queue.push(action);
+        this.actionQueue.push(action);
     }
 
     run = async () => {
-        if (this.queue.length === 0) return;
+        if (this.actionQueue.length === 0) return;
 
-        const action = this.queue.pop();
+        const action = this.actionQueue.pop();
         console.log('action-queue::run(): action:', action);
 
         const executor = this.actionExecutor[action.type];
@@ -53,6 +56,17 @@ class ActionQueue {
         const result = await executor(action.data);
         action.nextRoute && this.routeAction({value: action.nextRoute});
         action.callback && action.callback({type: action.type, result});
+        action.notify && this.listenerMap
+            .get(action.notify)
+            ?.forEach(listener => {
+                console.log('action-queue::noMethod(): listener:', listener);
+                listener?.callback({type: action.type, result});
+            });
+    }
+
+    addListener(key, tags) {
+        this.listenerMap.set(key, (Array.isArray(tags) ? tags : [tags]));
+        console.log('action-queue::addListener(): key, this.listenerMap.get(key):', key, this.listenerMap.get(key));
     }
 
     registerUserAction = async (data) => {
