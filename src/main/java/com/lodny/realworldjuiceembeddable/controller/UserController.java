@@ -23,7 +23,6 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody final WrapRegisterUserRequest wrapRegisterUserRequest) {
-        // todo : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `com.lodny.realworldjuiceembeddable.entity.dto.RegisterUserRequest`, problem: email 은 필수입니다.]
         RegisterUserRequest registerUserRequest = wrapRegisterUserRequest.user();
         log.info("[C] registerUser() : registerUserRequest={}", registerUserRequest);
 

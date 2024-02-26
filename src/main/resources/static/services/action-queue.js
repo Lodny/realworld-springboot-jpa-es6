@@ -47,6 +47,8 @@ class ActionQueue {
         if (!executor) return;
 
         const data = await executor(action.data);
+        console.log('action-queue::run(): data:', data);
+
         if (!this.checkError(data)) return;
 
         action.set && store.set(action.set, data[action.set]);

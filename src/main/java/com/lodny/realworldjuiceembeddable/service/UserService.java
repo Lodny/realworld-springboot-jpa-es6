@@ -31,13 +31,14 @@ public class UserService {
     }
 
     public UserResponse login(final LoginRequest loginRequest) {
+        final String errorMsg = "email or password is invalid. please check.";
+
         RealWorldUser foundUser = userRepository.findByEmail(loginRequest.email())
-                        .orElseThrow(() -> new RealException("user not found"));
-//                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                        .orElseThrow(() -> new RealException(errorMsg));
         log.info("[S] login() : foundUser={}", foundUser);
 
         if (! loginRequest.password().equals(foundUser.getPassword()))
-            throw new IllegalArgumentException("invalid user or password");
+            throw new RealException(errorMsg);
 
         String token = jwtUtil.createToken(foundUser.getEmail());
         log.info("[S] login() : token={}", token);
