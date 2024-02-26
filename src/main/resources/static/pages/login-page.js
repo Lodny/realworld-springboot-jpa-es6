@@ -59,6 +59,8 @@ class LoginPage extends HTMLElement {
     }
 
     findElements() {
+        this.emailTag = this.shadowRoot.querySelector('input[type="text"]');
+        this.pwdTag = this.shadowRoot.querySelector('input[type="password"]');
         this.loginBtn = this.shadowRoot.querySelector('button');
     }
 
@@ -74,19 +76,33 @@ class LoginPage extends HTMLElement {
             });
     }
 
-    login(evt) {
+    login = (evt) => {
         evt.preventDefault();
         console.log('login-page::login(): 1:', 1);
 
         actionQueue.addAction({
             type: 'login',
             data: {
-                email: 'coco@drink.com',
-                password: '1234'
+                email: this.emailTag.value,
+                password: this.pwdTag.value,
+                // email: 'coco@drink.com',
+                // password: '1234'
             },
             set: 'user',
             nextRoute: '/',
+            callback: this.callback,
         });
+    }
+
+    callback = ({type, result}) => {
+        console.log('login-page::callback(): type, message:', type, result);
+
+        if (type === 'error') {
+            if (result.startsWith('email'))
+                this.emailTag.focus();
+            else if (result.startsWith('password'))
+                this.pwdTag.focus();
+        }
     }
 
     render() {

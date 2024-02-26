@@ -97,9 +97,6 @@ class EditorPage extends HTMLElement {
         evt.preventDefault();
         console.log('editor-page::registerArticle(): evt', evt);
 
-        if (!this.titleInput.value || !this.descriptionInput.value || !this.bodyTextarea.value)
-            return;
-
         const article = {
             title: this.titleInput.value,
             description: this.descriptionInput.value,
@@ -113,8 +110,19 @@ class EditorPage extends HTMLElement {
             data: {
                 value: article
             },
-            nextRoute: '/'
+            nextRoute: '/',
+            callback: this.callback,
         })
+    }
+
+    callback = ({type, result}) => {
+        console.log('editor-page::callback(): type, result:', type, result);
+
+        if (type === 'error') {
+            if (result.startsWith('title')) {
+                this.titleInput.focus();
+            }
+        }
     }
 
     render() {

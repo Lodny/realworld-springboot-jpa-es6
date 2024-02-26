@@ -49,7 +49,10 @@ class ActionQueue {
         const data = await executor(action.data);
         console.log('action-queue::run(): data:', data);
 
-        if (!this.checkError(data)) return;
+        if (!this.checkError(data)) {
+            action.callback && action.callback({type: "error", result: data.message});
+            return;
+        }
 
         action.set && store.set(action.set, data[action.set]);
         action.nextRoute && this.routeAction({value: action.nextRoute});
