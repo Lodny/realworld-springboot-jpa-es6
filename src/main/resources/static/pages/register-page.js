@@ -62,7 +62,13 @@ class RegisterPage extends HTMLElement {
     }
 
     findElements() {
+        this.usernameTag = this.shadowRoot.querySelector('input[placeholder="Username"]');
+        this.emailTag = this.shadowRoot.querySelector('input[placeholder="Email"]');
+        this.passwordTag = this.shadowRoot.querySelector('input[placeholder="Password"]');
 
+        console.log('register-page::findElements(): this.usernameTag:', this.usernameTag);
+        console.log('register-page::findElements(): this.usernameTag:', this.emailTag);
+        console.log('register-page::findElements(): this.usernameTag:', this.passwordTag);
     }
 
     setEventHandler() {
@@ -78,20 +84,37 @@ class RegisterPage extends HTMLElement {
             });
     }
 
-    register(evt) {
+    register = (evt) => {
         evt.preventDefault();
         console.log('register-page::register(): 1:', 1);
 
         actionQueue.addAction({
             type: 'registerUser',
             data: {
-                username: 'cider',
-                email: 'cider@drink.com',
-                password: '1234'
+                username: this.usernameTag.value,
+                email: this.emailTag.value,
+                password: this.passwordTag.value,
+                // username: 'cider',
+                // email: 'cider@drink.com',
+                // password: '1234'
             },
             set: 'user',
-            nextRoute: '/'
+            nextRoute: '/',
+            callback: this.callback,
         });
+    }
+
+    callback = ({type, result}) => {
+        console.log('register-page::callback(): type, result:', type, result);
+
+        if (type === 'error') {
+            if (result.startsWith('username'))
+                this.usernameTag.focus();
+            else if (result.startsWith('email'))
+                this.emailTag.focus();
+            else if (result.startsWith('password'))
+                this.passwordTag.focus();
+        }
     }
 
     render() {
