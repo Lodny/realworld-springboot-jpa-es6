@@ -13,6 +13,8 @@ class ActionQueue {
         this.navbar = document.querySelector('real-navbar');
         console.log('action-queue::constructor(): this.navbar:', this.navbar);
 
+        this.alertTag = document.querySelector('real-alert');
+
         this.actionExecutor = {
             'registerUser': this.registerUserAction
             , 'login': this.loginAction
@@ -50,6 +52,7 @@ class ActionQueue {
         console.log('action-queue::run(): data:', data);
 
         if (!this.checkError(data)) {
+            await this.alertTag.alert(data.message);
             action.callback && action.callback({type: "error", result: data.message});
             return;
         }
@@ -62,11 +65,10 @@ class ActionQueue {
     }
 
     checkError(result) {
-        if (! result) return true;
-        if (! result.message) return true;
+        if (!result) return true;
+        if (!result.message) return true;
 
-        const alertTag = document.querySelector('real-alert');
-        alertTag.alert(result.message);
+        return false;
     }
 
     runNotify(action, result) {

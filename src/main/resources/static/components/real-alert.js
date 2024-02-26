@@ -6,9 +6,9 @@ const style = `<style>
         background-color: #fefefe;
         border-radius: 10px;
         margin: 15% auto;
-        padding: 20px;
+        padding: 30px;
         border: 1px solid #888;
-        width: 400px;
+        width: 600px;
         text-align: center;
         box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     }
@@ -34,6 +34,7 @@ const style = `<style>
     
     p {
         color: black;
+        font-size: 20px;
     }
 </style>`;
 
@@ -70,14 +71,27 @@ class RealAlert extends HTMLElement {
 
     connectedCallback() {
         this.messageTag = this.shadowRoot.querySelector('p');
-        this.shadowRoot.querySelector('.close').addEventListener('click', () => {
-            this.style.display = 'none';
-        });
+        this.shadowRoot.querySelector('.close').addEventListener('click', () => this.close());
     }
 
-    alert = (message) => {
+    close() {
+        this.style.display = 'none';
+    }
+
+    alert = async (message) => {
         this.messageTag.innerHTML = message;
         this.style.display = 'block';
+
+        return new Promise((resolve) => {
+            document.addEventListener('click', () => {
+                this.close();
+                resolve();
+            }, { once: true });
+            // document.addEventListener('keydown', () => {
+            //     this.close();
+            //     resolve();
+            // }, { once: true });
+        });
     }
 }
 
