@@ -14,9 +14,10 @@ class ActionQueue {
         console.log('action-queue::constructor(): this.navbar:', this.navbar);
 
         this.actionExecutor = {
-            'register-user': this.registerUserAction
+            'registerUser': this.registerUserAction
             , 'login': this.loginAction
             , 'route': this.routeAction
+            , 'logout': this.logoutAction
             , 'getProfile': this.getProfile
             , 'favorite': this.favoriteAction
             , 'unfavorite': this.unfavoriteAction
@@ -28,7 +29,6 @@ class ActionQueue {
             , 'addComment': this.addComment
             , 'getComments': this.getComments
             , 'deleteComment': this.deleteComment
-            , 'logout': this.logout
             , 'tags': this.getTags
         }
     }
@@ -47,8 +47,22 @@ class ActionQueue {
         if (!executor) return;
 
         const result = await executor(action.data);
+        if (!this.checkError(result)) return;
+
+        action.set && store.set(action.set, result[action.set]);
         action.nextRoute && this.routeAction({value: action.nextRoute});
-        action.callback && action.callback({type: action.type, result});
+        action.callback && action.callback({type: action.type, result: Object.values(result)[0]});
+        this.runNotify(action, result);
+    }
+
+    checkError(result) {
+        if (! result) return true;
+        if (! result.message) return true;
+
+        alert(result.message);
+    }
+
+    runNotify(action, result) {
         action.notify && this.listenerMap
             .get(action.notify)
             ?.forEach(listener => {
@@ -75,20 +89,16 @@ class ActionQueue {
         console.log('action-queue::removeListener(): listeners:', listeners);
     }
 
-    registerUserAction = async (data) => {
-        const json = await realApi.registerUser(data);
-        console.log('action-queue::registerUserAction(): json:', json);
-        store.set('user', json.user);
+    registerUserAction = async (user) => {
+        return await realApi.registerUser(user);
     }
 
-    loginAction = async (data) => {
-        const json = await realApi.loginUser(data);
-        console.log('action-queue::loginAction(): json:', json);
-        store.set('user', json.user);
+    loginAction = async (user) => {
+        return await realApi.loginUser(user);
     }
 
     logoutAction = () => {
-        store.remove('user');
+        store.delete('user');
     }
 
     routeAction = ({value}) => {
@@ -100,11 +110,7 @@ class ActionQueue {
 
     getProfile = async ({value: username}) => {
         console.log('action-queue::getProfile(): username:', username);
-
-        const {profile} = await realApi.getProfile(username);
-        console.log('action-queue::getProfile(): profile:', profile);
-
-        return profile;
+        return await realApi.getProfile(username);
     }
 
     checkAuth() {
@@ -137,10 +143,7 @@ class ActionQueue {
 
         if (!this.checkFavoriteAction(slug)) return;
 
-        const result = await realApi.favorite(slug);
-        console.log('action-queue::favoriteAction(): result:', result);
-
-        return result.article;
+        return await realApi.favorite(slug);
     }
 
     unfavoriteAction = async ({value: slug}) => {
@@ -148,10 +151,7 @@ class ActionQueue {
 
         if (!this.checkFavoriteAction(slug)) return;
 
-        const result = await realApi.unfavorite(slug);
-        console.log('action-queue::unfavoriteAction(): result:', result);
-
-        return result.article;
+        return realApi.unfavorite(slug);
     }
 
     checkFollowAction = (username) => {
@@ -175,41 +175,27 @@ class ActionQueue {
 
         if (!this.checkFollowAction(username)) return;
 
-        const result = await realApi.follow(username);
-        console.log('action-queue::followAction(): result:', result);
-
-        return result.profile;
+        return await realApi.follow(username);
     }
 
     registerArticle = async ({value: article}) => {
         console.log('action-queue::registerArticle(): article', article);
         this.checkAuth();
 
-        const data = await realApi.registerArticle(article);
-        console.log('action-queue::registerArticle(): data.article:', data.article);
-
-        return data.article;
+        return await realApi.registerArticle(article);
     }
 
     getArticles = async ({value: param}) => {
         console.log('action-queue::getArticles(): param:', param);
 
-        const {articles} = await realApi.getArticles(param);
-        console.log('action-queue::registerArticle(): articles:', articles);
-
-        store.set('articles', articles);
-
-        return articles;
+        return await realApi.getArticles(param);
     }
 
     unfollowAction = async ({value: username}) => {
         console.log('action-queue::unfollowAction(): username:', username);
         if (!this.checkFollowAction(username)) return;
 
-        const result = await realApi.unfollow(username);
-        console.log('action-queue::unfollowAction(): result:', result);
-
-        return result.profile;
+        return await realApi.unfollow(username);
     }
 
     deleteArticle = async ({value: slug}) => {
@@ -223,43 +209,36 @@ class ActionQueue {
         console.log('action-queue::addComment(): slug, value:', slug, body);
         this.checkAuth();
 
-        const data = await realApi.addComment(slug, body);
-        const comments = store.get('comments');
-        store.set('comments', [data.comment, ...comments]);
+        const result = await realApi.addComment(slug, body);
+        if (! result.message) {
+            const comments = store.get('comments');
+            store.set('comments', [result.comment, ...comments]);
+        }
 
-        return data.comment;
+        return result;
     }
 
     getComments = async ({value: slug}) => {
         console.log('action-queue::addComment(): slug:', slug);
 
-        const {comments} = await realApi.getComments(slug);
-        store.set('comments', comments);
-
-        return comments;
+        return await realApi.getComments(slug);
     }
 
     deleteComment = async ({slug, value: id}) => {
         console.log('action-queue::deleteComment(): slug, id:', slug, id);
         this.checkAuth();
 
-        const count = await realApi.deleteComment(slug, id);
-        const comments = store.get('comments').filter(comment => comment.id !== Number(id));
-        store.set('comments', comments);
+        const result = await realApi.deleteComment(slug, id);
+        if (! result.message) {
+            const comments = store.get('comments').filter(comment => comment.id !== Number(id));
+            store.set('comments', comments);
+        }
 
-        return count;
-    }
-
-    logout = () => {
-        console.log('action-queue::logout(): ');
-
-        store.delete('user');
+        return result;
     }
 
     getTags = async () => {
-        const data = await realApi.getTop10Tags();
-        console.log('action-queue::getTags(): data:', data);
-        return data?.tags;
+        return await realApi.getTop10Tags();
     }
 }
 

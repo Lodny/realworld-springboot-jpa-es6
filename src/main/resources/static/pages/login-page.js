@@ -84,7 +84,8 @@ class LoginPage extends HTMLElement {
                 email: 'coco@drink.com',
                 password: '1234'
             },
-            nextRoute: '/'
+            set: 'user',
+            nextRoute: '/',
         });
     }
 

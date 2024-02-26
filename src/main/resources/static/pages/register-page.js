@@ -83,12 +83,13 @@ class RegisterPage extends HTMLElement {
         console.log('register-page::register(): 1:', 1);
 
         actionQueue.addAction({
-            type: 'register-user',
+            type: 'registerUser',
             data: {
                 username: 'cider',
                 email: 'cider@drink.com',
                 password: '1234'
             },
+            set: 'user',
             nextRoute: '/'
         });
     }

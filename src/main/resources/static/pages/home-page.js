@@ -136,6 +136,7 @@ class HomePage extends HTMLElement {
             data: {
                 value: param,
             },
+            set: 'articles',
             callback: this.callback,
         })
     }

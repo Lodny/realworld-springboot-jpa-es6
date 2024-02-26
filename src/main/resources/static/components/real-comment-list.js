@@ -91,6 +91,7 @@ class RealCommentList extends HTMLElement {
             data: {
                 value: this.slug,
             },
+            set: 'comments',
             callback: this.callback
         })
     }
