@@ -5,6 +5,7 @@ import com.lodny.realworldjuiceembeddable.entity.dto.LoginRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.RegisterUserRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
 import com.lodny.realworldjuiceembeddable.repository.UserRepository;
+import com.lodny.realworldjuiceembeddable.sys.exception.RealException;
 import com.lodny.realworldjuiceembeddable.sys.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,8 @@ public class UserService {
 
     public UserResponse login(final LoginRequest loginRequest) {
         RealWorldUser foundUser = userRepository.findByEmail(loginRequest.email())
-                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
+                        .orElseThrow(() -> new RealException("user not found"));
+//                        .orElseThrow(() -> new IllegalArgumentException("user not found"));
         log.info("[S] login() : foundUser={}", foundUser);
 
         if (! loginRequest.password().equals(foundUser.getPassword()))
