@@ -65,7 +65,8 @@ class ActionQueue {
         if (! result) return true;
         if (! result.message) return true;
 
-        alert(result.message);
+        const alertTag = document.querySelector('real-alert');
+        alertTag.alert(result.message);
     }
 
     runNotify(action, result) {
