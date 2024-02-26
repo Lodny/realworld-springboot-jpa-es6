@@ -46,12 +46,13 @@ class ActionQueue {
         const executor = this.actionExecutor[action.type];
         if (!executor) return;
 
-        const result = await executor(action.data);
-        if (!this.checkError(result)) return;
+        const data = await executor(action.data);
+        if (!this.checkError(data)) return;
 
-        action.set && store.set(action.set, result[action.set]);
+        action.set && store.set(action.set, data[action.set]);
         action.nextRoute && this.routeAction({value: action.nextRoute});
-        action.callback && action.callback({type: action.type, result: Object.values(result)[0]});
+        const result = Object.values(data)[0];
+        action.callback && action.callback({type: action.type, result});
         this.runNotify(action, result);
     }
 
