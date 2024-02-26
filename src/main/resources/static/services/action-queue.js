@@ -14,19 +14,22 @@ class ActionQueue {
         console.log('action-queue::constructor(): this.navbar:', this.navbar);
 
         this.actionExecutor = {
-            'register-user': this.registerUserAction,
-            'login': this.loginAction,
-            'route': this.routeAction,
-            'favorite': this.favoriteAction,
-            'unfavorite': this.unfavoriteAction,
-            'follow': this.followAction,
-            'unfollow': this.unfollowAction,
-            'registerArticle': this.registerArticle,
-            'deleteArticle': this.deleteArticle,
-            'addComment': this.addComment,
-            'deleteComment': this.deleteComment,
-            'logout': this.logout,
-            'tags': this.getTags,
+            'register-user': this.registerUserAction
+            , 'login': this.loginAction
+            , 'route': this.routeAction
+            , 'getProfile': this.getProfile
+            , 'favorite': this.favoriteAction
+            , 'unfavorite': this.unfavoriteAction
+            , 'follow': this.followAction
+            , 'unfollow': this.unfollowAction
+            , 'registerArticle': this.registerArticle
+            , 'getArticles': this.getArticles
+            , 'deleteArticle': this.deleteArticle
+            , 'addComment': this.addComment
+            , 'getComments': this.getComments
+            , 'deleteComment': this.deleteComment
+            , 'logout': this.logout
+            , 'tags': this.getTags
         }
     }
 
@@ -88,11 +91,20 @@ class ActionQueue {
         store.remove('user');
     }
 
-    routeAction = (data) => {
+    routeAction = ({value}) => {
         console.log('action-queue::routeAction(): this.navbar:', this.navbar);
         if (!this.navbar) return;
 
-        this.navbar.setCurrentLink(data.value);
+        this.navbar.setCurrentLink(value);
+    }
+
+    getProfile = async ({value: username}) => {
+        console.log('action-queue::getProfile(): username:', username);
+
+        const {profile} = await realApi.getProfile(username);
+        console.log('action-queue::getProfile(): profile:', profile);
+
+        return profile;
     }
 
     checkAuth() {
@@ -179,6 +191,17 @@ class ActionQueue {
         return data.article;
     }
 
+    getArticles = async ({value: param}) => {
+        console.log('action-queue::getArticles(): param:', param);
+
+        const {articles} = await realApi.getArticles(param);
+        console.log('action-queue::registerArticle(): articles:', articles);
+
+        store.set('articles', articles);
+
+        return articles;
+    }
+
     unfollowAction = async ({value: username}) => {
         console.log('action-queue::unfollowAction(): username:', username);
         if (!this.checkFollowAction(username)) return;
@@ -205,6 +228,15 @@ class ActionQueue {
         store.set('comments', [data.comment, ...comments]);
 
         return data.comment;
+    }
+
+    getComments = async ({value: slug}) => {
+        console.log('action-queue::addComment(): slug:', slug);
+
+        const {comments} = await realApi.getComments(slug);
+        store.set('comments', comments);
+
+        return comments;
     }
 
     deleteComment = async ({slug, value: id}) => {

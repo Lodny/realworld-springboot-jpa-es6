@@ -3,7 +3,7 @@ import {RealTab} from '../components/real-tab.js'
 import {RealSidebar} from '../components/real-sidebar.js'
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
-import {realApi} from "../services/api.js";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = `<style>
 
@@ -61,11 +61,7 @@ class HomePage extends HTMLElement {
     }
 
     async connectedCallback() {
-        const data = await this.getArticles(this.activeTab);
-        this.articles = data?.articles;
-        store.setArticles(this.articles);
-
-        this.updateArticles();
+        this.getArticles(this.activeTab);
     }
 
     findElements() {
@@ -94,11 +90,7 @@ class HomePage extends HTMLElement {
             this.tabTag.setAttribute('tab-titles', tabTitles);
         }
 
-        const data = await this.getArticles(activeTab);
-        this.articles = data?.articles;
-        store.setArticles(this.articles);
-
-        this.updateArticles();
+        this.getArticles(activeTab);
     }
 
     tagEventHandler = (tagName) => {
@@ -108,14 +100,22 @@ class HomePage extends HTMLElement {
         this.tabTag.setAttribute('active-tab', activeTab);
     }
 
-    render() {
+    callback = ({type, result}) => {
+        console.log('home-page::callback(): type, result', type, result);
+
+        if (type === 'getArticles') {
+            this.updateArticles(result);
+        }
+    }
+
+        render() {
     }
 
     updateArticles(articles) {
         const activeTab = this.tabTag.getAttribute('active-tab');
         console.log('home-page::updateArticles(): activeTab:', activeTab);
 
-        this.articlesTag.innerHTML = this.articles
+        this.articlesTag.innerHTML = articles
             ?.map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
             .join('')
     }
@@ -131,7 +131,13 @@ class HomePage extends HTMLElement {
             param = {tag: activeTab.slice(1)}
         }
 
-        return realApi.getArticles(param);
+        actionQueue.addAction({
+            type: 'getArticles',
+            data: {
+                value: param,
+            },
+            callback: this.callback,
+        })
     }
 }
 customElements.define('home-page', HomePage);

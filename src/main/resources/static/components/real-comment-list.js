@@ -1,7 +1,6 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
 import {actionQueue, addGoAction} from "../services/action-queue.js";
-import {realApi} from "../services/api.js";
 import {RealComment} from "./real-comment.js";
 
 const style = `<style>
@@ -85,14 +84,15 @@ class RealCommentList extends HTMLElement {
     }
 
     async connectedCallback() {
-        const data = await realApi.getComments(this.slug);
-        console.log('real-comment-list::connectedCallback(): data:', data);
+        console.log('real-comment-list::connectedCallback(): 1:', 1);
 
-        this.comments = data.comments;
-        console.log('real-comment-list::connectedCallback(): this.comments:', this.comments);
-
-        store.set("comments", this.comments);
-        this.updateComments(this.comments);
+        actionQueue.addAction({
+            type: 'getComments',
+            data: {
+                value: this.slug,
+            },
+            callback: this.callback
+        })
     }
 
     findElements() {
@@ -138,11 +138,9 @@ class RealCommentList extends HTMLElement {
     callback = ({type, result}) => {
         console.log('real-comment-list::callback(): type, result', type, result);
 
-        if (type === 'addComment') {
-            this.comments = store.get('comments');
-            console.log('real-comment-list::callback(): this.comments:', this.comments);
-
-            // this.updateComments(this.comments);
+        if (type === 'getComments') {
+            this.updateComments(result);
+        } else if (type === 'addComment') {
             this.insertComment(result.id);
         }
     }

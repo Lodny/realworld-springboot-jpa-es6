@@ -1,7 +1,6 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {currentUser, store} from "../services/store.js";
 import {actionQueue, addGoAction} from "../services/action-queue.js";
-import {realApi} from "../services/api.js";
 
 const style = `<style>
     img {
@@ -109,13 +108,14 @@ class ProfilePage extends HTMLElement {
         return [tabTitles, activeTab];
     }
 
-    async connectedCallback() {
-        const profileUsername = this.getAttribute('pathName');
-        const data = await realApi.getProfile(profileUsername);
-        this.profile = data.profile;
-        console.log('profile-page::connectedCallback(): this.profile:', this.profile);
-
-        this.render(this.profile);
+    connectedCallback() {
+        actionQueue.addAction({
+            type: 'getProfile',
+            data: {
+                value: this.getAttribute('pathName'),
+            },
+            callback: this.callback,
+        });
     }
 
     findElements() {
@@ -139,7 +139,7 @@ class ProfilePage extends HTMLElement {
 
     tabEventHandler = (activeTab) => {
         console.log('profile-page::tabEventHandler(): activeTab:', activeTab);
-        this.updateArticles();
+        this.getArticles(activeTab);
     }
 
     render(profile) {
@@ -176,33 +176,42 @@ class ProfilePage extends HTMLElement {
             this.followButton.innerHTML = `<i class="ion-plus-round"></i> &nbsp; Follow ${profile.username}`;
     }
 
-    async updateArticles() {
-        const activeTab = this.tabTag.getAttribute('active-tab');
-        console.log('profile-page::updateArticles(): activeTab:', activeTab);
-
-        const articles = await this.getArticles(activeTab);
-
+    updateArticles(articles) {
         this.articlesTag.innerHTML = articles
             .map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
             .join('')
     }
 
-    async getArticles(activeTab) {
+    getArticles(activeTab) {
         let param = {};
         if (activeTab === 'My Articles')
             param = {author: this.profile.username}
         else if (activeTab === 'Favorited Articles')
             param = {favorited: this.profile.username}
 
-        const data = await realApi.getArticles(param);
-        store.setArticles(data?.articles);
-        return data?.articles;
+        actionQueue.addAction({
+            type: 'getArticles',
+            data: {
+                value: param,
+            },
+            callback: this.callback,
+        });
     }
 
     callback = ({type, result}) => {
-        this.profile = result;
-        console.log('profile-page::callback(): this.profile:', this.profile);
-        this.updateFollowing(this.profile);
+        console.log('profile-page::callback(): type, result:', type, result);
+
+        if (type === 'getProfile') {
+            this.profile = result;
+            this.getArticles('My Articles');
+            this.updateProfile(result);
+        } else if (type === 'getArticles') {
+            this.updateArticles(result);
+        } else if (['follow', 'unfollow'].includes(type)) {
+            this.profile = result;
+            this.updateFollowing(this.profile);
+        }
+
     }
 
     follow = async (evt) => {
@@ -215,7 +224,6 @@ class ProfilePage extends HTMLElement {
             data: {
                 value: profile.username,
             },
-            callback: this.callback
         });
     }
 
