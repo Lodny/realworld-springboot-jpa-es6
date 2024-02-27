@@ -62,6 +62,11 @@ class HomePage extends HTMLElement {
 
     async connectedCallback() {
         this.getArticles(this.activeTab);
+        actionQueue.addListener('changePage', this);
+    }
+
+    disconnectedCallback() {
+        actionQueue.removeListener('changePage');
     }
 
     findElements() {
@@ -91,7 +96,8 @@ class HomePage extends HTMLElement {
             this.tabTag.setAttribute('tab-titles', tabTitles);
         }
 
-        this.getArticles(activeTab);
+        this.activeTab = activeTab
+        this.getArticles(this.activeTab);
     }
 
     tagEventHandler = (tagName) => {
@@ -110,10 +116,13 @@ class HomePage extends HTMLElement {
 
             this.pagingTag.setPageCount(data.totalPages);
             this.pagingTag.setCurrentPage(data.number);
+        } else if (type === 'changePage') {
+            console.log('home-page::callback(): this.activeTab:', this.activeTab);
+            this.getArticles(this.activeTab, Number(result));
         }
     }
 
-        render() {
+    render() {
     }
 
     updateArticles(articles) {
@@ -125,7 +134,7 @@ class HomePage extends HTMLElement {
             .join('')
     }
 
-    getArticles(activeTab) {
+    getArticles(activeTab, page = 1) {
         let param = {};
         if (activeTab === 'Global Feed') {
 
@@ -140,6 +149,7 @@ class HomePage extends HTMLElement {
             type: 'getArticles',
             data: {
                 value: param,
+                page
             },
             set: 'articles',
             callback: this.callback,

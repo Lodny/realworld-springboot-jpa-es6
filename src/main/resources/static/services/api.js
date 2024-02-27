@@ -108,8 +108,8 @@ class RealApi {
             tag,
             author,
             favorited,
-            offset = 0,
-            limit = 20,
+            offset,
+            limit,
         } = param;
         console.log('api::realApi.getArticles(): param:', param);
 

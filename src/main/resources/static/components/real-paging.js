@@ -1,4 +1,4 @@
-import {actionQueue} from "../services/action-queue";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = `<style>
     .pagination {
@@ -117,11 +117,13 @@ class RealPaging extends HTMLElement {
             .forEach(link => link.addEventListener('click', (evt) => {
                 evt.preventDefault();
                 console.log('real-paging::noMethod(): evt.target.innerText:', evt.target.innerText);
+
                 actionQueue.addAction({
                     type: 'changePage',
                     data: {
                         value: evt.target.innerText
-                    }
+                    },
+                    notify: 'changePage'
                 })
             }));
     }

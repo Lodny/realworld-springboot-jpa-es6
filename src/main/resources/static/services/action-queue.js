@@ -33,6 +33,7 @@ class ActionQueue {
             , 'getComments': this.getComments
             , 'deleteComment': this.deleteComment
             , 'tags': this.getTags
+            , 'changePage': this.changePage
         }
     }
 
@@ -195,8 +196,12 @@ class ActionQueue {
         return await realApi.registerArticle(article);
     }
 
-    getArticles = async ({value: param}) => {
-        console.log('action-queue::getArticles(): param:', param);
+    getArticles = async ({value: param, page}) => {
+        console.log('action-queue::getArticles(): param, page:', param, page);
+
+        param.limit = 2;
+        // param.limit = 20;
+        param.offset = (page - 1) * param.limit;
 
         return await realApi.getArticles(param);
     }
@@ -256,6 +261,11 @@ class ActionQueue {
 
     getTags = async () => {
         return await realApi.getTop10Tags();
+    }
+
+    changePage = ({value: page}) => {
+        console.log('action-queue::changePage(): page:', page);
+        return page;
     }
 }
 
