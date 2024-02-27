@@ -66,7 +66,7 @@ class HomePage extends HTMLElement {
     }
 
     disconnectedCallback() {
-        actionQueue.removeListener('changePage');
+        actionQueue.removeListener('changePage', this);
     }
 
     findElements() {

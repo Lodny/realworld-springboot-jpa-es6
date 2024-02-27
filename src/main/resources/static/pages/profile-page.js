@@ -95,7 +95,8 @@ class ProfilePage extends HTMLElement {
         this.attachShadow({mode: 'open'});
 
         const [tabTitles, activeTab] = this.getTabTitles();
-        this.shadowRoot.innerHTML = getTemplate(tabTitles, activeTab);
+        this.activeTab = activeTab;
+        this.shadowRoot.innerHTML = getTemplate(tabTitles, this.activeTab);
 
         this.findElements();
         this.setEventHandler();
@@ -116,6 +117,11 @@ class ProfilePage extends HTMLElement {
             },
             callback: this.callback,
         });
+        actionQueue.addListener('changePage', this);
+    }
+
+    disconnectedCallback() {
+        actionQueue.removeListener('changePage', this);
     }
 
     findElements() {
@@ -127,6 +133,8 @@ class ProfilePage extends HTMLElement {
 
         this.tabTag = this.shadowRoot.querySelector('real-tab');
         this.articlesTag = this.shadowRoot.querySelector('.articles');
+
+        this.pagingTag = this.shadowRoot.querySelector('real-paging');
     }
 
     setEventHandler() {
@@ -139,7 +147,8 @@ class ProfilePage extends HTMLElement {
 
     tabEventHandler = (activeTab) => {
         console.log('profile-page::tabEventHandler(): activeTab:', activeTab);
-        this.getArticles(activeTab);
+        this.activeTab = activeTab;
+        this.getArticles(this.activeTab);
     }
 
     render(profile) {
@@ -182,7 +191,7 @@ class ProfilePage extends HTMLElement {
             .join('')
     }
 
-    getArticles(activeTab) {
+    getArticles(activeTab, page = 1) {
         let param = {};
         if (activeTab === 'My Articles')
             param = {author: this.profile.username}
@@ -193,26 +202,33 @@ class ProfilePage extends HTMLElement {
             type: 'getArticles',
             data: {
                 value: param,
+                page
             },
             set: 'articles',
             callback: this.callback,
         });
     }
 
-    callback = ({type, result}) => {
+    callback = ({type, result, data}) => {
         console.log('profile-page::callback(): type, result:', type, result);
 
         if (type === 'getProfile') {
             this.profile = result;
-            this.getArticles('My Articles');
+            this.getArticles(this.activeTab);
             this.updateProfile(result);
         } else if (type === 'getArticles') {
             this.updateArticles(result);
+            console.log('profile-page::callback(): data:', data);
+
+            this.pagingTag.setPageCount(data.totalPages);
+            this.pagingTag.setCurrentPage(data.number);
         } else if (['follow', 'unfollow'].includes(type)) {
             this.profile = result;
             this.updateFollowing(this.profile);
+        } else if (type === 'changePage') {
+            console.log('profile-page::callback(): this.activeTab:', this.activeTab);
+            this.getArticles(this.activeTab, Number(result));
         }
-
     }
 
     follow = async (evt) => {
