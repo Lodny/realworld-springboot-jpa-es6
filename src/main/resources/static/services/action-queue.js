@@ -61,7 +61,7 @@ class ActionQueue {
         action.set && store.set(action.set, data[action.set]);
         action.nextRoute && this.routeAction({value: action.nextRoute});
         const result = Object.values(data)[0];
-        action.callback && action.callback({type: action.type, result});
+        action.callback && action.callback({type: action.type, result, data});
         this.runNotify(action, result);
     }
 

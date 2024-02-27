@@ -68,6 +68,7 @@ class HomePage extends HTMLElement {
         this.tabTag = this.shadowRoot.querySelector('real-tab');
         this.sidebarTag = this.shadowRoot.querySelector('real-sidebar');
         this.articlesTag = this.shadowRoot.querySelector('.articles');
+        this.pagingTag = this.shadowRoot.querySelector('real-paging');
         console.log('home-page::findElements(): this.sidebarTag:', this.sidebarTag);
     }
 
@@ -100,11 +101,15 @@ class HomePage extends HTMLElement {
         this.tabTag.setAttribute('active-tab', activeTab);
     }
 
-    callback = ({type, result}) => {
+    callback = ({type, result, data}) => {
         console.log('home-page::callback(): type, result', type, result);
 
         if (type === 'getArticles') {
             this.updateArticles(result);
+            console.log('home-page::callback(): data:', data);
+
+            this.pagingTag.setPageCount(data.totalPages);
+            this.pagingTag.setCurrentPage(data.number);
         }
     }
 
