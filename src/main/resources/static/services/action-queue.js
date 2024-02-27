@@ -25,6 +25,7 @@ class ActionQueue {
             , 'unfavorite': this.unfavoriteAction
             , 'follow': this.followAction
             , 'unfollow': this.unfollowAction
+            , 'updateUser': this.updateUser
             , 'registerArticle': this.registerArticle
             , 'getArticles': this.getArticles
             , 'deleteArticle': this.deleteArticle
@@ -205,6 +206,13 @@ class ActionQueue {
         if (!this.checkFollowAction(username)) return;
 
         return await realApi.unfollow(username);
+    }
+
+    updateUser = async (user) => {
+        console.log('action-queue::updateUser(): user:', user);
+        this.checkAuth();
+
+        return await realApi.updateUser(user);
     }
 
     deleteArticle = async ({value: slug}) => {

@@ -1,10 +1,11 @@
 import {iconCdn} from "../services/icon-cdn.js";
 import {actionQueue} from "../services/action-queue.js";
+import {currentUser} from "../services/store.js";
 
 const style = `<style>
 </style>`;
 
-const getTemplate = () => {
+const getTemplate = (user) => {
     return `
         ${iconCdn}
         <link rel="stylesheet" href="../css/common.css">
@@ -25,20 +26,20 @@ const getTemplate = () => {
                     <form>
                         <fieldset>
                             <fieldset class="form-group">
-                                <input class="form-control" type="text" placeholder="URL of profile picture" />
+                                <input class="form-control image" type="text" placeholder="URL of profile picture" value="${user.image}" />
                             </fieldset>
                             <fieldset class="form-group">
-                                <input class="form-control form-control-lg" type="text" placeholder="Your Name" />
+                                <input class="form-control form-control-lg username" type="text" placeholder="Your Name" value="${user.username}" />
                             </fieldset>
                             <fieldset class="form-group">
                                 <textarea
-                                    class="form-control form-control-lg"
+                                    class="form-control form-control-lg bio"
                                     rows="8"
                                     placeholder="Short bio about you"
-                                ></textarea>
+                                >${user.bio}</textarea>
                             </fieldset>
                             <fieldset class="form-group">
-                                <input class="form-control form-control-lg" type="text" placeholder="Email" />
+                                <input class="form-control form-control-lg email" type="text" placeholder="Email" value="${user.email}" />
                             </fieldset>
                             <fieldset class="form-group">
                             <input
@@ -63,7 +64,8 @@ class SettingsPage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.shadowRoot.innerHTML = getTemplate();
+        const user = currentUser();
+        this.shadowRoot.innerHTML = getTemplate(user);
 
         this.findElements();
         this.setEventHandler();
@@ -79,15 +81,47 @@ class SettingsPage extends HTMLElement {
     setEventHandler() {
         console.log('settings-page::setEventHandler(): 1:', 1);
 
-        this.updateBtn = this.shadowRoot.querySelector('button.update');
-        this.shadowRoot.querySelector('button.logout')
-            ?.addEventListener('click', (evt) => {
-                evt.preventDefault();
-                actionQueue.addAction({
-                    type: 'logout',
-                    nextRoute: '/'
-                });
-            });
+        this.imageInputTag = this.shadowRoot.querySelector('input.image');
+        this.usernameInputTag = this.shadowRoot.querySelector('input.username');
+        this.bioTextareaTag = this.shadowRoot.querySelector('textarea');
+        this.emailInputTag = this.shadowRoot.querySelector('input.email');
+        this.passwordInputTag = this.shadowRoot.querySelector('input[type="password"]');
+
+        this.shadowRoot.querySelector('button.update')?.addEventListener('click', this.updateUser);
+        this.shadowRoot.querySelector('button.logout')?.addEventListener('click', this.logout);
+    }
+
+    logout = (evt) => {
+        evt.preventDefault();
+        actionQueue.addAction({
+            type: 'logout',
+            nextRoute: '/'
+        });
+    }
+
+    updateUser = (evt) => {
+        evt.preventDefault();
+        actionQueue.addAction({
+            type: 'updateUser',
+            data: {
+                image: this.imageInputTag.value,
+                username: this.usernameInputTag.value,
+                bio: this.bioTextareaTag.value,
+                email: this.emailInputTag.value,
+                password: this.passwordInputTag.value,
+            },
+            nextRoute: '/',
+            set: 'user',
+            callback: this.callback,
+        });
+    }
+
+    callback = ({type, result}) => {
+        console.log('settings-page::callback(): type, result:', type, result);
+
+        if (type === 'updateUser') {
+        } else if (type === 'error') {
+        }
     }
 
     render() {

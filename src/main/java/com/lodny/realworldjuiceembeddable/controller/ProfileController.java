@@ -5,6 +5,7 @@ import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapProfileResponse;
 import com.lodny.realworldjuiceembeddable.service.ProfileService;
 import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
+import com.lodny.realworldjuiceembeddable.sys.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,7 @@ public class ProfileController {
         log.info("[C] getProfile() : loginUser={}", loginUser);
 
         ProfileResponse profileResponse = profileService.getProfile(username, loginUser);
-        if (profileResponse.getImage() == null)
-            profileResponse.setImage("https://api.realworld.io/images/demo-avatar.png");
+        profileResponse.setImage(ImageUtil.nullToDefaultImage(profileResponse.getImage()));
         log.info("[C] getProfile() : profileResponse={}", profileResponse);
 
         return ResponseEntity.ok(new WrapProfileResponse(profileResponse));

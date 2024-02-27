@@ -2,6 +2,7 @@ package com.lodny.realworldjuiceembeddable.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
+import com.lodny.realworldjuiceembeddable.sys.util.ImageUtil;
 import lombok.Builder;
 
 @Builder
@@ -15,8 +16,7 @@ public record UserResponse(
     @JsonIgnore RealWorldUser user) {
 
     public UserResponse {
-        if (image == null)
-            image = "https://api.realworld.io/images/demo-avatar.png";
+        image = ImageUtil.nullToDefaultImage(image);
     }
 
     public static UserResponse of(final RealWorldUser user, final String token) {

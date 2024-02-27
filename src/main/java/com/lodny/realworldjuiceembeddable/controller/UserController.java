@@ -2,11 +2,15 @@ package com.lodny.realworldjuiceembeddable.controller;
 
 import com.lodny.realworldjuiceembeddable.entity.dto.LoginRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.RegisterUserRequest;
+import com.lodny.realworldjuiceembeddable.entity.dto.UpdateUserRequest;
 import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapLoginRequest;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapRegisterUserRequest;
+import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapUpdateUserRequest;
 import com.lodny.realworldjuiceembeddable.entity.wrapper.WrapUserResponse;
 import com.lodny.realworldjuiceembeddable.service.UserService;
+import com.lodny.realworldjuiceembeddable.sys.annotation.JwtTokenRequired;
+import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,6 +43,19 @@ public class UserController {
 
         UserResponse userResponse = userService.login(loginRequest);
         log.info("[C] login() : userResponse={}", userResponse);
+
+        return ResponseEntity.ok(new WrapUserResponse(userResponse));
+    }
+
+    @JwtTokenRequired
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody final WrapUpdateUserRequest wrapUpdateUserRequest,
+                                        @LoginUser final UserResponse loginUser) {
+        UpdateUserRequest updateUserRequest = wrapUpdateUserRequest.user();
+        log.info("[C] updateUser() : updateUserRequest={}", updateUserRequest);
+
+        UserResponse userResponse = userService.updateUser(updateUserRequest, loginUser);
+        log.info("[C] registerUser() : userResponse={}", userResponse);
 
         return ResponseEntity.ok(new WrapUserResponse(userResponse));
     }

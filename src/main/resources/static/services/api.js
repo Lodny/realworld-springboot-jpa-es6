@@ -31,18 +31,26 @@ const apiGet = (url) => {
     // }
 }
 
-const apiPost = (url, data, token = null) => {
-    console.log('api::post(): BASE_URL + url:', BASE_URL + url);
+const apiPostOrPut = (method, url, data) => {
+    console.log('api::apiPostOrPut(): BASE_URL + url:', BASE_URL + url);
 
     const headers = initHeaders();
     headers.set('Content-Type', 'application/json');
     return fetch(BASE_URL + url, {
-        method: 'POST',
+        method,
         headers,
         body: JSON.stringify(data)
     })
         .then(response => response.json())
-        .catch(error => console.log('[E] api::apiPost():', error));
+        .catch(error => console.log('[E] api::apiPostOrPut():', error));
+}
+
+const apiPost = (url, data) => {
+    return apiPostOrPut('POST', url, data);
+}
+
+const apiPut = (url, data) => {
+    return apiPostOrPut('PUT', url, data);
 }
 
 const apiDelete = (url, data, token = null) => {
@@ -63,12 +71,12 @@ class RealApi {
     constructor() {
     }
 
-    registerUser = (data) => {
-        return apiPost('/users', {user: data});
+    registerUser = (user) => {
+        return apiPost('/users', {user});
     }
 
-    loginUser = (data) => {
-        return apiPost('/users/login', {user: data});
+    loginUser = (user) => {
+        return apiPost('/users/login', {user});
     }
 
     favorite = (slug) => {
@@ -131,8 +139,8 @@ class RealApi {
         return apiGet(`/articles/${slug}/comments`);
     }
 
-    addComment = (slug, data) => {
-        return apiPost(`/articles/${slug}/comments`, {comment: {body: data}});
+    addComment = (slug, body) => {
+        return apiPost(`/articles/${slug}/comments`, {comment: {body}});
     }
 
     deleteComment = (slug, id) => {
@@ -141,6 +149,10 @@ class RealApi {
 
     getTop10Tags = () => {
         return apiGet(`/tags`);
+    }
+
+    updateUser = (user) => {
+        return apiPut(`/users`, {user});
     }
 }
 const realApi = new RealApi();

@@ -81,18 +81,13 @@ class LoginPage extends HTMLElement {
         this.shadowRoot.activeElement?.blur();
         console.log('login-page::login(): 1:', 1);
 
-        // const focusedElement = this.shadowRoot.activeElement;
-        // if (focusedElement) {
-        //     focusedElement.blur(); // 포커스 제거
-        // }
-
         actionQueue.addAction({
             type: 'login',
             data: {
-                email: this.emailTag.value,
-                password: this.pwdTag.value,
-                // email: 'coco@drink.com',
-                // password: '1234'
+                // email: this.emailTag.value,
+                // password: this.pwdTag.value,
+                email: 'coco@drink.com',
+                password: '1234'
             },
             set: 'user',
             nextRoute: '/',
