@@ -59,8 +59,7 @@ public class ArticleResponse {
         if (objects == null)
             throw new IllegalArgumentException("The article is not found");
 
-        log.info("[St] ArticleResponse of() : objects.length={}", objects.length);
-        log.info("[St] ArticleResponse of() : objects={}", objects);
+        log.info("ArticleResponse of() : objects={}", objects);
         if (objects.length < ARRAY_COUNT || objects[0] == null)
             throw new IllegalArgumentException("The article is not found");
 

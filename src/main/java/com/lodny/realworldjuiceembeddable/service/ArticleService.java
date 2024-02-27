@@ -2,17 +2,21 @@ package com.lodny.realworldjuiceembeddable.service;
 
 import com.lodny.realworldjuiceembeddable.entity.Article;
 import com.lodny.realworldjuiceembeddable.entity.RealWorldUser;
-import com.lodny.realworldjuiceembeddable.entity.dto.*;
+import com.lodny.realworldjuiceembeddable.entity.dto.ArticleResponse;
+import com.lodny.realworldjuiceembeddable.entity.dto.ProfileResponse;
+import com.lodny.realworldjuiceembeddable.entity.dto.RegisterArticleRequest;
+import com.lodny.realworldjuiceembeddable.entity.dto.UserResponse;
 import com.lodny.realworldjuiceembeddable.mapper.ArticleMapper;
 import com.lodny.realworldjuiceembeddable.repository.ArticleRepository;
-import com.lodny.realworldjuiceembeddable.sys.util.MapToDto.MapToDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -62,14 +66,14 @@ public class ArticleService {
         return articleRepository.deleteBySlugAndAuthorId(slug, loginUserId);
     }
 
-    public List<ArticleResponse> getArticles(final PageRequest pageRequest, final Long loginUserId) {
+    public Page<ArticleResponse> getArticles(final PageRequest pageRequest, final Long loginUserId) {
         Page<Object> objs = articleRepository.getArticles(loginUserId, pageRequest);
         log.info("[S] getArticles() : objs={}", objs);
 
         return getArticleResponses(objs);
     }
 
-    public List<ArticleResponse> getArticlesByTag(final String tag,
+    public Page<ArticleResponse> getArticlesByTag(final String tag,
                                                   final Long loginUserId,
                                                   final PageRequest pageRequest) {
         Page<Object> objs = articleRepository.getArticlesByTag(tag, loginUserId, pageRequest);
@@ -78,7 +82,7 @@ public class ArticleService {
         return getArticleResponses(objs);
     }
 
-    public List<ArticleResponse> getArticlesByAuthor(final String author,
+    public Page<ArticleResponse> getArticlesByAuthor(final String author,
                                                      final Long loginUserId,
                                                      final PageRequest pageRequest) {
         Page<Object> objs = articleRepository.getArticlesByAuthor(author, loginUserId, pageRequest);
@@ -87,16 +91,20 @@ public class ArticleService {
         return getArticleResponses(objs);
     }
 
-    public List<ArticleResponse> getArticlesByFavorited(final String favorited, final Long loginUserId, final PageRequest pageRequest) {
+    public Page<ArticleResponse> getArticlesByFavorited(final String favorited, final Long loginUserId, final PageRequest pageRequest) {
         Page<Object> objs = articleRepository.getArticlesByFavorited(favorited, loginUserId, pageRequest);
         log.info("[S] getArticlesByFavorited() : objs={}", objs);
 
         return getArticleResponses(objs);
     }
 
-    private List<ArticleResponse> getArticleResponses(final Page<Object> objs) {
-        return objs.stream()
+    private Page<ArticleResponse> getArticleResponses(final Page<Object> objs) {
+        List<ArticleResponse> articleResponses = objs.stream()
                 .map(obj -> ArticleResponse.of((Object[]) obj))
                 .toList();
+
+        log.info("[S] getArticleResponses() : articleResponses={}", articleResponses);
+
+        return new PageImpl<>(articleResponses, objs.getPageable(), objs.getTotalElements());
     }
 }

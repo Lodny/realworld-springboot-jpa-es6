@@ -12,12 +12,11 @@ import com.lodny.realworldjuiceembeddable.sys.annotation.JwtTokenRequired;
 import com.lodny.realworldjuiceembeddable.sys.annotation.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -63,20 +62,21 @@ public class ArticleController {
         log.info("[C] getArticles() : pageRequest={}", pageRequest);
 
         final Long loginUserId = loginUser == null ? -1 : loginUser.id();
-        log.info("[S] getArticles() : loginUserId={}", loginUserId);
+        log.info("[C] getArticles() : loginUserId={}", loginUserId);
 
-        log.info("getArticles() : articleParam.type()={}", articleParam.type());
+        log.info("[C] getArticles() : articleParam.type()={}", articleParam.type());
 
-        final List<ArticleResponse> articleResponses =
+
+        final Page<ArticleResponse> pageArticles =
                 switch (articleParam.type()) {
                     case "tag"       -> articleService.getArticlesByTag(articleParam.tag(), loginUserId, pageRequest);
                     case "author"    -> articleService.getArticlesByAuthor(articleParam.author(), loginUserId, pageRequest);
                     case "favorited" -> articleService.getArticlesByFavorited(articleParam.favorited(), loginUserId, pageRequest);
                     default          -> articleService.getArticles(pageRequest, loginUserId);
                 };
-        log.info("[C] getArticles() : articleResponses={}", articleResponses);
+        log.info("[C] getArticles() : pageArticles={}", pageArticles);
 
-        return ResponseEntity.ok(new WrapArticleResponses(articleResponses, articleResponses.size()));
+        return ResponseEntity.ok(new WrapArticleResponses(pageArticles));
     }
 
     private static PageRequest getPageRequest(final ArticleParam articleParam) {
