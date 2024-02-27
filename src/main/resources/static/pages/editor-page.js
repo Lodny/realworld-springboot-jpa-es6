@@ -40,7 +40,7 @@ const getTemplate = () => {
                                     <div class="tag-list">                                        
                                     </div>
                                 </fieldset>
-                                <button class="btn btn-lg pull-xs-right btn-primary" type="button">
+                                <button class="btn btn-lg pull-xs-right btn-primary" type="button" tabindex="-1">
                                     Publish Article
                                 </button>
                             </fieldset>
@@ -95,6 +95,7 @@ class EditorPage extends HTMLElement {
 
     registerArticle = (evt) => {
         evt.preventDefault();
+        this.shadowRoot.activeElement?.blur();
         console.log('editor-page::registerArticle(): evt', evt);
 
         const article = {
@@ -121,6 +122,10 @@ class EditorPage extends HTMLElement {
         if (type === 'error') {
             if (result.startsWith('title')) {
                 this.titleInput.focus();
+            } else if (result.startsWith('description')) {
+                this.descriptionInput.focus();
+            } else if (result.startsWith('body')) {
+                this.bodyTextarea.focus();
             }
         }
     }

@@ -37,7 +37,7 @@ const getTemplate = () => {
                             <fieldset class="form-group">
                                 <input class="form-control form-control-lg" type="password" placeholder="Password" />
                             </fieldset>
-                            <button class="btn btn-lg btn-primary pull-xs-right">Sign up</button>
+                            <button class="btn btn-lg btn-primary pull-xs-right" tabindex="-1">Sign up</button>
                         </form>
                     </div>
                 </div>
@@ -86,6 +86,7 @@ class RegisterPage extends HTMLElement {
 
     register = (evt) => {
         evt.preventDefault();
+        this.shadowRoot.activeElement?.blur();
         console.log('register-page::register(): 1:', 1);
 
         actionQueue.addAction({

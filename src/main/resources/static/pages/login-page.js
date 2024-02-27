@@ -34,7 +34,7 @@ const getTemplate = () => {
                             <fieldset class="form-group">
                                 <input class="form-control form-control-lg" type="password" placeholder="Password" />
                             </fieldset>
-                            <button class="btn btn-lg btn-primary pull-xs-right">Sign in</button>
+                            <button class="btn btn-lg btn-primary pull-xs-right" tabindex="-1">Sign in</button>
                         </form>
                     </div>
                 </div>
@@ -78,7 +78,13 @@ class LoginPage extends HTMLElement {
 
     login = (evt) => {
         evt.preventDefault();
+        this.shadowRoot.activeElement?.blur();
         console.log('login-page::login(): 1:', 1);
+
+        // const focusedElement = this.shadowRoot.activeElement;
+        // if (focusedElement) {
+        //     focusedElement.blur(); // 포커스 제거
+        // }
 
         actionQueue.addAction({
             type: 'login',
