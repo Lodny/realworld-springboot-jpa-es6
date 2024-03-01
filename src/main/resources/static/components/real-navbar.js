@@ -87,30 +87,23 @@ class RealNavbar extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.shadowRoot.innerHTML = getTemplate();
-
-        this.findElements();
-        this.setEventHandler();
 
         this.active = getRouteByUrl('/');
         console.log('real-navbar::constructor(): this.active:', this.active);
+
+        this.shadowRoot.innerHTML = getTemplate();
     }
 
     connectedCallback() {
+        console.log('real-navbar::connectedCallback(): 1:', 1);
+
+        this.links = Array.from(this.shadowRoot.querySelectorAll('a'));
+        this.links.forEach(aTag => aTag.addEventListener('click', this.clickLink));
+
         this.render(null, this.active);
     }
 
-    findElements = () => {
-        this.links = Array.from(this.shadowRoot.querySelectorAll('a'));
-        this.offLis = Array.from(this.shadowRoot.querySelectorAll('.nav-item.off'));
-        this.onLis = Array.from(this.shadowRoot.querySelectorAll('.nav-item.on'));
-        this.usernameLink = this.shadowRoot.querySelector('.nav-link.username');
-    }
-
-    setEventHandler = () => {
-        this.links.forEach(aTag => aTag.addEventListener('click', this.clickLink));
-    }
-
+    //todo::setCallback
     setCallback = (cb) => this.callback = cb;
 
     clickLink = (evt) => {
@@ -141,12 +134,15 @@ class RealNavbar extends HTMLElement {
         const user = currentUser();
         console.log('real-navbar::updateLinks(): user:', user);
 
-        this.offLis.forEach(link => link.style.display = user ? 'none' : 'block');
-        this.onLis.forEach(link => link.style.display = user ? 'block' : 'none');
+        this.shadowRoot.querySelectorAll('.nav-item.off')
+            .forEach(link => link.style.display = user ? 'none' : 'block');
+        this.shadowRoot.querySelectorAll('.nav-item.on')
+            .forEach(link => link.style.display = user ? 'block' : 'none');
 
         if (user) {
-            this.usernameLink.innerHTML = `<img src="" class="user-pic"/>${user.username}`;
-            this.usernameLink.href = `href="/profile/${user.username}`
+            const usernameLink = this.shadowRoot.querySelector('.nav-link.username');
+            usernameLink.innerHTML = `<img src="" class="user-pic"/>${user.username}`;
+            usernameLink.href = `href="/profile/${user.username}`
         }
     }
 
