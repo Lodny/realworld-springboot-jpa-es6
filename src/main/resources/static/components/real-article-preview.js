@@ -104,40 +104,29 @@ class RealArticlePreview extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
 
-        this.article = this.getArticle();
-        console.log('real-article-preview::constructor(): this.article:', this.article);
-
-        this.shadowRoot.innerHTML = getTemplate(this.article);
-
-        this.findElements();
-        this.setEventHandler();
-    }
-
-    getArticle() {
         const slug = this.getAttribute('slug');
         console.log('real-article-preview::constructor(): slug:', slug);
         if (!slug)
             throw Error('slug is required');
 
-        return store.getArticle(slug);
+        this.article = store.getArticle(slug);
+        console.log('real-article-preview::constructor(): this.article:', this.article);
+
+        this.shadowRoot.innerHTML = getTemplate(this.article);
     }
 
     connectedCallback() {
-        this.updateFavorite(this.article);
-    }
+        console.log('real-article-preview::connectedCallback(): 1:', 1);
 
-    findElements() {
-        this.articleLink = this.shadowRoot.querySelector('a.preview-link');
+        this.shadowRoot.querySelector('a.preview-link')
+            .addEventListener('click', this.goLink);
         this.favoriteButton = this.shadowRoot.querySelector('button');
-    }
-
-    setEventHandler() {
-        console.log('real-article::setEventHandler(): 1:', 1);
-
         this.favoriteButton.addEventListener('click', this.favorite);
+
         this.shadowRoot.querySelectorAll('.article-meta a')
             .forEach(link => link.addEventListener('click', this.goLink));
-        this.articleLink.addEventListener('click', this.goLink);
+
+        this.updateFavorite(this.article);
     }
 
     favorite = () => {
@@ -161,25 +150,30 @@ class RealArticlePreview extends HTMLElement {
         addGoAction(url);
     }
 
-    callback = ({type, result}) => {
-        console.log('real-article-preview::callback(): type:', type);
-        console.log('real-article-preview::callback(): result:', result);
-
-        if (!result) return;
-
-        this.article = result;
-        store.setArticle(this.article);
-        console.log('real-article-preview::callback(): this.article:', this.article);
-
-        this.updateFavorite(this.article);
-    }
-
     updateFavorite(article) {
         console.log('real-article-preview::updateFavorite(): 1:', 1);
         this.favoriteButton.innerHTML = `<i class="ion-heart"></i> ${article.favoritesCount}`;
         article.favorited
             ? this.favoriteButton.classList.add('focus')
             : this.favoriteButton.classList.remove('focus');
+    }
+
+    callback = ({type, result}) => {
+        console.log('real-article-preview::callback(): type, result:', type, result);
+
+        const favoriteCallback = (result) => {
+            if (!result) return;
+
+            this.article = result;
+            store.setArticle(this.article);
+            this.updateFavorite(this.article);
+        }
+
+        const runCallback = {
+            'favorite':   favoriteCallback,
+            'unfavorite':   favoriteCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 
