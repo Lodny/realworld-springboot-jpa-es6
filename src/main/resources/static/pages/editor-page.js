@@ -60,27 +60,19 @@ class EditorPage extends HTMLElement {
         this.shadowRoot.innerHTML = getTemplate();
 
         this.tags = [];
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     connectedCallback() {
-        this.render();
-    }
+        console.log('editor-page::connectedCallback(): 1:', 1);
 
-    findElements() {
         this.registerBtn = this.shadowRoot.querySelector('button');
         this.titleInput = this.shadowRoot.querySelector('input.title');
         this.descriptionInput = this.shadowRoot.querySelector('input.description');
         this.bodyTextarea = this.shadowRoot.querySelector('textarea');
         this.tagsInput = this.shadowRoot.querySelector('input.tags');
-    }
 
-    setEventHandler() {
-        console.log('editor-page::setEventHandler(): 1:', 1);
-        this.registerBtn.addEventListener('click', this.registerArticle);
         this.tagsInput.addEventListener('keyup', this.enterKeyUp)
+        this.registerBtn.addEventListener('click', this.registerArticle);
     }
 
     enterKeyUp = (evt) => {
@@ -91,6 +83,12 @@ class EditorPage extends HTMLElement {
             this.updateTags();
             this.tagsInput.value = '';
         }
+    }
+
+    updateTags() {
+        this.shadowRoot.querySelector('.tag-list').innerHTML = this.tags
+            .map(tag => `<span class="tag-default tag-pill"> <i class="ion-close-round"></i> ${tag} </span>`)
+            .join('');
     }
 
     registerArticle = (evt) => {
@@ -119,7 +117,7 @@ class EditorPage extends HTMLElement {
     callback = ({type, result}) => {
         console.log('editor-page::callback(): type, result:', type, result);
 
-        if (type === 'error') {
+        const errorCallback = (result) => {
             if (result.startsWith('title')) {
                 this.titleInput.focus();
             } else if (result.startsWith('description')) {
@@ -128,15 +126,11 @@ class EditorPage extends HTMLElement {
                 this.bodyTextarea.focus();
             }
         }
-    }
 
-    render() {
-    }
-
-    updateTags() {
-        this.shadowRoot.querySelector('.tag-list').innerHTML = this.tags
-            .map(tag => `<span class="tag-default tag-pill"> <i class="ion-close-round"></i> ${tag} </span>`)
-            .join('');
+        const runCallback = {
+            'error': errorCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 customElements.define('editor-page', EditorPage);

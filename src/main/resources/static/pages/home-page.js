@@ -39,9 +39,6 @@ class HomePage extends HTMLElement {
         const [tabTitles, activeTab] = this.getTabTitles();
         this.activeTab = activeTab;
         this.shadowRoot.innerHTML = getTemplate(tabTitles, activeTab);
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     getTabTitles(tagName) {
@@ -61,26 +58,22 @@ class HomePage extends HTMLElement {
     }
 
     async connectedCallback() {
+        console.log('home-page::connectedCallback(): 1:', 1);
+
+        this.tabTag = this.shadowRoot.querySelector('real-tab');
+        this.sidebarTag = this.shadowRoot.querySelector('real-sidebar');
+        this.articlesTag = this.shadowRoot.querySelector('.articles');
+        this.pagingTag = this.shadowRoot.querySelector('real-paging');
+
+        this.tabTag?.setCallback(this.tabEventHandler);
+        this.sidebarTag?.setCallback(this.tagEventHandler);
+
         this.getArticles(this.activeTab);
         actionQueue.addListener('changePage', this);
     }
 
     disconnectedCallback() {
         actionQueue.removeListener('changePage', this);
-    }
-
-    findElements() {
-        this.tabTag = this.shadowRoot.querySelector('real-tab');
-        this.sidebarTag = this.shadowRoot.querySelector('real-sidebar');
-        this.articlesTag = this.shadowRoot.querySelector('.articles');
-        this.pagingTag = this.shadowRoot.querySelector('real-paging');
-        console.log('home-page::findElements(): this.sidebarTag:', this.sidebarTag);
-    }
-
-    setEventHandler() {
-        console.log('home-page::setEventHandler(): 1:', 1);
-        this.tabTag?.setCallback(this.tabEventHandler);
-        this.sidebarTag?.setCallback(this.tagEventHandler);
     }
 
     tabEventHandler = async (activeTab) => {
@@ -105,24 +98,6 @@ class HomePage extends HTMLElement {
         const [tabTitles, activeTab] = this.getTabTitles(tagName);
         this.tabTag.setAttribute('tab-titles', tabTitles);
         this.tabTag.setAttribute('active-tab', activeTab);
-    }
-
-    callback = ({type, result, data}) => {
-        console.log('home-page::callback(): type, result', type, result);
-
-        if (type === 'getArticles') {
-            this.updateArticles(result);
-            console.log('home-page::callback(): data:', data);
-
-            this.pagingTag.setPageCount(data.totalPages);
-            this.pagingTag.setCurrentPage(data.number);
-        } else if (type === 'changePage') {
-            console.log('home-page::callback(): this.activeTab:', this.activeTab);
-            this.getArticles(this.activeTab, Number(result));
-        }
-    }
-
-    render() {
     }
 
     updateArticles(articles) {
@@ -154,6 +129,27 @@ class HomePage extends HTMLElement {
             set: 'articles',
             callback: this.callback,
         })
+    }
+
+    callback = ({type, result, data}) => {
+        console.log('home-page::callback(): type, result', type, result);
+        console.log('home-page::callback(): data:', data);
+
+        const getArticlesCallback = (result, data) => {
+            this.updateArticles(result);
+            this.pagingTag.setPageCount(data.totalPages);
+            this.pagingTag.setCurrentPage(data.number);
+        }
+
+        const changePageCallback = (result) => {
+            this.getArticles(this.activeTab, Number(result));
+        }
+
+        const runCallback = {
+            'getArticles': getArticlesCallback,
+            'changePage': changePageCallback,
+        }
+        runCallback[type] && runCallback[type](result, data);
     }
 }
 customElements.define('home-page', HomePage);

@@ -64,22 +64,11 @@ class SettingsPage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        const user = currentUser();
-        this.shadowRoot.innerHTML = getTemplate(user);
-
-        this.findElements();
-        this.setEventHandler();
+        this.shadowRoot.innerHTML = getTemplate(currentUser());
     }
 
     connectedCallback() {
-        this.render();
-    }
-
-    findElements() {
-    }
-
-    setEventHandler() {
-        console.log('settings-page::setEventHandler(): 1:', 1);
+        console.log('settings-page::connectedCallback(): 1:', 1);
 
         this.imageInputTag = this.shadowRoot.querySelector('input.image');
         this.usernameInputTag = this.shadowRoot.querySelector('input.username');
@@ -87,8 +76,10 @@ class SettingsPage extends HTMLElement {
         this.emailInputTag = this.shadowRoot.querySelector('input.email');
         this.passwordInputTag = this.shadowRoot.querySelector('input[type="password"]');
 
-        this.shadowRoot.querySelector('button.update')?.addEventListener('click', this.updateUser);
-        this.shadowRoot.querySelector('button.logout')?.addEventListener('click', this.logout);
+        this.shadowRoot.querySelector('button.update')
+            ?.addEventListener('click', this.updateUser);
+        this.shadowRoot.querySelector('button.logout')
+            ?.addEventListener('click', this.logout);
     }
 
     logout = (evt) => {
@@ -119,12 +110,14 @@ class SettingsPage extends HTMLElement {
     callback = ({type, result}) => {
         console.log('settings-page::callback(): type, result:', type, result);
 
-        if (type === 'updateUser') {
-        } else if (type === 'error') {
-        }
-    }
+        const updateUserCallback = (result) => {}
+        const errorCallback = (result) => {}
 
-    render() {
+        const runCallback = {
+            'updateUser':   updateUserCallback,
+            'error':        errorCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 customElements.define('settings-page', SettingsPage);

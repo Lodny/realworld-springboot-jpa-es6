@@ -97,9 +97,6 @@ class ProfilePage extends HTMLElement {
         const [tabTitles, activeTab] = this.getTabTitles();
         this.activeTab = activeTab;
         this.shadowRoot.innerHTML = getTemplate(tabTitles, this.activeTab);
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     getTabTitles() {
@@ -110,6 +107,8 @@ class ProfilePage extends HTMLElement {
     }
 
     connectedCallback() {
+        this.findElements();
+
         actionQueue.addAction({
             type: 'getProfile',
             data: {
@@ -128,21 +127,18 @@ class ProfilePage extends HTMLElement {
         this.profileNameH4 = this.shadowRoot.querySelector('h4');
         this.bioP = this.shadowRoot.querySelector('p');
         this.image = this.shadowRoot.querySelector('img');
+
         this.followButton = this.shadowRoot.querySelector('button.follow');
-        this.editButton = this.shadowRoot.querySelector('button.edit');
-
-        this.tabTag = this.shadowRoot.querySelector('real-tab');
-        this.articlesTag = this.shadowRoot.querySelector('.articles');
-
-        this.pagingTag = this.shadowRoot.querySelector('real-paging');
-    }
-
-    setEventHandler() {
-        console.log('profile-page::setEventHandler(): 1:', 1);
         this.followButton.addEventListener('click', this.follow);
+
+        this.editButton = this.shadowRoot.querySelector('button.edit');
         this.editButton.addEventListener('click', this.edit);
 
-        this.tabTag?.setCallback(this.tabEventHandler);
+        this.shadowRoot.querySelector('real-tab')
+            .setCallback(this.tabEventHandler);
+
+        this.articlesTag = this.shadowRoot.querySelector('.articles');
+        this.pagingTag = this.shadowRoot.querySelector('real-paging');
     }
 
     tabEventHandler = (activeTab) => {
@@ -151,31 +147,11 @@ class ProfilePage extends HTMLElement {
         this.getArticles(this.activeTab);
     }
 
-    render(profile) {
-        console.log('profile-page::render(): profile:', profile);
-
-        this.updateProfile(profile);
-        this.updateButtons(profile);
-        this.updateFollowing(profile);
-        this.updateArticles();
-    }
-
     updateProfile(profile) {
         this.profileNameH4.innerHTML = profile.username;
         this.bioP.innerHTML = profile.bio;
         if (profile.image)
             this.image.src = profile.image;
-    }
-
-    updateButtons(profile) {
-        this.user = currentUser();
-        if (profile.username === this.user?.username) {
-            this.followButton.style.display = 'none'
-            this.editButton.style.display = 'block'
-        } else {
-            this.followButton.style.display = 'block'
-            this.editButton.style.display = 'none'
-        }
     }
 
     updateFollowing(profile) {
@@ -209,28 +185,6 @@ class ProfilePage extends HTMLElement {
         });
     }
 
-    callback = ({type, result, data}) => {
-        console.log('profile-page::callback(): type, result:', type, result);
-
-        if (type === 'getProfile') {
-            this.profile = result;
-            this.getArticles(this.activeTab);
-            this.updateProfile(result);
-        } else if (type === 'getArticles') {
-            this.updateArticles(result);
-            console.log('profile-page::callback(): data:', data);
-
-            this.pagingTag.setPageCount(data.totalPages);
-            this.pagingTag.setCurrentPage(data.number);
-        } else if (['follow', 'unfollow'].includes(type)) {
-            this.profile = result;
-            this.updateFollowing(this.profile);
-        } else if (type === 'changePage') {
-            console.log('profile-page::callback(): this.activeTab:', this.activeTab);
-            this.getArticles(this.activeTab, Number(result));
-        }
-    }
-
     follow = async (evt) => {
         evt.preventDefault();
         console.log('profile-page::follow(): 1:', 1);
@@ -249,6 +203,40 @@ class ProfilePage extends HTMLElement {
         console.log('profile-page::edit(): 1:', 1);
 
         addGoAction('/settings');
+    }
+
+    callback = ({type, result, data}) => {
+        console.log('profile-page::callback(): type, result:', type, result);
+        console.log('profile-page::callback(): data:', data);
+
+        const getProfileCallback = (result) => {
+            this.profile = result;
+            this.getArticles(this.activeTab);
+            this.updateProfile(result);
+        }
+
+        const getArticlesCallback = (result, data) => {
+            this.updateArticles(result);
+            this.pagingTag.setPageCount(data.totalPages);
+            this.pagingTag.setCurrentPage(data.number);
+        }
+
+        const followOrUnfollowCallback = (result) => {
+            this.profile = result;
+            this.updateFollowing(this.profile);
+        }
+
+        const changePageCallback = (result) => {
+            this.getArticles(this.activeTab, Number(result));
+        }
+
+        const callbackFunc = {
+            'getProfile':   getProfileCallback,
+            'getArticles':  getArticlesCallback,
+            'follow':       followOrUnfollowCallback,
+            'changePage':   changePageCallback,
+        }
+        callbackFunc[type] && callbackFunc[type](result, data);
     }
 }
 customElements.define('profile-page', ProfilePage);

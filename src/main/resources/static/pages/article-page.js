@@ -149,40 +149,18 @@ class ArticlePage extends HTMLElement {
     async connectedCallback() {
         console.log('article-page::connectedCallback(): 1:', 1);
 
-        this.findElements();
-        this.setEventHandler();
-        // const data = await realApi.getProfile(profileUsername);
-        // this.profile = data.profile;
-        // console.log('profile-page::connectedCallback(): this.profile:', this.profile);
-        //
-        // this.render(this.profile);
+        this.articleMetas = Array.from(this.shadowRoot.querySelectorAll('real-article-meta'));
+        console.log('article-page::findElements(): this.articleMetas:', this.articleMetas);
+
+        actionQueue.addListener('follow', this.articleMetas);
+        actionQueue.addListener('favorite', this.articleMetas);
     }
 
     disconnectedCallback() {
         console.log('article-page::disconnectedCallback(): 1:', 1);
 
-        this.removeListener();
-    }
-    findElements() {
-        this.articleMetas = Array.from(this.shadowRoot.querySelectorAll('real-article-meta'));
-        console.log('article-page::findElements(): this.articleMetas:', this.articleMetas);
-        actionQueue.addListener('follow', this.articleMetas);
-        actionQueue.addListener('favorite', this.articleMetas);
-    }
-
-    removeListener() {
-        console.log('article-page::removeListener(): 1:', 1);
-
         actionQueue.removeListener('follow', this.articleMetas);
         actionQueue.removeListener('favorite', this.articleMetas);
-    }
-
-    setEventHandler() {
-        console.log('article-page::setEventHandler(): 1:', 1);
-
-    }
-
-    render() {
     }
 }
 customElements.define('article-page', ArticlePage);

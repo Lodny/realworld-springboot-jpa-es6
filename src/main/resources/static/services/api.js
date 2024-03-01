@@ -3,14 +3,8 @@ import {store} from "./store.js";
 const BASE_URL = 'api';
 
 const initHeaders = () => {
-    const headers = new Map();
     const user = store.get("user");
-    if (user)
-        headers.set('Authorization', 'Token ' + user.token);
-
-    console.log('api::initHeaders(): headers:', headers);
-
-    return headers;
+    return user ? {'Authorization': 'Token ' + user.token} : {};
 }
 
 const apiGet = (url) => {

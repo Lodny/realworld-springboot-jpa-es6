@@ -49,27 +49,18 @@ class LoginPage extends HTMLElement {
         this.attachShadow({mode: 'open'});
 
         this.shadowRoot.innerHTML = getTemplate();
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     connectedCallback() {
-        this.render();
-    }
+        console.log('login-page::connectedCallback(): 1:', 1);
 
-    findElements() {
         this.emailTag = this.shadowRoot.querySelector('input[type="text"]');
-        this.pwdTag = this.shadowRoot.querySelector('input[type="password"]');
-        this.loginBtn = this.shadowRoot.querySelector('button');
-    }
+        this.passwordTag = this.shadowRoot.querySelector('input[type="password"]');
 
-    setEventHandler() {
-        console.log('login-page::setEventHandler(): 1:', 1);
-        this.loginBtn.addEventListener('click', this.login);
+        this.shadowRoot.querySelector('button')
+            .addEventListener('click', this.login);
 
-        this.shadowRoot
-            .querySelector('a')
+        this.shadowRoot.querySelector('a')
             .addEventListener('click', (evt) => {
                 evt.preventDefault();
                 addGoAction(evt.target.href);
@@ -85,7 +76,7 @@ class LoginPage extends HTMLElement {
             type: 'login',
             data: {
                 // email: this.emailTag.value,
-                // password: this.pwdTag.value,
+                // password: this.passwordTag.value,
                 email: 'coco@drink.com',
                 password: '1234'
             },
@@ -98,15 +89,17 @@ class LoginPage extends HTMLElement {
     callback = ({type, result}) => {
         console.log('login-page::callback(): type, message:', type, result);
 
-        if (type === 'error') {
+        const errorCallback = (result) => {
             if (result.startsWith('email'))
                 this.emailTag.focus();
             else if (result.startsWith('password'))
-                this.pwdTag.focus();
+                this.passwordTag.focus();
         }
-    }
 
-    render() {
+        const runCallback = {
+            'error': errorCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 customElements.define('login-page', LoginPage);
