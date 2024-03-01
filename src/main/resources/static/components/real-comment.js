@@ -98,19 +98,11 @@ class RealComment extends HTMLElement {
         const user = currentUser();
         const isOwnComment = user?.username === comment.author.username;
         this.shadowRoot.innerHTML = getTemplate(comment, isOwnComment);
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     connectedCallback() {
+        console.log('real-comment::connectedCallback(): 1:', 1);
 
-    }
-
-    findElements() {
-    }
-
-    setEventHandler() {
         this.shadowRoot
             .querySelector('.ion-trash-a')
             ?.addEventListener('click', this.deleteComment);
@@ -140,10 +132,6 @@ class RealComment extends HTMLElement {
     callback = ({type, result}) => {
         console.log('real-comment::callback(): type, result', type, result);
         this.remove();
-    }
-
-    render() {
-
     }
 }
 customElements.define('real-comment', RealComment);

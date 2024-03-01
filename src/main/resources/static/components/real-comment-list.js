@@ -78,13 +78,18 @@ class RealCommentList extends HTMLElement {
         console.log('real-comment-list::constructor(): user:', user);
 
         this.shadowRoot.innerHTML = getTemplate(user);
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     async connectedCallback() {
         console.log('real-comment-list::connectedCallback(): 1:', 1);
+
+        this.commentsTag = this.shadowRoot.querySelector('.comments')
+        this.shadowRoot.querySelectorAll('a')
+            .forEach(link => link.addEventListener('click', this.goLink));
+
+        this.shadowRoot
+            .querySelector('button')
+            ?.addEventListener('click', this.addComment);
 
         actionQueue.addAction({
             type: 'getComments',
@@ -94,21 +99,6 @@ class RealCommentList extends HTMLElement {
             set: 'comments',
             callback: this.callback
         })
-    }
-
-    findElements() {
-        this.links = this.shadowRoot.querySelectorAll('a');
-        this.commentsTag = this.shadowRoot.querySelector('.comments')
-        this.textareaTag = this.shadowRoot.querySelector('textarea');
-    }
-
-    setEventHandler() {
-        console.log('real-comment-list::setEventHandler(): 1:', 1);
-        this.links.forEach(link => link.addEventListener('click', this.goLink));
-
-        this.shadowRoot
-            .querySelector('button')
-            ?.addEventListener('click', this.addComment);
     }
 
     goLink = (evt) => {
@@ -121,7 +111,8 @@ class RealCommentList extends HTMLElement {
     addComment = (evt) => {
         evt.preventDefault();
 
-        const body = this.textareaTag.value;
+        const textareaTag = this.shadowRoot.querySelector('textarea');
+        const body = textareaTag.value;
         console.log('real-comment-list::addComment(): body:', body);
 
         actionQueue.addAction({
@@ -133,21 +124,7 @@ class RealCommentList extends HTMLElement {
             callback: this.callback
         });
 
-        this.textareaTag.value = '';
-    }
-
-    callback = ({type, result}) => {
-        console.log('real-comment-list::callback(): type, result', type, result);
-
-        if (type === 'getComments') {
-            this.updateComments(result);
-        } else if (type === 'addComment') {
-            this.insertComment(result.id);
-        }
-    }
-
-    render() {
-
+        textareaTag.value = '';
     }
 
     insertComment(commentId) {
@@ -160,6 +137,24 @@ class RealCommentList extends HTMLElement {
         this.commentsTag.innerHTML = comments
             .map(comment => `<real-comment slug="${this.slug}" id="${comment.id}"></real-comment>`)
             .join('');
+    }
+
+    callback = ({type, result}) => {
+        console.log('real-comment-list::callback(): type, result', type, result);
+
+        const getCommentsCallback = (result) => {
+            this.updateComments(result);
+        }
+
+        const addCommentCallback = (result) => {
+            this.insertComment(result.id);
+        }
+
+        const runCallback = {
+            'getComments':  getCommentsCallback,
+            'addComment':   addCommentCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 customElements.define('real-comment-list', RealCommentList);
