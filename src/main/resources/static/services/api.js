@@ -7,13 +7,16 @@ const initHeaders = () => {
     return user ? {'Authorization': 'Token ' + user.token} : {};
 }
 
-const apiGet = (url) => {
-    console.log('api::get(): BASE_URL + url:', BASE_URL + url);
+const apiGetOrDelete = (method, url) => {
+    console.log('api::apiGetOrDelete(): method, BASE_URL + url:', method, BASE_URL + url);
 
     const headers = initHeaders();
-    return fetch(BASE_URL + url, {headers})
+    return fetch(BASE_URL + url, {
+        method,
+        headers
+    })
         .then(response => response.json())
-        .catch(error => console.log('[E] api::apiGet():', error));
+        .catch(error => console.log('[E] api::apiGetOrDelete():', error));
 
     // try {
     //     const response = await fetch(BASE_URL + url, {headers});
@@ -26,10 +29,9 @@ const apiGet = (url) => {
 }
 
 const apiPostOrPut = (method, url, data) => {
-    console.log('api::apiPostOrPut(): BASE_URL + url:', BASE_URL + url);
+    console.log('api::apiPostOrPut(): method, BASE_URL + url:', method, BASE_URL + url);
 
-    const headers = initHeaders();
-    headers.set('Content-Type', 'application/json');
+    const headers = {...initHeaders(), 'Content-Type': 'application/json'};
     return fetch(BASE_URL + url, {
         method,
         headers,
@@ -37,6 +39,10 @@ const apiPostOrPut = (method, url, data) => {
     })
         .then(response => response.json())
         .catch(error => console.log('[E] api::apiPostOrPut():', error));
+}
+
+const apiGet = (url, data) => {
+    return apiGetOrDelete('GET', url, data);
 }
 
 const apiPost = (url, data) => {
@@ -47,16 +53,8 @@ const apiPut = (url, data) => {
     return apiPostOrPut('PUT', url, data);
 }
 
-const apiDelete = (url, data, token = null) => {
-    console.log('api::apiDelete(): BASE_URL + url:', BASE_URL + url);
-
-    const headers = initHeaders();
-    return fetch(BASE_URL + url, {
-        method: 'DELETE',
-        headers,
-    })
-        .then(response => response.json())
-        .catch(error => console.log('[E] api::apiDelete():', error));
+const apiDelete = (url, data) => {
+    return apiGetOrDelete('DELETE', url, data);
 }
 
 
