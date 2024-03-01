@@ -79,13 +79,13 @@ class RealPaging extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-
         this.shadowRoot.innerHTML = getTemplate();
     }
 
     connectedCallback() {
-        this.pageUlTag = this.shadowRoot.querySelector('ul');
+        console.log('real-paging::connectedCallback(): 1:', 1);
     }
+
     static get observedAttributes() {
         return ['page', 'page-count'];
     }
@@ -94,17 +94,15 @@ class RealPaging extends HTMLElement {
         console.log('real-paging::attributeChangedCallback(): name, oldValue, newValue:', name, oldValue, newValue);
         if (name === 'page-count') {
             this.updatePages(newValue);
-            console.log('real-paging::attributeChangedCallback(): 1:', 1);
         } else if (name === 'page') {
             this.updateActivePage(oldValue, newValue);
-            console.log('real-paging::attributeChangedCallback(): 2:', 2);
         }
     }
 
     updatePages(pageCount) {
         console.log('real-paging::updatePages(): pageCount:', pageCount);
 
-        this.pageUlTag.innerHTML = new Array(Number(pageCount))
+        this.shadowRoot.querySelector('ul').innerHTML = new Array(Number(pageCount))
             .fill()
             .map((_, index) => ` 
                 <li class="page-item">
@@ -147,15 +145,13 @@ class RealPaging extends HTMLElement {
 
     setPageCount(pageCount) {
         console.log('real-paging::setPageCount(): pageCount:', pageCount);
+        //todo::setAttribute
         this.setAttribute('page-count', pageCount);
     }
 
     setCurrentPage(currPage) {
         console.log('real-paging::setCurrentPage(): currPage:', currPage);
         this.setAttribute('page', currPage + 1);
-    }
-
-    render() {
     }
 }
 customElements.define('real-paging', RealPaging);
