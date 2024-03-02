@@ -52,29 +52,18 @@ const routeInfo = {
 };
 
 function extractPath(url, basePath) {
-    // const regex = new RegExp('(?:^https?://localhost:\\d+)?(' + basePath.replace(/:[a-zA-Z0-9-]+/g, '[a-zA-Z0-9-]+') + ')(/.*)?');
     const regex = new RegExp(basePath.replace(/:[a-zA-Z0-9-]+/g, '([a-zA-Z0-9-]+)'));
     const match = url.match(regex);
     if (!match) return null;
 
-    // console.log('routes::extractPath(): match:', match);
-
-    // const link = match[1];
-    // const pathName = match[2] ? match[2].substring(1) : null;
     return [match[0], match[1]];
 }
 
 const getRouteByUrl = (url) => {
-    console.log('routes::getRouteNameByUrl(): url:', url);
-
     const foundRoute = routeInfo.routes.toReversed().find(route => {
         return !!extractPath(url, route.url);
     });
-    console.log('routes::getRouteNameByUrl(): foundRoute:', foundRoute);
-
-    const [link, pathName] = extractPath(url, foundRoute.url);
-    console.log('routes::getRouteNameByUrl(): pathName:', pathName);
-
+    const [_, pathName] = extractPath(url, foundRoute.url);
     return {...foundRoute, pathName};
 }
 
@@ -83,5 +72,25 @@ const getRouteByName = (name) => {
     return routeInfo.routes.find(route => route.name === name);
 }
 
+const getBaseUrlByUrl = (url) => {
+    return routeInfo.routes.toReversed().find(route => {
+        return !!extractPath(url, route.url);
+    })?.url;
+}
 
-export {routeInfo, getRouteByUrl, getRouteByName}
+const getCustomTagHTML = (url) => {
+    const route = getRouteByUrl(url);
+
+    const routeTagName = route.element.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const pathName = `pathName="${route.pathName ?? ''}"`
+    console.log('routes::getCustomTagHTML(): routeTagName, pathName:', routeTagName, pathName);
+
+    return `<${routeTagName} ${pathName}></${routeTagName}>`;
+}
+
+export {
+    getRouteByUrl,
+    getRouteByName,
+    getBaseUrlByUrl,
+    getCustomTagHTML
+}

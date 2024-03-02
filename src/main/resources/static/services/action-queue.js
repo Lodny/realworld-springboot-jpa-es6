@@ -53,51 +53,56 @@ class ActionQueue {
         const data = await executor(action.data);
         console.log('action-queue::run(): data:', data);
 
-        if (!this.checkError(data)) {
+        if (this.hasError(data)) {
             await this.alertTag.alert(data.message);
             action.callback && action.callback({type: "error", result: data.message});
             return;
         }
 
-        action.set && store.set(action.set, data[action.set]);
-        action.nextRoute && this.routeAction({value: action.nextRoute});
         const result = data && Object.values(data)[0];
+        action.set && store.set(action.set, data[action.set]);
         action.callback && action.callback({type: action.type, result, data});
-        this.runNotify(action, result);
+        this.notifyListener(action, result);
+        action.nextRoute && addGoAction(action.nextRoute);
     }
 
-    checkError(result) {
-        if (!result) return true;
-        if (!result.message) return true;
+    hasError(result) {
+        if (!result) return false;
+        if (!result.message) return false;
 
-        return false;
+        return true;
     }
 
-    runNotify(action, result) {
-        action.notify && this.listenerMap
-            .get(action.notify)
+    notifyListener(action, result) {
+        this.listenerMap
+            .get(action.type)
             ?.forEach(listener => {
                 console.log('action-queue::noMethod(): listener:', listener);
                 listener?.callback({type: action.type, result});
             });
     }
 
-    addListener(key, tags) {
-        const listeners = this.listenerMap.get(key) ?? [];
-        listeners.push(...(Array.isArray(tags) ? tags : [tags]));
-        this.listenerMap.set(key, listeners);
+    addListener(types, listener) {
+        console.log('action-queue::addListener(): types:', types);
+        console.log('action-queue::addListener(): listener:', listener);
 
-        console.log('action-queue::addListener(): key, this.listenerMap.get(key):', key, this.listenerMap.get(key));
+        types = Array.isArray(types) ? types : [types];
+        types.forEach(type => {
+            const listeners = this.listenerMap.get(type) ?? [];
+            listeners.push(listener);
+            this.listenerMap.set(type, listeners);
+        })
     }
 
-    removeListener(key, tags) {
-        tags = (Array.isArray(tags) ? tags : [tags]);
+    removeListener(types, removeListener) {
+        console.log('action-queue::removeListener(): types:', types);
+        console.log('action-queue::removeListener(): removeListener:', removeListener);
 
-        let listeners = this.listenerMap.get(key) ?? [];
-        listeners = listeners.filter(listener => !tags.includes(listener));
-        this.listenerMap.set(key, listeners);
-
-        console.log('action-queue::removeListener(): listeners:', listeners);
+        types = Array.isArray(types) ? types : [types];
+        types.forEach(type => {
+            const listeners = this.listenerMap.get(type) ?? [];
+            this.listenerMap.set(type, listeners.filter(listener => listener !== removeListener));
+        })
     }
 
     registerUserAction = async (user) => {
@@ -112,11 +117,8 @@ class ActionQueue {
         store.delete('user');
     }
 
-    routeAction = ({value}) => {
-        console.log('action-queue::routeAction(): this.navbar:', this.navbar);
-        if (!this.navbar) return;
-
-        this.navbar.setCurrentLink(value);
+    routeAction = (data) => {
+        return data;
     }
 
     getProfile = async ({value: username}) => {
@@ -271,11 +273,11 @@ class ActionQueue {
 
 const actionQueue = new ActionQueue();
 
-const addGoAction = (routeName) => {
+const addGoAction = (url) => {
     actionQueue.addAction({
         type: 'route',
         data: {
-            value: routeName,
+            value: url,
         },
     });
 }

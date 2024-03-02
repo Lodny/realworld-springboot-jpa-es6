@@ -72,11 +72,11 @@ class RealArticleMeta extends HTMLElement {
         console.log('real-article-meta::constructor(): color:', color);
 
         this.shadowRoot.innerHTML = getTemplate(this.article, isMyArticle, color);
-
     }
 
     connectedCallback() {
         console.log('real-article-meta::connectedCallback(): 1:', 1);
+        actionQueue.addListener(['follow', 'unfollow', 'favorite', 'unfavorite'], this);
 
         this.shadowRoot.querySelector('button.edit')
             ?.addEventListener('click', this.editArticle);
@@ -92,6 +92,10 @@ class RealArticleMeta extends HTMLElement {
 
         this.updateFollowing(this.article.author);
         this.updateFavorite(this.article);
+    }
+
+    disconnectedCallback() {
+        actionQueue.removeListener(['follow', 'unfollow', 'favorite', 'unfavorite'], this);
     }
 
     goLink = (evt) => {
@@ -133,8 +137,6 @@ class RealArticleMeta extends HTMLElement {
             data: {
                 value: author.username,
             },
-            // callback: this.callback,
-            notify: 'follow'
         });
     }
 
@@ -147,8 +149,6 @@ class RealArticleMeta extends HTMLElement {
             data: {
                 value: this.article.slug,
             },
-            // callback: this.callback,
-            notify: 'favorite'
         });
     }
 

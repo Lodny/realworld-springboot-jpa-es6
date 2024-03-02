@@ -59,6 +59,7 @@ class HomePage extends HTMLElement {
 
     async connectedCallback() {
         console.log('home-page::connectedCallback(): 1:', 1);
+        actionQueue.addListener('changePage', this);
 
         this.tabTag = this.shadowRoot.querySelector('real-tab');
         this.sidebarTag = this.shadowRoot.querySelector('real-sidebar');
@@ -69,7 +70,6 @@ class HomePage extends HTMLElement {
         this.sidebarTag?.setCallback(this.tagEventHandler);
 
         this.getArticles(this.activeTab);
-        actionQueue.addListener('changePage', this);
     }
 
     disconnectedCallback() {

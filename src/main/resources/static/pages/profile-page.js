@@ -107,23 +107,9 @@ class ProfilePage extends HTMLElement {
     }
 
     connectedCallback() {
-        this.findElements();
-
-        actionQueue.addAction({
-            type: 'getProfile',
-            data: {
-                value: this.getAttribute('pathName'),
-            },
-            callback: this.callback,
-        });
+        console.log('profile-page::connectedCallback(): 1:', 1);
         actionQueue.addListener('changePage', this);
-    }
 
-    disconnectedCallback() {
-        actionQueue.removeListener('changePage', this);
-    }
-
-    findElements() {
         this.profileNameH4 = this.shadowRoot.querySelector('h4');
         this.bioP = this.shadowRoot.querySelector('p');
         this.image = this.shadowRoot.querySelector('img');
@@ -139,6 +125,18 @@ class ProfilePage extends HTMLElement {
 
         this.articlesTag = this.shadowRoot.querySelector('.articles');
         this.pagingTag = this.shadowRoot.querySelector('real-paging');
+
+        actionQueue.addAction({
+            type: 'getProfile',
+            data: {
+                value: this.getAttribute('pathName'),
+            },
+            callback: this.callback,
+        });
+    }
+
+    disconnectedCallback() {
+        actionQueue.removeListener('changePage', this);
     }
 
     tabEventHandler = (activeTab) => {

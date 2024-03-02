@@ -56,7 +56,7 @@ class RealFooter extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.shadow.innerHTML = getTemplate()
+        this.shadowRoot.innerHTML = getTemplate()
     }
 
     connectedCallback() {

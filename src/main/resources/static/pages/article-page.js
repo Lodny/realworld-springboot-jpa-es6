@@ -151,16 +151,9 @@ class ArticlePage extends HTMLElement {
 
         this.articleMetas = Array.from(this.shadowRoot.querySelectorAll('real-article-meta'));
         console.log('article-page::findElements(): this.articleMetas:', this.articleMetas);
-
-        actionQueue.addListener('follow', this.articleMetas);
-        actionQueue.addListener('favorite', this.articleMetas);
     }
 
     disconnectedCallback() {
-        console.log('article-page::disconnectedCallback(): 1:', 1);
-
-        actionQueue.removeListener('follow', this.articleMetas);
-        actionQueue.removeListener('favorite', this.articleMetas);
     }
 }
 customElements.define('article-page', ArticlePage);

@@ -64,7 +64,6 @@ const style = `<style>
 
 const getTemplate = (article) => {
     const author = article.author;
-    //todo::tag
 
     return `
         ${iconCdn}

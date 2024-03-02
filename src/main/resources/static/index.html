@@ -35,33 +35,9 @@
 <real-alert></real-alert>
 
 <script type="module">
-    import { routeInfo } from './services/routes.js';
-
     document.addEventListener('DOMContentLoaded', function() {
-        initNavbar();
-        initRouter();
+        console.log('index::DOMContentLoaded():');
     });
-
-    const navCallback = (menuName) => {
-        console.log('index::navCallback(): menuName:', menuName);
-        const router = document.querySelector('real-router');
-        router.go(menuName);
-    }
-
-    const initNavbar = () => {
-        const navbar = document.querySelector('real-navbar');
-        navbar.setCallback(navCallback);
-    }
-
-    const initRouter = () => {
-        const router = document.querySelector('real-router');
-        router.setRoutes(routeInfo);
-    }
-
-    // customElements.whenDefined('real-router').then(() => {
-    //     const router = document.querySelector('real-router');
-    //     router.setRoutes(100);
-    // });
 </script>
 
 </body>

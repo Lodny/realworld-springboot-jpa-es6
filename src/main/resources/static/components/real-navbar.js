@@ -1,6 +1,7 @@
-import {currentUser} from "../services/store.js";
+import {currentUser, store} from "../services/store.js";
 import {iconCdn} from "../services/icon-cdn.js"
-import {getRouteByUrl} from "../services/routes.js";
+import {getBaseUrlByUrl} from "../services/routes.js";
+import {actionQueue, addGoAction} from "../services/action-queue.js";
 
 const style = `
     <style>
@@ -87,47 +88,27 @@ class RealNavbar extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-
-        this.active = getRouteByUrl('/');
-        console.log('real-navbar::constructor(): this.active:', this.active);
-
         this.shadowRoot.innerHTML = getTemplate();
     }
 
     connectedCallback() {
         console.log('real-navbar::connectedCallback(): 1:', 1);
+        actionQueue.addListener('route', this);
 
         this.links = Array.from(this.shadowRoot.querySelectorAll('a'));
         this.links.forEach(aTag => aTag.addEventListener('click', this.clickLink));
-
-        this.render(null, this.active);
+        this.updateActiveLink('/')
     }
 
-    //todo::setCallback
-    setCallback = (cb) => this.callback = cb;
+    disconnectedCallback() {
+        actionQueue.removeListener('route', this);
+    }
 
     clickLink = (evt) => {
         evt.preventDefault();
         console.log('real-navbar::clickLink(): evt.target.href:', evt.target.href);
 
-        this.setCurrentLink(evt.target.href);
-    }
-
-    setCurrentLink(link) {
-        if (typeof link === 'string')
-            link = getRouteByUrl(link);
-
-        const prevActive = this.active;
-        this.active = link;
-        this.render(prevActive, this.active);
-
-        if (this.callback)
-            this.callback(this.active);
-    }
-
-    render(prevActive, currActive) {
-        this.updateLinks();
-        this.updateActiveLink(prevActive, currActive);
+        addGoAction(evt.target.href);
     }
 
     updateLinks() {
@@ -146,17 +127,29 @@ class RealNavbar extends HTMLElement {
         }
     }
 
-    updateActiveLink(prevActive, currActive) {
-        console.log('real-navbar::updateActiveLink(): prevActive:', prevActive);
-        console.log('real-navbar::updateActiveLink(): currActive:', currActive);
+    updateActiveLink(url) {
+        console.log('real-navbar::updateActiveLink(): url:', url);
 
-        this.links.toReversed()
-            .find(link => getRouteByUrl(link.href)?.name === prevActive?.name)
+        this.shadowRoot.querySelector('.nav .nav-item .nav-link.active')
             ?.classList.remove('active');
 
         this.links.toReversed()
-            .find(link => getRouteByUrl(link.href)?.name === currActive.name)
+            .find(link => getBaseUrlByUrl(link.href) === getBaseUrlByUrl(url))
             ?.classList.add('active');
+    }
+
+    callback = ({type, result}) => {
+        console.log('real-navbar::callback(): type, result:', type, result);
+
+        const routeCallback = (url) => {
+            this.updateLinks();
+            this.updateActiveLink(url);
+        }
+
+        const runCallback = {
+            'route':   routeCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 customElements.define('real-navbar', RealNavbar);

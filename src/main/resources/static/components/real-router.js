@@ -1,52 +1,42 @@
-import {EditorPage} from "../pages/editor-page.js";
-import {SettingsPage} from "../pages/settings-page.js";
-import {ProfilePage} from "../pages/profile-page.js";
+import {getCustomTagHTML} from "../services/routes.js";
+import {actionQueue} from "../services/action-queue.js";
+
+const getTemplate = () => {
+    return `
+        <home-page></home-page>
+    `
+}
 
 class RealRouter extends HTMLElement {
-
     constructor() {
         super();
-
-        this.shadow = this.attachShadow({mode: 'open'});
+        this.attachShadow({mode: 'open'});
+        this.shadowRoot.innerHTML = getTemplate();
     }
 
     connectedCallback() {
-        this.render();
+        console.log('real-router::connectedCallback(): 1:', 1);
+        actionQueue.addListener('route', this);
     }
 
-    setRoutes(routeInfo) {
-        console.log('real-router::setRoutes(): routeInfo:', routeInfo);
-        this.routes = routeInfo.routes;
-        this.go(this.routes[0]);
+    disconnectedCallback() {
+        actionQueue.removeListener('route', this);
     }
 
-    go(route) {
-        console.log('real-router::go(): route:', route);
+    callback = ({type, result}) => {
+        console.log('real-router::callback(): type, result:', type, result);
 
-        this.active = route;
-        console.log('real-router::go(): this.active:', this.active);
+        const changeRouteCallback = (url) => {
+            this.shadowRoot.innerHTML = getCustomTagHTML(url);
+        }
 
-        this.render();
-    }
-
-    getCurrentTagString() {
-        const className = this.active.element.name;
-        const tagName = className.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-
-        const pathName = `pathName="${this.active.pathName ?? ''}"`
-        console.log('real-router::getCurrentTagString(): pathName:', pathName);
-
-        return `<${tagName} ${pathName}></${tagName}>`;
-    }
-
-    render() {
-        if (!this.active) return;
-        console.log('real-router::render(): this.active.element.name:', this.active.element.name);
-
-        this.shadow.innerHTML = this.getCurrentTagString();
-        console.log('real-router::render(): this.shadow.innerHTML:', this.shadow.innerHTML);
+        const runCallback = {
+            'route':  changeRouteCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
-customElements.define('real-router', RealRouter);
 
+customElements.define('real-router', RealRouter);
 export {RealRouter}
+// customElements.whenDefined()
