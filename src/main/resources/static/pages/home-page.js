@@ -135,7 +135,6 @@ class HomePage extends HTMLElement {
         }
 
         const activeTabCallback = (activeTab) => {
-            console.log('>>>>>>>>>>>>>>> home-page::activeTabCallback(): 1:', 1);
             this.activeTab = activeTab
             this.getArticles(this.activeTab);
         }

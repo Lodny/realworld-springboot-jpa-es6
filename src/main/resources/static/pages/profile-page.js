@@ -93,7 +93,7 @@ class ProfilePage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
-        this.listenTypes = ['getProfile', 'getArticles', 'follow', 'changePage'];
+        this.listenTypes = ['getProfile', 'getArticles', 'follow', 'unfollow', 'changePage', 'activeTab'];
 
         const [tabTitles, activeTab] = this.getTabTitles();
         this.activeTab = activeTab;
@@ -190,10 +190,10 @@ class ProfilePage extends HTMLElement {
         console.log('profile-page::callback(): type, result:', type, result);
         console.log('profile-page::callback(): data:', data);
 
-        const getProfileCallback = (result) => {
-            this.profile = result;
+        const getProfileCallback = (profile) => {
+            this.profile = profile;
             this.getArticles(this.activeTab);
-            this.updateProfile(result);
+            this.updateProfile(profile);
         }
 
         const getArticlesCallback = (articles, {totalPages, number}) => {
@@ -207,20 +207,27 @@ class ProfilePage extends HTMLElement {
             })
         }
 
-        const followOrUnfollowCallback = (result) => {
-            this.profile = result;
+        const followOrUnfollowCallback = (profile) => {
+            this.profile = profile;
             this.updateFollowing(this.profile);
         }
 
-        const changePageCallback = (result) => {
-            this.getArticles(this.activeTab, Number(result));
+        const changePageCallback = (paeg) => {
+            this.getArticles(this.activeTab, +page);
+        }
+
+        const activeTabCallback = (activeTab) => {
+            this.activeTab = activeTab
+            this.getArticles(this.activeTab);
         }
 
         const callbackFunc = {
             'getProfile':   getProfileCallback,
             'getArticles':  getArticlesCallback,
             'follow':       followOrUnfollowCallback,
+            'unfollow':     followOrUnfollowCallback,
             'changePage':   changePageCallback,
+            'activeTab':    activeTabCallback,
         }
         callbackFunc[type] && callbackFunc[type](result, data);
     }

@@ -73,9 +73,9 @@ const getTemplate = () => {
         
         <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
-                <li class="nav-item">
-                    <a class="nav-link active" href="Global Feed">Global Feed</a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link active" href="Global Feed">Global Feed</a>-->
+<!--                </li>-->
             </ul>
         </div>
         <slot></slot>
@@ -88,7 +88,7 @@ class RealTab extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
         this.listenTypes = ['tabTitles', 'activeTab'];
-        this.activeTab = 'Global Feed';
+
         this.shadowRoot.innerHTML = getTemplate();
     }
 
@@ -97,21 +97,31 @@ class RealTab extends HTMLElement {
         actionQueue.addListener(this.listenTypes, this);
 
         this.ulTag = this.shadowRoot.querySelector('ul');
-        this.setEventHandler();
+
+        const tabTitles = this.getAttribute('tab-titles').split(',');
+        this.activeTab = this.getAttribute('active-tab');
+        this.initTabTitles(tabTitles, this.activeTab);
     }
 
     disconnectedCallback() {
         actionQueue.removeListener(this.listenTypes, this);
     }
 
-    setEventHandler() {
-        this.shadowRoot.querySelectorAll('a')
+    initTabTitles(tabTitles, activeTab) {
+        this.ulTag.innerHTML = tabTitles.map(title =>`
+                <li class="nav-item">
+                    <a class="nav-link ${title === activeTab ? 'active' : ''}" href="${title}">${title}</a>
+                </li>`).join('');
+
+        this.ulTag.querySelectorAll('a')
             .forEach(aTag => aTag.addEventListener('click', this.clickLink));
     }
 
     clickLink = async (evt) => {
         evt.preventDefault();
         console.log('real-tab::clickLink(): evt.target:', evt.target);
+        console.log('real-tab::clickLink(): this.activeTab:', this.activeTab);
+
 
         if (this.activeTab !== evt.target.innerHTML) {
             if (this.activeTab.startsWith('#')) {
@@ -138,12 +148,8 @@ class RealTab extends HTMLElement {
         console.log('real-tab::callback(): data:', data);
 
         const tabTitlesCallback = (result, {tabTitles, activeTab}) => {
-            this.ulTag.innerHTML = tabTitles.map(title =>`
-                <li class="nav-item">
-                    <a class="nav-link ${title === activeTab ? 'active' : ''}" href="${title}">${title}</a>
-                </li>`).join('');
-
-            this.setEventHandler();
+            this.initTabTitles(tabTitles, activeTab);
+            this.activeTab = activeTab;
 
             actionQueue.addAction({
                 type: 'activeTab',
