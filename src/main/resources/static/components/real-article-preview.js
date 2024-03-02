@@ -102,6 +102,7 @@ class RealArticlePreview extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this.listenTypes = ['favorite', 'unfavorite'];
 
         const slug = this.getAttribute('slug');
         console.log('real-article-preview::constructor(): slug:', slug);
@@ -116,6 +117,7 @@ class RealArticlePreview extends HTMLElement {
 
     connectedCallback() {
         console.log('real-article-preview::connectedCallback(): 1:', 1);
+        actionQueue.addListener(this.listenTypes, this);
 
         this.shadowRoot.querySelector('a.preview-link')
             .addEventListener('click', this.goLink);
@@ -128,6 +130,10 @@ class RealArticlePreview extends HTMLElement {
         this.updateFavorite(this.article);
     }
 
+    unconnectedCallback() {
+        actionQueue.removeListener(this.listenTypes, this);
+    }
+
     favorite = () => {
         console.log('real-article-preview::favorite(): this.article:', this.article);
 
@@ -136,7 +142,6 @@ class RealArticlePreview extends HTMLElement {
             data: {
                 value: this.article.slug,
             },
-            callback: this.callback
         });
     }
 
@@ -157,13 +162,14 @@ class RealArticlePreview extends HTMLElement {
             : this.favoriteButton.classList.remove('focus');
     }
 
-    callback = ({type, result}) => {
+    callback = ({type, result,data}) => {
         console.log('real-article-preview::callback(): type, result:', type, result);
+        console.log('real-article-preview::callback(): data:', data);
 
-        const favoriteCallback = (result) => {
-            if (!result) return;
+        const favoriteCallback = (_, {article}) => {
+            if (this.article.slug !== article.slug) return;
 
-            this.article = result;
+            this.article = article;
             store.setArticle(this.article);
             this.updateFavorite(this.article);
         }
@@ -172,7 +178,7 @@ class RealArticlePreview extends HTMLElement {
             'favorite':   favoriteCallback,
             'unfavorite':   favoriteCallback,
         }
-        runCallback[type] && runCallback[type](result);
+        runCallback[type] && runCallback[type](result, data);
     }
 }
 

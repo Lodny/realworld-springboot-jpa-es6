@@ -110,7 +110,6 @@ class EditorPage extends HTMLElement {
                 value: article
             },
             nextRoute: '/',
-            callback: this.callback,
         })
     }
 

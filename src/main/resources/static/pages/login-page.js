@@ -82,7 +82,6 @@ class LoginPage extends HTMLElement {
             },
             set: 'user',
             nextRoute: '/',
-            callback: this.callback,
         });
     }
 

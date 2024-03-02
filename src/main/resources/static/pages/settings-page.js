@@ -69,6 +69,7 @@ class SettingsPage extends HTMLElement {
 
     connectedCallback() {
         console.log('settings-page::connectedCallback(): 1:', 1);
+        actionQueue.addListener('updateUser', this);
 
         this.imageInputTag = this.shadowRoot.querySelector('input.image');
         this.usernameInputTag = this.shadowRoot.querySelector('input.username');
@@ -80,6 +81,10 @@ class SettingsPage extends HTMLElement {
             ?.addEventListener('click', this.updateUser);
         this.shadowRoot.querySelector('button.logout')
             ?.addEventListener('click', this.logout);
+    }
+
+    disconnectedCallback() {
+        actionQueue.removeListener('updateUser', this);
     }
 
     logout = (evt) => {
@@ -103,7 +108,6 @@ class SettingsPage extends HTMLElement {
             },
             nextRoute: '/',
             set: 'user',
-            callback: this.callback,
         });
     }
 

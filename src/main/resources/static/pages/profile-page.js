@@ -93,6 +93,7 @@ class ProfilePage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this.listenTypes = ['getProfile', 'getArticles', 'follow', 'changePage'];
 
         const [tabTitles, activeTab] = this.getTabTitles();
         this.activeTab = activeTab;
@@ -108,47 +109,31 @@ class ProfilePage extends HTMLElement {
 
     connectedCallback() {
         console.log('profile-page::connectedCallback(): 1:', 1);
-        actionQueue.addListener('changePage', this);
-
-        this.profileNameH4 = this.shadowRoot.querySelector('h4');
-        this.bioP = this.shadowRoot.querySelector('p');
-        this.image = this.shadowRoot.querySelector('img');
+        actionQueue.addListener(this.listenTypes, this);
 
         this.followButton = this.shadowRoot.querySelector('button.follow');
         this.followButton.addEventListener('click', this.follow);
 
-        this.editButton = this.shadowRoot.querySelector('button.edit');
-        this.editButton.addEventListener('click', this.edit);
-
-        this.shadowRoot.querySelector('real-tab')
-            .setCallback(this.tabEventHandler);
-
-        this.articlesTag = this.shadowRoot.querySelector('.articles');
+        this.shadowRoot.querySelector('button.edit')
+            .addEventListener('click', this.edit);
 
         actionQueue.addAction({
             type: 'getProfile',
             data: {
                 value: this.getAttribute('pathName'),
             },
-            callback: this.callback,
         });
     }
 
     disconnectedCallback() {
-        actionQueue.removeListener('changePage', this);
-    }
-
-    tabEventHandler = (activeTab) => {
-        console.log('profile-page::tabEventHandler(): activeTab:', activeTab);
-        this.activeTab = activeTab;
-        this.getArticles(this.activeTab);
+        actionQueue.removeListener(this.listenTypes, this);
     }
 
     updateProfile(profile) {
-        this.profileNameH4.innerHTML = profile.username;
-        this.bioP.innerHTML = profile.bio;
+        this.shadowRoot.querySelector('h4').innerHTML = profile.username;
+        this.shadowRoot.querySelector('p').innerHTML = profile.bio;
         if (profile.image)
-            this.image.src = profile.image;
+            this.shadowRoot.querySelector('img').src = profile.image;
     }
 
     updateFollowing(profile) {
@@ -159,7 +144,7 @@ class ProfilePage extends HTMLElement {
     }
 
     updateArticles(articles) {
-        this.articlesTag.innerHTML = articles
+        this.shadowRoot.querySelector('.articles').innerHTML = articles
             .map(article => `<real-article-preview slug="${article.slug}"></real-article-preview>`)
             .join('')
     }
@@ -178,7 +163,6 @@ class ProfilePage extends HTMLElement {
                 page
             },
             set: 'articles',
-            callback: this.callback,
         });
     }
 

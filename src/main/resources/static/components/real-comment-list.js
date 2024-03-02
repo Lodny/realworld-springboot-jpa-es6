@@ -70,6 +70,7 @@ class RealCommentList extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this.listenTypes = ['getComments', 'addComment'];
 
         this.slug = this.getAttribute('slug');
         console.log('real-comment-list::constructor(): this.slug:', this.slug);
@@ -82,6 +83,7 @@ class RealCommentList extends HTMLElement {
 
     async connectedCallback() {
         console.log('real-comment-list::connectedCallback(): 1:', 1);
+        actionQueue.addListener(this.listenTypes, this);
 
         this.commentsTag = this.shadowRoot.querySelector('.comments')
         this.shadowRoot.querySelectorAll('a')
@@ -97,8 +99,11 @@ class RealCommentList extends HTMLElement {
                 value: this.slug,
             },
             set: 'comments',
-            callback: this.callback
         })
+    }
+
+    disconnectedCallback() {
+        actionQueue.removeListener(this.listenTypes, this);
     }
 
     goLink = (evt) => {
@@ -121,7 +126,6 @@ class RealCommentList extends HTMLElement {
                 slug: this.slug,
                 value: body,
             },
-            callback: this.callback
         });
 
         textareaTag.value = '';
@@ -142,12 +146,12 @@ class RealCommentList extends HTMLElement {
     callback = ({type, result}) => {
         console.log('real-comment-list::callback(): type, result', type, result);
 
-        const getCommentsCallback = (result) => {
-            this.updateComments(result);
+        const getCommentsCallback = (comments) => {
+            this.updateComments(comments);
         }
 
-        const addCommentCallback = (result) => {
-            this.insertComment(result.id);
+        const addCommentCallback = ({id}) => {
+            this.insertComment(id);
         }
 
         const runCallback = {

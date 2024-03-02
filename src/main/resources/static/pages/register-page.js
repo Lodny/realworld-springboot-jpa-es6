@@ -85,7 +85,6 @@ class RegisterPage extends HTMLElement {
             },
             set: 'user',
             nextRoute: '/',
-            callback: this.callback,
         });
     }
 

@@ -43,7 +43,6 @@ class RealSidebar extends HTMLElement {
 
         actionQueue.addAction({
             type: 'getTags',
-            // callback: this.callback
         });
     }
 
