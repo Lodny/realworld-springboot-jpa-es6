@@ -124,7 +124,6 @@ class ProfilePage extends HTMLElement {
             .setCallback(this.tabEventHandler);
 
         this.articlesTag = this.shadowRoot.querySelector('.articles');
-        this.pagingTag = this.shadowRoot.querySelector('real-paging');
 
         actionQueue.addAction({
             type: 'getProfile',
@@ -213,10 +212,15 @@ class ProfilePage extends HTMLElement {
             this.updateProfile(result);
         }
 
-        const getArticlesCallback = (result, data) => {
-            this.updateArticles(result);
-            this.pagingTag.setPageCount(data.totalPages);
-            this.pagingTag.setCurrentPage(data.number);
+        const getArticlesCallback = (articles, {totalPages, number}) => {
+            this.updateArticles(articles);
+            actionQueue.addAction({
+                type: 'pageInfo',
+                data: {
+                    totalPages,
+                    number
+                }
+            })
         }
 
         const followOrUnfollowCallback = (result) => {

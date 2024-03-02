@@ -39,48 +39,44 @@ class RealSidebar extends HTMLElement {
     }
 
     async connectedCallback() {
+        actionQueue.addListener(['getTags'], this);
+
         actionQueue.addAction({
-            type: 'tags',
-            callback: this.callback
+            type: 'getTags',
+            // callback: this.callback
         });
-
-        this.findElements();
     }
 
-    findElements() {
-        this.tagListTag = this.shadowRoot.querySelector('.tag-list');
-    }
-
-    setEventHandler() {
-        this.shadowRoot
-            .querySelectorAll('a')
-            .forEach(link => link.addEventListener('click', this.clickTag))
+    disconnectedCallback() {
+        actionQueue.removeListener(['getTags'], this);
     }
 
     clickTag = (evt) => {
         evt.preventDefault();
-        console.log('real-sidebar::clickTag(): evt.target:', evt.target);
-        console.log('real-sidebar::clickTag(): evt.target.innerHTML:', evt.target.innerHTML);
-
-        this?.callback(evt.target.innerHTML);
+        actionQueue.addAction({
+            type: 'selectTag',
+            data: {
+                value: evt.target.innerHTML,
+            }
+        });
     }
 
-    setCallback = callback => this.callback = callback;
+    callback = ({type, result}) => {
+        console.log('real-sidebar::callback(): type, result:', type, result);
 
-    callback = ({type, result: tags}) => {
-        console.log('real-sidebar::connectedCallback(): tags:', tags);
+        const getTagsCallback = (tags) => {
+            this.shadowRoot.querySelector('.tag-list').innerHTML = tags
+                .map(tag => `<a href="" class="tag-pill tag-default">${tag}</a>`)
+                .join('');
 
-        this.updateTags(tags);
-        this.setEventHandler();
-    }
+            this.shadowRoot.querySelectorAll('a')
+                .forEach(link => link.addEventListener('click', this.clickTag))
+        }
 
-    render() {
-    }
-
-    updateTags(tags) {
-        this.tagListTag.innerHTML = tags
-            .map(tag => `<a href="" class="tag-pill tag-default">${tag}</a>`)
-            .join('');
+        const runCallback = {
+            'getTags':   getTagsCallback,
+        }
+        runCallback[type] && runCallback[type](result);
     }
 }
 customElements.define('real-sidebar', RealSidebar);

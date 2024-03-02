@@ -1,6 +1,7 @@
 import {RealArticlePreview} from "./real-article-preview.js";
 import {RealPaging} from "./real-paging.js";
 import {iconCdn} from "../services/icon-cdn.js";
+import {actionQueue} from "../services/action-queue.js";
 
 const style = ` <style>
     .feed-toggle {
@@ -72,7 +73,7 @@ const getTemplate = () => {
         
         <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
-                <li class="nav-item global">
+                <li class="nav-item">
                     <a class="nav-link active" href="Global Feed">Global Feed</a>
                 </li>
             </ul>
@@ -86,94 +87,81 @@ class RealTab extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this.listenTypes = ['tabTitles', 'activeTab'];
+        this.activeTab = 'Global Feed';
         this.shadowRoot.innerHTML = getTemplate();
-
-        this.tabTitles = this.getAttribute('tab-titles').split(',');
-        this.activeTab = this.getAttribute('active-tab');
-        console.log('real-tab::constructor(): this.tabTitles:', this.tabTitles);
-        console.log('real-tab::constructor(): this.activeTab:', this.activeTab);
-
-        this.findElements();
-        this.setEventHandler();
     }
 
     async connectedCallback() {
-        this.updateTabs(this.tabTitles, this.activeTab);
-        this.render();
+        console.log('real-tab::connectedCallback(): 1:', 1);
+        actionQueue.addListener(this.listenTypes, this);
+
+        this.ulTag = this.shadowRoot.querySelector('ul');
+        this.setEventHandler();
     }
 
-    static get observedAttributes() {
-        return ['tab-titles', 'active-tab'];
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        console.log('real-tab::attributeChangedCallback(): name, oldValue, newValue:', name, oldValue, newValue);
-        // if (oldValue === newValue) {
-        //     return;
-        // }
-
-        if ('tab-titles' === name) {
-            const tabTitles = newValue.split(',');
-            this.updateTabs(tabTitles, this.activeTab);
-            this.tabTitles = tabTitles;
-        }
-        else if ('active-tab' === name) {
-            this.updateActiveTab(oldValue, newValue);
-            this.activeTab = newValue;
-
-            if (this.callback)
-                this.callback(this.activeTab);
-        }
-    }
-
-    findElements() {
-        this.tabUlTag = this.shadowRoot.querySelector('ul');
-        this.links = this.shadowRoot.querySelectorAll('a');
+    disconnectedCallback() {
+        actionQueue.removeListener(this.listenTypes, this);
     }
 
     setEventHandler() {
-        console.log('real-tab::setEventHandler(): 1:', 1);
-        this.links.forEach(aTag => aTag.addEventListener('click', this.clickLink));
+        this.shadowRoot.querySelectorAll('a')
+            .forEach(aTag => aTag.addEventListener('click', this.clickLink));
     }
-
-    setCallback = (cb) => this.callback = cb;
 
     clickLink = async (evt) => {
         evt.preventDefault();
         console.log('real-tab::clickLink(): evt.target:', evt.target);
 
-        this.setActiveTab(evt.target.innerHTML);
+        if (this.activeTab !== evt.target.innerHTML) {
+            if (this.activeTab.startsWith('#')) {
+                this.ulTag.querySelector('li:last-child').remove();
+            } else {
+                this.shadowRoot.querySelector('.nav-link.active')
+                    ?.classList.remove('active');
+            }
+
+            evt.target.classList.add('active');
+        }
+
+        this.activeTab = evt.target.innerHTML;
+        actionQueue.addAction({
+            type: 'activeTab',
+            data: {
+                value: this.activeTab
+            }
+        });
     }
 
-    setActiveTab(tabTitle) {
-        console.log('real-tab::setActiveTab(): tabTitle:', tabTitle);
-        // if (this.activeTab === tabTitle) return;
-        this.setAttribute('active-tab', tabTitle);
-    }
+    callback = ({type, result, data}) => {
+        console.log('real-tab::callback(): type, result:', type, result);
+        console.log('real-tab::callback(): data:', data);
 
-    render() {
-        // this.updateTabs();
-    }
+        const tabTitlesCallback = (result, {tabTitles, activeTab}) => {
+            this.ulTag.innerHTML = tabTitles.map(title =>`
+                <li class="nav-item">
+                    <a class="nav-link ${title === activeTab ? 'active' : ''}" href="${title}">${title}</a>
+                </li>`).join('');
 
-    updateTabs(tabTitles, activeTab) {
-        console.log('real-tab::updateTabs(): tabTitles, activeTab:', tabTitles, activeTab);
-        this.tabUlTag.innerHTML = tabTitles.map(title =>`
-            <li class="nav-item">
-                <a class="nav-link ${title === activeTab ? 'active' : ''}" href="${title}">${title}</a>
-            </li>`).join('');
+            this.setEventHandler();
 
-        this.findElements()
-        this.setEventHandler();
-    }
+            actionQueue.addAction({
+                type: 'activeTab',
+                data: {
+                    value: activeTab
+                }
+            });
+        }
 
-    updateActiveTab(oldActiveTab, activeTab) {
-        let linkTag = this.shadowRoot.querySelector('.nav-link.active');
-        linkTag?.classList.remove('active');
+        const activeTabCallback = (result, data) => {
+            console.log('>>>>> real-tab::activeTabCallback(): 1:', 1);
+        }
 
-        linkTag = this.shadowRoot.querySelector(`a[href="${activeTab}"]`);
-        console.log('real-tab::updateActiveTab(): linkTag:', linkTag);
-
-        linkTag?.classList.add('active');
+        const runCallback = {
+            'tabTitles': tabTitlesCallback,
+            'activeTab': activeTabCallback,
+        }
+        runCallback[type] && runCallback[type](result, data);
     }
 }
 customElements.define('real-tab', RealTab);

@@ -6,10 +6,7 @@ class ActionQueue {
         this.actionQueue = [];
         this.listenerMap = new Map();
 
-        this.timerId = setInterval(this.run, 100);
-        // this.router = document.querySelector('real-router');
-        // console.log('action-queue::constructor(): this.router:', this.router);
-
+        setInterval(this.run, 20);
         this.navbar = document.querySelector('real-navbar');
         console.log('action-queue::constructor(): this.navbar:', this.navbar);
 
@@ -32,8 +29,12 @@ class ActionQueue {
             , 'addComment': this.addComment
             , 'getComments': this.getComments
             , 'deleteComment': this.deleteComment
-            , 'tags': this.getTags
+            , 'getTags': this.getTags
+            , 'selectTag': this.selectTag
             , 'changePage': this.changePage
+            , 'pageInfo': this.pageInfo
+            , 'tabTitles': this.tabTitles
+            , 'activeTab': this.activeTab
         }
     }
 
@@ -44,7 +45,7 @@ class ActionQueue {
     run = async () => {
         if (this.actionQueue.length === 0) return;
 
-        const action = this.actionQueue.pop();
+        const action = this.actionQueue.shift();
         console.log('action-queue::run(): action:', action);
 
         const executor = this.actionExecutor[action.type];
@@ -62,7 +63,7 @@ class ActionQueue {
         const result = data && Object.values(data)[0];
         action.set && store.set(action.set, data[action.set]);
         action.callback && action.callback({type: action.type, result, data});
-        this.notifyListener(action, result);
+        this.notifyListener(action, result, data);
         action.nextRoute && addGoAction(action.nextRoute);
     }
 
@@ -73,12 +74,12 @@ class ActionQueue {
         return true;
     }
 
-    notifyListener(action, result) {
+    notifyListener(action, result, data) {
         this.listenerMap
             .get(action.type)
             ?.forEach(listener => {
                 console.log('action-queue::noMethod(): listener:', listener);
-                listener?.callback({type: action.type, result});
+                listener?.callback({type: action.type, result, data});
             });
     }
 
@@ -265,10 +266,17 @@ class ActionQueue {
         return await realApi.getTop10Tags();
     }
 
+    selectTag = (data) => data;
+
     changePage = ({value: page}) => {
         console.log('action-queue::changePage(): page:', page);
         return page;
     }
+
+    pageInfo = (data) => data;
+
+    tabTitles = (data) => data;
+    activeTab = (data) => data;
 }
 
 const actionQueue = new ActionQueue();

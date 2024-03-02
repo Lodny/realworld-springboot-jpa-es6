@@ -79,79 +79,72 @@ class RealPaging extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this.listenTypes = ['changePage', 'pageInfo'];
         this.shadowRoot.innerHTML = getTemplate();
     }
 
     connectedCallback() {
         console.log('real-paging::connectedCallback(): 1:', 1);
+        actionQueue.addListener(this.listenTypes, this);
     }
 
-    static get observedAttributes() {
-        return ['page', 'page-count'];
+    disconnectedCallback() {
+        actionQueue.removeListener(this.listenTypes, this);
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        console.log('real-paging::attributeChangedCallback(): name, oldValue, newValue:', name, oldValue, newValue);
-        if (name === 'page-count') {
-            this.updatePages(newValue);
-        } else if (name === 'page') {
-            this.updateActivePage(oldValue, newValue);
+    // static get observedAttributes() {
+    //     return ['page', 'page-count'];
+    // }
+    //
+    // attributeChangedCallback(name, oldValue, newValue) {
+    //     console.log('real-paging::attributeChangedCallback(): name, oldValue, newValue:', name, oldValue, newValue);
+    //
+    //     if (name === 'page-count') {
+    //         this.updatePages(newValue);
+    //     } else if (name === 'page') {
+    //         this.updateActivePage(oldValue, newValue);
+    //     }
+    // }
+
+    clickPage = (evt) => {
+        evt.preventDefault();
+        console.log('real-paging::noMethod(): evt.target.innerText:', evt.target.innerText);
+
+        actionQueue.addAction({
+            type: 'changePage',
+            data: {
+                value: evt.target.innerText
+            },
+        });
+    }
+
+    callback = ({type, result, data}) => {
+        console.log('real-paging::callback(): type, result:', type, result);
+        console.log('real-paging::callback(): data:', data);
+
+        const changePageCallback = (page) => {
+            console.log('>>>>> real-paging::changePageCallback(): page:', page);
         }
-    }
 
-    updatePages(pageCount) {
-        console.log('real-paging::updatePages(): pageCount:', pageCount);
-
-        this.shadowRoot.querySelector('ul').innerHTML = new Array(Number(pageCount))
-            .fill()
-            .map((_, index) => ` 
-                <li class="page-item">
+        const pageInfoCallback = (result, pageInfo) => {
+            this.shadowRoot.querySelector('ul').innerHTML = new Array(+pageInfo.totalPages)
+                .fill()
+                .map((_, index) => ` 
+                <li class="page-item ${index === +pageInfo.number ? 'active': ''}">
                     <a class="page-link" href="">${index + 1}</a>
                 </li>`)
-            .join('');
+                .join('');
 
-        this.shadowRoot
-            .querySelectorAll('a')
-            .forEach(link => link.addEventListener('click', (evt) => {
-                evt.preventDefault();
-                console.log('real-paging::noMethod(): evt.target.innerText:', evt.target.innerText);
-
-                actionQueue.addAction({
-                    type: 'changePage',
-                    data: {
-                        value: evt.target.innerText
-                    },
-                    notify: 'changePage'
-                })
-            }));
-    }
-
-    updateActivePage(oldPage, newPage) {
-        console.log('real-paging::updateActivePage(): oldPage, newPage:', oldPage, newPage);
-
-        let pageLinks = Array.from(this.shadowRoot.querySelectorAll('a'));
-        if (oldPage !== null) {
-            pageLinks
-                .find(tag => tag.innerText === oldPage)
-                ?.closest('li')
-                .classList.remove('active');
+            this.shadowRoot
+                .querySelectorAll('a')
+                .forEach(link => link.addEventListener('click', this.clickPage));
         }
 
-        pageLinks
-            .find(tag => tag.innerText === newPage)
-            ?.closest('li')
-            .classList.add('active');
-    }
-
-    setPageCount(pageCount) {
-        console.log('real-paging::setPageCount(): pageCount:', pageCount);
-        //todo::setAttribute
-        this.setAttribute('page-count', pageCount);
-    }
-
-    setCurrentPage(currPage) {
-        console.log('real-paging::setCurrentPage(): currPage:', currPage);
-        this.setAttribute('page', currPage + 1);
+        const runCallback = {
+            'changePage':   changePageCallback,
+            'pageInfo':     pageInfoCallback,
+        }
+        runCallback[type] && runCallback[type](result, data);
     }
 }
 customElements.define('real-paging', RealPaging);

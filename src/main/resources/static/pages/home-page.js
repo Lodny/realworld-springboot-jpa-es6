@@ -35,6 +35,7 @@ class HomePage extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: 'open'});
+        this.listenTypes = ['getArticles', 'changePage', 'selectTag', 'activeTab'];
 
         const [tabTitles, activeTab] = this.getTabTitles();
         this.activeTab = activeTab;
@@ -59,45 +60,17 @@ class HomePage extends HTMLElement {
 
     async connectedCallback() {
         console.log('home-page::connectedCallback(): 1:', 1);
-        actionQueue.addListener('changePage', this);
+        actionQueue.addListener(this.listenTypes, this);
 
         this.tabTag = this.shadowRoot.querySelector('real-tab');
-        this.sidebarTag = this.shadowRoot.querySelector('real-sidebar');
-        this.articlesTag = this.shadowRoot.querySelector('.articles');
-        this.pagingTag = this.shadowRoot.querySelector('real-paging');
 
-        this.tabTag?.setCallback(this.tabEventHandler);
-        this.sidebarTag?.setCallback(this.tagEventHandler);
+        this.articlesTag = this.shadowRoot.querySelector('.articles');
 
         this.getArticles(this.activeTab);
     }
 
     disconnectedCallback() {
-        actionQueue.removeListener('changePage', this);
-    }
-
-    tabEventHandler = async (activeTab) => {
-        console.log('home-page::tabEventHandler(): activeTab:', activeTab);
-
-        const existTagTab = this.tabTag
-            .getAttribute('tab-titles').split(',')
-            .findIndex(title => title.startsWith('#')) >= 0;
-
-        if (existTagTab && !activeTab.startsWith('#')) {
-            console.log('home-page::tabEventHandler(): existTagTab:', existTagTab);
-            const [tabTitles, activeTab] = this.getTabTitles();
-            this.tabTag.setAttribute('tab-titles', tabTitles);
-        }
-
-        this.activeTab = activeTab
-        this.getArticles(this.activeTab);
-    }
-
-    tagEventHandler = (tagName) => {
-        console.log('home-page::tagEventHandler(): tagName:', tagName);
-        const [tabTitles, activeTab] = this.getTabTitles(tagName);
-        this.tabTag.setAttribute('tab-titles', tabTitles);
-        this.tabTag.setAttribute('active-tab', activeTab);
+        actionQueue.removeListener(this.listenTypes, this);
     }
 
     updateArticles(articles) {
@@ -127,7 +100,6 @@ class HomePage extends HTMLElement {
                 page
             },
             set: 'articles',
-            callback: this.callback,
         })
     }
 
@@ -135,19 +107,44 @@ class HomePage extends HTMLElement {
         console.log('home-page::callback(): type, result', type, result);
         console.log('home-page::callback(): data:', data);
 
-        const getArticlesCallback = (result, data) => {
-            this.updateArticles(result);
-            this.pagingTag.setPageCount(data.totalPages);
-            this.pagingTag.setCurrentPage(data.number);
+        const getArticlesCallback = (articles, {totalPages, number}) => {
+            this.updateArticles(articles);
+            actionQueue.addAction({
+                type: 'pageInfo',
+                data: {
+                    totalPages,
+                    number
+                }
+            });
         }
 
-        const changePageCallback = (result) => {
-            this.getArticles(this.activeTab, Number(result));
+        const changePageCallback = (page) => {
+            this.getArticles(this.activeTab, Number(page));
+        }
+
+        const selectTagCallback = (tagName) => {
+            const [tabTitles, activeTab] = this.getTabTitles(tagName);
+
+            actionQueue.addAction({
+                type: 'tabTitles',
+                data: {
+                    tabTitles,
+                    activeTab
+                }
+            })
+        }
+
+        const activeTabCallback = (activeTab) => {
+            console.log('>>>>>>>>>>>>>>> home-page::activeTabCallback(): 1:', 1);
+            this.activeTab = activeTab
+            this.getArticles(this.activeTab);
         }
 
         const runCallback = {
             'getArticles': getArticlesCallback,
             'changePage': changePageCallback,
+            'selectTag': selectTagCallback,
+            'activeTab': activeTabCallback,
         }
         runCallback[type] && runCallback[type](result, data);
     }
