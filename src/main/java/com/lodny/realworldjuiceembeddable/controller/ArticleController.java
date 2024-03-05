@@ -52,6 +52,22 @@ public class ArticleController {
         return ResponseEntity.ok(new WrapArticleResponse(articleResponse));
     }
 
+    @JwtTokenRequired
+    @GetMapping("/feed")
+    public ResponseEntity<?> getFeedArticle(@ModelAttribute final ArticleParam articleParam,
+                                            @LoginUser final UserResponse loginUser) {
+        log.info("getFeedArticle() : articleParam={}", articleParam);
+        log.info("[C] getFeedArticle() : loginUser={}", loginUser);
+
+        PageRequest pageRequest = getPageRequest(articleParam);
+        log.info("[C] getFeedArticle() : pageRequest={}", pageRequest);
+
+        final Page<ArticleResponse> pageArticles = articleService.getFeedArticles(loginUser.id(), pageRequest);
+        log.info("[C] getFeedArticle() : pageArticles={}", pageArticles);
+
+        return ResponseEntity.ok(new WrapArticleResponses(pageArticles));
+    }
+
     @GetMapping
     public ResponseEntity<?> getArticles(@ModelAttribute final ArticleParam articleParam,
                                          @LoginUser final UserResponse loginUser) {

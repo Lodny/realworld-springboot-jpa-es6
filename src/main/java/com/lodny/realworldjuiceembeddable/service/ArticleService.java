@@ -91,6 +91,13 @@ public class ArticleService {
         return getArticleResponses(objs);
     }
 
+    public Page<ArticleResponse> getFeedArticles(final Long loginUserId, final PageRequest pageRequest) {
+        Page<Object> objs = articleRepository.getFeedArticles(loginUserId, pageRequest);
+        log.info("[S] getFeedArticles() : objs={}", objs);
+
+        return getArticleResponses(objs);
+    }
+
     public Page<ArticleResponse> getArticlesByFavorited(final String favorited, final Long loginUserId, final PageRequest pageRequest) {
         Page<Object> objs = articleRepository.getArticlesByFavorited(favorited, loginUserId, pageRequest);
         log.info("[S] getArticlesByFavorited() : objs={}", objs);
