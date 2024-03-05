@@ -194,6 +194,7 @@ class ProfilePage extends HTMLElement {
             this.profile = profile;
             this.getArticles(this.activeTab);
             this.updateProfile(profile);
+            this.updateFollowing(profile);
         }
 
         const getArticlesCallback = (articles, {totalPages, number}) => {
